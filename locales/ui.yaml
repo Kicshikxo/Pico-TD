@@ -1,0 +1,53 @@
+_version: 2
+
+ui.game_title:
+    en: "Pico TD"
+    ru: "Pico TD"
+
+ui.start_game:
+    en: "Start game"
+    ru: "Начать игру"
+
+ui.settings:
+    en: "Settings"
+    ru: "Настройки"
+
+ui.exit_game:
+    en: "Exit game"
+    ru: "Выйти из игры"
+
+ui.change_locale:
+    en: "Change language"
+    ru: "Сменить язык"
+
+ui.english_language:
+    en: "English"
+    ru: "Английский"
+
+ui.russian_language:
+    en: "Russian"
+    ru: "Русский"
+
+ui.music_volume:
+    en: "Music volume"
+    ru: "Громкость музыки"
+
+ui.sfx_volume:
+    en: "SFX volume"
+    ru: "Громкость звуков"
+
+ui.current_locale:
+    en: "Current language: %{text}"
+    ru: "Текущий язык: %{text}"
+
+ui.select_level:
+    en: "Select level"
+    ru: "Выберите уровень"
+
+ui.upload_level:
+    en: "Upload level"
+    ru: "Загрузить уровень"
+
+ui.back_to_menu:
+    en: "Back to menu"
+    ru: "Вернуться в меню"

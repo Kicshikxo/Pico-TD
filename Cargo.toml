@@ -1,0 +1,77 @@
+[package]
+name = "pico_td"
+version = "0.0.1"
+edition = "2021"
+license = "WTFPL"
+
+[dependencies]
+bevy = { version = "0.15.1" }
+# bevy = { version = "0.15.1", default-features = false, features = [
+#     # "android-game-activity",
+#     # "android_shared_stdcxx",
+#     # "animation",
+#     # "bevy_animation",
+#     # "bevy_asset",
+#     # "bevy_audio",
+#     # "bevy_color",
+#     # "bevy_core_pipeline",
+#     # "bevy_gilrs",
+#     "bevy_gizmos",
+#     # "bevy_gltf",
+#     # "bevy_mesh_picking_backend",
+#     # "bevy_pbr",
+#     # "bevy_picking",
+#     # "bevy_render",
+#     # "bevy_scene",
+#     # "bevy_sprite",
+#     # "bevy_sprite_picking_backend",
+#     # "bevy_state",
+#     "bevy_text",
+#     # "bevy_ui",
+#     "bevy_ui_picking_backend",
+#     # "bevy_window",
+#     # "bevy_winit",
+#     # "custom_cursor",
+#     # "default_font",
+#     # "hdr",
+#     # "ktx2",
+#     "multi_threaded",
+#     "png",
+#     # "smaa_luts",
+#     # "sysinfo_plugin",
+#     # "tonemapping_luts",
+#     "vorbis",
+#     "webgl2",
+#     # "x11",
+#     # "zstd",
+# ] }
+rand = { version = "0.8.5" }
+ron = { version = "0.8.1" }
+serde = { version = "1.0.217" }
+# serde_json = { version = "1.0.134" }
+bevy_asset_loader = { version = "0.22.0", features = ["2d"] }
+bevy_embedded_assets = { version = "0.12.0" }
+# bevy_light_2d = { version = "0.5.0" }
+
+rust-i18n = { version = "3.1.2" }
+sys-locale = { version = "0.3.2" }
+
+bevy-persistent = { version = "0.7.0", features = ["ron"] }
+directories = { version = "6.0.0" }
+
+[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
+native-dialog = { version = "0.7.0" }
+bevy-inspector-egui = { version = "0.28.0" }
+
+[profile.dev]
+opt-level = 1
+
+[profile.dev.package."*"]
+opt-level = 3
+
+[profile.release]
+lto = true
+strip = true
+panic = "abort"
+opt-level = "z"
+codegen-units = 1

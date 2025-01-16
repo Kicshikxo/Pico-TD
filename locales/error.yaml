@@ -1,0 +1,13 @@
+_version: 2
+
+level_select.file_upload_error.title:
+    en: "File upload error"
+    ru: "Ошибка при загрузке файла"
+
+level_select.file_upload_error.description:
+    en: "File cannot be uploaded. Try again."
+    ru: "Файл не может быть загружен. Попробуйте ещё раз"
+
+level_select.file_reading_error.title:
+    en: "File reading error"
+    ru: "Ошибка при чтении файла"
