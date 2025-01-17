@@ -2,18 +2,18 @@ use bevy::prelude::*;
 use bevy_asset_loader::asset_collection::AssetCollection;
 use rand::Rng;
 
-use crate::entities::tilemap::tile::TileVariant;
+use crate::entities::tile::TileVariant;
 
 #[derive(AssetCollection, Resource)]
 #[allow(unused)]
 pub struct TileAssets {
     #[asset(texture_atlas_layout(tile_size_x = 16, tile_size_y = 16, columns = 18, rows = 11))]
-    pub forest_tilemap_atlas: Handle<TextureAtlasLayout>,
+    pub forest_tilemap_layout: Handle<TextureAtlasLayout>,
     #[asset(path = "embedded://images/tiles/forest_tilemap.png")]
     pub forest_tilemap: Handle<Image>,
 
     #[asset(texture_atlas_layout(tile_size_x = 16, tile_size_y = 16, columns = 12, rows = 11))]
-    pub show_tilemap_atlas: Handle<TextureAtlasLayout>,
+    pub show_tilemap_layout: Handle<TextureAtlasLayout>,
     #[asset(path = "embedded://images/tiles/snow_tilemap.png")]
     pub show_tilemap: Handle<Image>,
 }

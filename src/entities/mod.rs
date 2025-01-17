@@ -1,13 +1,14 @@
-// pub mod entity_shadow;
 pub mod projectile;
 pub mod structure;
+pub mod tile;
 pub mod tilemap;
 pub mod unit;
 
 use bevy::prelude::*;
 use projectile::ProjectilePlugin;
 use structure::StructurePlugin;
-use tilemap::{tile::TilePligin, TilemapPlugin};
+use tile::TilePligin;
+use tilemap::TilemapPlugin;
 use unit::UnitPlugin;
 
 pub struct EntitiesPlugin;

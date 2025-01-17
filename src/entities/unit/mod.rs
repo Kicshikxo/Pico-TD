@@ -7,7 +7,7 @@ use health::{UnitHealth, UnitHealthBar};
 
 use crate::game::GameState;
 
-use super::tilemap::{movement::TileMovement, position::TilePosition};
+use super::tile::{movement::TileMovement, position::TilePosition};
 
 #[derive(Clone, Copy, PartialEq, Debug)]
 #[allow(unused)]
@@ -18,7 +18,7 @@ pub enum UnitVariant {
 }
 
 #[derive(Component, Clone)]
-#[require(UnitHealth, TileMovement, TilePosition, Sprite)]
+#[require(UnitHealth, TileMovement, TilePosition)]
 pub struct Unit {
     variant: UnitVariant,
 }

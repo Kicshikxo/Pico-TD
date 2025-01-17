@@ -1,4 +1,4 @@
-use std::sync::{Arc, Mutex};
+// use std::sync::{Arc, Mutex};
 
 use bevy::{
     audio::{PlaybackMode, Volume},
@@ -41,7 +41,7 @@ pub struct UiButton {
     width: Val,
     height: Val,
     padding: UiRect,
-    on_click: Option<Arc<Mutex<dyn FnMut() + Send + Sync>>>,
+    // on_click: Option<Arc<Mutex<dyn FnMut() + Send + Sync>>>,
 }
 
 impl Default for UiButton {
@@ -51,7 +51,7 @@ impl Default for UiButton {
             width: Val::Percent(100.0),
             height: Val::Auto,
             padding: UiRect::axes(Val::Px(24.0), Val::Px(12.0)),
-            on_click: None,
+            // on_click: None,
         }
     }
 }
@@ -117,13 +117,13 @@ impl UiButton {
         self.padding = padding;
         self
     }
-    pub fn on_click<F>(mut self, f: F) -> Self
-    where
-        F: FnMut() + Send + Sync + 'static,
-    {
-        self.on_click = Some(Arc::new(Mutex::new(f)));
-        self
-    }
+    // pub fn on_click<F>(mut self, f: F) -> Self
+    // where
+    //     F: FnMut() + Send + Sync + 'static,
+    // {
+    //     self.on_click = Some(Arc::new(Mutex::new(f)));
+    //     self
+    // }
 }
 
 pub struct UiButtonPlugin;
@@ -137,13 +137,13 @@ impl Plugin for UiButtonPlugin {
 fn button_update(
     mut commands: Commands,
     mut interaction_query: Query<
-        (&Interaction, &mut UiButton, &mut ImageNode),
+        (&Interaction, &mut ImageNode),
         (Changed<Interaction>, With<UiButton>),
     >,
     ui_audio_assets: Option<Res<UiAudioAssets>>,
     game_audio_volume: Res<Persistent<GameAudioVolume>>,
 ) {
-    for (interaction, ui_button, mut image_node) in &mut interaction_query {
+    for (interaction, mut image_node) in &mut interaction_query {
         image_node.color = match *interaction {
             Interaction::Pressed => Color::srgb(0.9, 0.9, 0.9).into(),
             Interaction::Hovered => Color::srgb(0.95, 0.95, 0.95).into(),
@@ -160,10 +160,10 @@ fn button_update(
                     },
                 ));
             }
-            if let Some(on_click) = ui_button.on_click.as_ref() {
-                let mut callback = on_click.lock().unwrap();
-                callback();
-            }
+            // if let Some(on_click) = ui_button.on_click.as_ref() {
+            //     let mut callback = on_click.lock().unwrap();
+            //     callback();
+            // }
         }
     }
 }

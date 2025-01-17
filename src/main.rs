@@ -1,4 +1,4 @@
-#![windows_subsystem = "windows"]
+// #![windows_subsystem = "windows"]
 mod assets;
 mod audio;
 mod entities;
@@ -23,7 +23,6 @@ fn main() {
                     primary_window: Some(Window {
                         title: "Pico TD".into(),
                         name: Some("Pico TD".into()),
-                        // resolution: (640.0, 640.0).into(),
                         resolution: WindowResolution::new(640.0, 640.0),
                         // .with_scale_factor_override(1.0),
                         present_mode: PresentMode::AutoVsync,

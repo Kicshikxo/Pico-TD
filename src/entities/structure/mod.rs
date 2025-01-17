@@ -7,26 +7,30 @@ use bevy::{
 use bevy_persistent::Persistent;
 
 use crate::{
-    assets::{audio::game::GameAudioAssets, entities::tile::TileAssets},
+    assets::audio::game::GameAudioAssets,
     audio::GameAudioVolume,
     entities::projectile::Projectile,
     game::{GameState, MainTilemap},
 };
 
 use super::{
-    tilemap::{movement::TileMovement, position::TilePosition},
+    tile::{
+        movement::TileMovement,
+        position::TilePosition,
+        sprite::{ProjectileTileSpriteVariant, TileSprite, TileSpriteVariant},
+    },
     unit::Unit,
 };
 
 #[derive(Clone, Copy, PartialEq, Debug)]
 #[allow(unused)]
 pub enum StructureVariant {
-    Tower,
-    None,
+    Soldier,
+    Empty,
 }
 
 #[derive(Component, Clone)]
-#[require(TilePosition, Sprite)]
+#[require(TilePosition)]
 pub struct Structure {
     variant: StructureVariant,
     damage: u32,
@@ -38,7 +42,7 @@ pub struct Structure {
 impl Default for Structure {
     fn default() -> Self {
         Self {
-            variant: StructureVariant::None,
+            variant: StructureVariant::Empty,
             damage: 0,
             fire_radius: 0.0,
             fire_rate: Duration::ZERO,
@@ -84,21 +88,17 @@ fn update_structure(
     mut structures: Query<(&mut Structure, &TilePosition, &mut Transform)>,
     main_tilemap: Query<Entity, With<MainTilemap>>,
     units: Query<(Entity, &TileMovement, &TilePosition), With<Unit>>,
-    tile_assets: Res<TileAssets>,
     game_audio_assets: Res<GameAudioAssets>,
     game_audio_volume: Res<Persistent<GameAudioVolume>>,
     time: Res<Time>,
 ) {
     let mut sorted_units = units.iter().collect::<Vec<_>>();
-    sorted_units.sort_by(
-        |(_unit_a_entity, unit_a_movement, _unit_a_tile_position),
-         (_unit_b_entity, unit_b_movement, _unit_b_tile_position)| {
-            unit_b_movement
-                .get_progress()
-                .partial_cmp(&unit_a_movement.get_progress())
-                .unwrap_or(std::cmp::Ordering::Equal)
-        },
-    );
+    sorted_units.sort_by(|(_, unit_a_movement, _), (_, unit_b_movement, _)| {
+        unit_b_movement
+            .get_progress()
+            .partial_cmp(&unit_a_movement.get_progress())
+            .unwrap_or(std::cmp::Ordering::Equal)
+    });
 
     for (mut structure, structure_tile_position, mut structure_transform) in structures.iter_mut() {
         if structure.cooldown > Duration::ZERO {
@@ -132,15 +132,10 @@ fn update_structure(
                             ],
                             projectile_duration,
                         ),
+                        TileSprite::new(TileSpriteVariant::Projectile(
+                            ProjectileTileSpriteVariant::Bullet,
+                        )),
                         Transform::from_scale(Vec3::ZERO),
-                        Sprite {
-                            image: tile_assets.forest_tilemap.clone(),
-                            texture_atlas: Some(TextureAtlas {
-                                layout: tile_assets.forest_tilemap_atlas.clone(),
-                                index: 191,
-                            }),
-                            ..default()
-                        },
                     ));
                 commands.spawn((
                     AudioPlayer::new(game_audio_assets.get_random_shoot().clone()),

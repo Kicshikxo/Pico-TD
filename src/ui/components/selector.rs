@@ -45,7 +45,7 @@ impl UiSelectorItemValue {
     pub fn as_number(&self) -> f32 {
         match self {
             UiSelectorItemValue::None => 0.0,
-            UiSelectorItemValue::String(value) => value.parse::<f32>().unwrap(),
+            UiSelectorItemValue::String(value) => value.parse::<f32>().unwrap_or(0.0),
             UiSelectorItemValue::Number(value) => *value,
         }
     }
@@ -164,6 +164,12 @@ impl UiSelector {
     pub fn get_current_item(&self) -> Option<&UiSelectorItem> {
         self.options.get(self.current_index)
     }
+    pub fn get_need_update(&self) -> bool {
+        self.need_update
+    }
+    pub fn set_need_update(&mut self, value: bool) {
+        self.need_update = value;
+    }
     pub fn get_value_changed(&mut self) -> bool {
         if self.value_changed {
             self.value_changed = false;
@@ -217,7 +223,7 @@ fn selector_update(
         }
     }
     for (mut selector, selector_children) in ui_selector.iter_mut() {
-        if selector.need_update == false {
+        if selector.get_need_update() == false {
             continue;
         }
 
@@ -233,6 +239,6 @@ fn selector_update(
                 text.0 = text_i18n.translate();
             }
         }
-        selector.need_update = false;
+        selector.set_need_update(false);
     }
 }

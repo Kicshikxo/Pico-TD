@@ -1,17 +1,13 @@
-pub mod movement;
-pub mod position;
-pub mod tile;
-
 use std::collections::HashMap;
 
 use bevy::{
     ecs::{component::ComponentId, world::DeferredWorld},
     prelude::*,
 };
-use position::TilePosition;
 
 use crate::{assets::entities::tile::TileAssets, game::GameState};
-use tile::{Tile, TileVariant};
+
+use super::tile::{position::TilePosition, Tile, TileVariant};
 
 #[derive(Component, Clone, Debug)]
 #[component(on_add = Tilemap::on_add)]
@@ -56,6 +52,12 @@ impl Tilemap {
     pub fn get_tile(&self, position: TilePosition) -> Option<Entity> {
         self.tiles.get(&position.as_ivec2()).copied()
     }
+    pub fn get_need_update(&self) -> bool {
+        self.need_update
+    }
+    pub fn set_need_update(&mut self, value: bool) {
+        self.need_update = value;
+    }
 }
 
 pub struct TilemapPlugin;
@@ -72,16 +74,16 @@ fn update_tilemap(
     tile_assets: Res<TileAssets>,
 ) {
     for mut tilemap in tilemaps.iter_mut() {
-        if tilemap.need_update == false {
+        if tilemap.get_need_update() == false {
             continue;
         }
 
-        for (tile_position, tile_entity) in &tilemap.tiles {
+        for (tile_position, tile_entity) in tilemap.get_tiles() {
             let nearby_tile = |dx: i32, dy: i32| -> TileVariant {
                 tilemap
                     .get_tile(TilePosition::from_ivec2(tile_position + IVec2::new(dx, dy)))
                     .and_then(|entity| tiles.get(entity).ok())
-                    .map(|(tile, _, _)| tile.variant)
+                    .map(|(tile, _, _)| tile.get_variant())
                     .unwrap_or(TileVariant::Unknown)
             };
 
@@ -91,25 +93,26 @@ fn update_tilemap(
                 [nearby_tile(-1, -1), nearby_tile(0, -1), nearby_tile(1, -1)],
             ];
 
-            let Ok((tile, mut tile_sprite, mut tile_transform)) = tiles.get_mut(*tile_entity)
-            else {
-                continue;
-            };
+            if let Ok((tile, mut tile_sprite, mut tile_transform)) = tiles.get_mut(*tile_entity) {
+                if let Some(texture_atlas) = tile_sprite.texture_atlas.as_mut() {
+                    texture_atlas.index = match tile.get_variant() {
+                        TileVariant::Ground => {
+                            tile_assets.get_ground_tile_index(tiles_around) as usize
+                        }
+                        TileVariant::Road => tile_assets.get_road_tile_index(tiles_around) as usize,
+                        TileVariant::Water => {
+                            tile_assets.get_water_tile_index(tiles_around) as usize
+                        }
+                        TileVariant::Unknown => 0,
+                    };
+                }
 
-            if let Some(texture_atlas) = tile_sprite.texture_atlas.as_mut() {
-                texture_atlas.index = match tile.variant {
-                    TileVariant::Ground => tile_assets.get_ground_tile_index(tiles_around) as usize,
-                    TileVariant::Road => tile_assets.get_road_tile_index(tiles_around) as usize,
-                    TileVariant::Water => tile_assets.get_water_tile_index(tiles_around) as usize,
-                    TileVariant::Unknown => 0,
-                };
+                tile_transform.translation = (tile_position * tilemap.tile_size.as_ivec2())
+                    .extend(-1)
+                    .as_vec3();
             }
-
-            tile_transform.translation = (tile_position * tilemap.tile_size.as_ivec2())
-                .extend(-1)
-                .as_vec3();
         }
 
-        tilemap.need_update = false;
+        tilemap.set_need_update(false);
     }
 }

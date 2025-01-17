@@ -4,7 +4,7 @@ use bevy::{
 };
 use bevy_asset_loader::asset_collection::AssetCollection;
 
-use crate::entities::tilemap::tile::Tile;
+use crate::entities::tile::Tile;
 
 #[derive(AssetCollection, Resource)]
 pub struct LevelsAssets {

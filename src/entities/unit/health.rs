@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 
 #[derive(Component, Clone, Debug)]
-#[require(Sprite, Transform)]
+#[require(Transform)]
 pub struct UnitHealth {
     max: u32,
     current: u32,

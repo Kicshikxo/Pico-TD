@@ -12,6 +12,15 @@ pub struct GameAudioVolume {
     sfx_volume: f32,
 }
 
+impl Default for GameAudioVolume {
+    fn default() -> Self {
+        Self {
+            music_volume: 0.5,
+            sfx_volume: 0.5,
+        }
+    }
+}
+
 impl GameAudioVolume {
     pub fn get_music_volume(&self) -> f32 {
         self.music_volume
@@ -24,15 +33,6 @@ impl GameAudioVolume {
     }
     pub fn set_sfx_volume(&mut self, volume: f32) {
         self.sfx_volume = volume.clamp(0.0, 1.0);
-    }
-}
-
-impl Default for GameAudioVolume {
-    fn default() -> Self {
-        Self {
-            music_volume: 1.0,
-            sfx_volume: 1.0,
-        }
     }
 }
 

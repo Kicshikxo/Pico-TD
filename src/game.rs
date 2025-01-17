@@ -2,7 +2,6 @@ use std::time::Duration;
 
 use bevy::{
     audio::{PlaybackMode, Volume},
-    core_pipeline::tonemapping::Tonemapping,
     prelude::*,
 };
 use bevy_persistent::Persistent;
@@ -17,7 +16,14 @@ use crate::{
     audio::{GameAudioPlugin, GameAudioVolume},
     entities::{
         structure::{Structure, StructureVariant},
-        tilemap::{movement::TileMovement, position::TilePosition, Tilemap},
+        tile::{
+            movement::TileMovement,
+            position::TilePosition,
+            sprite::{
+                StructureTileSpriteVariant, TileSprite, TileSpriteVariant, UnitTileSpriteVariant,
+            },
+        },
+        tilemap::Tilemap,
         unit::{
             health::{UnitHealth, UnitHealthBar},
             Unit, UnitVariant,
@@ -68,7 +74,6 @@ fn setup(
 ) {
     commands.spawn((
         Camera2d::default(),
-        Tonemapping::None,
         Msaa::Off,
         Transform::from_scale(Vec3::new(0.5, 0.5, 1.0)),
     ));
@@ -102,19 +107,13 @@ fn start_game(
 
     for x in 0..seleted_level.size.x {
         for y in 0..seleted_level.size.y {
+            let tile = seleted_level.map[y as usize][x as usize];
             tilemap.set_tile(
                 TilePosition::new(x as f32, y as f32),
                 commands
                     .spawn((
-                        seleted_level.map[y as usize][x as usize],
-                        Sprite {
-                            image: tile_assets.forest_tilemap.clone(),
-                            texture_atlas: Some(TextureAtlas {
-                                layout: tile_assets.forest_tilemap_atlas.clone(),
-                                index: 0,
-                            }),
-                            ..default()
-                        },
+                        TileSprite::new(TileSpriteVariant::Tilemap(tile.get_variant().into())),
+                        tile,
                     ))
                     .id(),
             );
@@ -144,14 +143,7 @@ fn start_game(
                         seleted_level.paths[0].clone(),
                         Duration::from_secs(10 + 5 * i),
                     ),
-                    Sprite {
-                        image: tile_assets.forest_tilemap.clone(),
-                        texture_atlas: Some(TextureAtlas {
-                            layout: tile_assets.forest_tilemap_atlas.clone(),
-                            index: (95 + 18 * i) as usize,
-                        }),
-                        ..default()
-                    },
+                    TileSprite::new(TileSpriteVariant::Unit(UnitTileSpriteVariant::Truck)),
                 ))
                 .with_child(UnitHealthBar);
         });
@@ -160,20 +152,15 @@ fn start_game(
     for structure_position in seleted_level.structure_points.iter() {
         commands.entity(tilemap_entity).with_child((
             Structure::new(
-                StructureVariant::None,
+                StructureVariant::Soldier,
                 10,
                 3.0,
                 Duration::from_secs_f32(0.5),
             ),
             TilePosition::new(structure_position.x, structure_position.y),
-            Sprite {
-                image: tile_assets.forest_tilemap.clone(),
-                texture_atlas: Some(TextureAtlas {
-                    layout: tile_assets.forest_tilemap_atlas.clone(),
-                    index: 106, // 8
-                }),
-                ..default()
-            },
+            TileSprite::new(TileSpriteVariant::Structure(
+                StructureTileSpriteVariant::Soldier,
+            )),
         ));
     }
 
@@ -183,7 +170,7 @@ fn start_game(
             Sprite {
                 image: tile_assets.forest_tilemap.clone(),
                 texture_atlas: Some(TextureAtlas {
-                    layout: tile_assets.forest_tilemap_atlas.clone(),
+                    layout: tile_assets.forest_tilemap_layout.clone(),
                     index: 94,
                 }),
                 ..default()

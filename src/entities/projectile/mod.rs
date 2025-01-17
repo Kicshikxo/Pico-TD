@@ -5,7 +5,7 @@ use bevy::prelude::*;
 use crate::game::GameState;
 
 use super::{
-    tilemap::{movement::TileMovement, position::TilePosition},
+    tile::{movement::TileMovement, position::TilePosition},
     unit::{health::UnitHealth, Unit},
 };
 
@@ -16,7 +16,7 @@ pub enum ProjectileVariant {
 }
 
 #[derive(Component)]
-#[require(Sprite)]
+#[require(TilePosition)]
 pub struct Projectile {
     variant: ProjectileVariant,
     target: Entity,
