@@ -5,6 +5,7 @@ use crate::{
     ui::{
         components::{
             button::{UiButton, UiButtonVariant},
+            container::{UiContainer, UiContainerVariant},
             text::{UiText, UiTextSize},
         },
         UiState,
@@ -58,52 +59,18 @@ fn ui_init(mut commands: Commands, ui_assets: Res<UiAssets>) {
         ))
         .with_children(|parent| {
             parent
-                .spawn((
-                    Node {
-                        width: Val::Px(320.0),
-                        align_items: AlignItems::Start,
-                        justify_content: JustifyContent::Center,
-                        flex_direction: FlexDirection::Column,
-                        row_gap: Val::Px(12.0),
-                        padding: UiRect::all(Val::Px(24.0)),
-                        ..default()
-                    },
-                    ImageNode {
-                        image: ui_assets.large_tilemap.clone(),
-                        texture_atlas: Some(TextureAtlas {
-                            index: 22,
-                            layout: ui_assets.large_tilemap_atlas.clone(),
-                        }),
-                        image_mode: NodeImageMode::Sliced(TextureSlicer {
-                            border: BorderRect::square(10.0),
-                            max_corner_scale: 2.5,
-                            ..default()
-                        }),
-                        ..default()
-                    },
-                ))
+                .spawn(
+                    UiContainer::new()
+                        .with_variant(UiContainerVariant::Primary)
+                        .with_width(Val::Px(320.0))
+                        .with_padding(UiRect::all(Val::Px(24.0)))
+                        .with_row_gap(Val::Px(12.0))
+                        .center()
+                        .column(),
+                )
                 .with_children(|parent| {
                     parent
-                        .spawn((
-                            Node {
-                                width: Val::Percent(100.0),
-                                padding: UiRect::all(Val::Px(8.0)),
-                                ..default()
-                            },
-                            ImageNode {
-                                image: ui_assets.large_tilemap.clone(),
-                                texture_atlas: Some(TextureAtlas {
-                                    index: 3,
-                                    layout: ui_assets.large_tilemap_atlas.clone(),
-                                }),
-                                image_mode: NodeImageMode::Sliced(TextureSlicer {
-                                    border: BorderRect::square(10.0),
-                                    max_corner_scale: 2.5,
-                                    ..default()
-                                }),
-                                ..default()
-                            },
-                        ))
+                        .spawn(UiContainer::new().with_padding(UiRect::all(Val::Px(8.0))))
                         .with_child(UiText::new("ui.game_title").with_size(UiTextSize::ExtraLarge));
 
                     parent
@@ -137,7 +104,7 @@ fn ui_destroy(mut commands: Commands, query: Query<Entity, With<RootUiComponent>
 fn ui_update(
     interaction_query: Query<
         (&Interaction, &MenuButtonAction),
-        (Changed<Interaction>, With<Button>),
+        (Changed<Interaction>, With<UiButton>),
     >,
     mut next_ui_state: ResMut<NextState<UiState>>,
     mut app_exit_events: EventWriter<AppExit>,

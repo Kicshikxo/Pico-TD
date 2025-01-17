@@ -5,8 +5,11 @@ use bevy::{
 
 use crate::{assets::ui::UiAssets, ui::i18n::I18nComponent};
 
+#[derive(Default)]
+#[allow(unused)]
 pub enum UiTextSize {
     Small,
+    #[default]
     Medium,
     Large,
     ExtraLarge,
@@ -29,6 +32,7 @@ impl UiTextSize {
 #[component(on_add = UiText::on_add)]
 pub struct UiText {
     size: UiTextSize,
+    justify: JustifyText,
     i18n_key: String,
     i18n_args: Vec<(String, String)>,
     enable_i18n: bool,
@@ -37,7 +41,8 @@ pub struct UiText {
 impl Default for UiText {
     fn default() -> Self {
         Self {
-            size: UiTextSize::Medium,
+            size: UiTextSize::default(),
+            justify: JustifyText::Center,
             i18n_key: String::new(),
             i18n_args: Vec::new(),
             enable_i18n: true,
@@ -45,6 +50,7 @@ impl Default for UiText {
     }
 }
 
+#[allow(unused)]
 impl UiText {
     pub fn new(i18n_key: &str) -> Self {
         Self {
@@ -58,6 +64,7 @@ impl UiText {
 
         let font = ui_assets.primary_font.clone();
         let font_size = ui_text.size.as_f32();
+        let justify = ui_text.justify.clone();
 
         let i18n_key = ui_text.i18n_key.clone();
         let i18n_args = ui_text.i18n_args.clone();
@@ -74,7 +81,7 @@ impl UiText {
                 ..default()
             },
             TextLayout {
-                justify: JustifyText::Center,
+                justify,
                 ..default()
             },
         ));
@@ -90,6 +97,10 @@ impl UiText {
     }
     pub fn with_size(mut self, size: UiTextSize) -> Self {
         self.size = size;
+        self
+    }
+    pub fn with_justify(mut self, justify: JustifyText) -> Self {
+        self.justify = justify;
         self
     }
     pub fn with_arg(mut self, key: &str, value: String) -> Self {

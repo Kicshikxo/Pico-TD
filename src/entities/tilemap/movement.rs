@@ -25,13 +25,14 @@ impl Default for TileMovement {
             path_cumulative_lengths: Vec::new(),
             position: Vec2::default(),
             previous_position: Vec2::default(),
-            duration: Duration::from_secs(0),
+            duration: Duration::ZERO,
             progress: 0.0,
-            elapsed_time: Duration::from_secs(0),
+            elapsed_time: Duration::ZERO,
         }
     }
 }
 
+#[allow(unused)]
 impl TileMovement {
     pub fn new(path: Vec<Vec2>, duration: Duration) -> Self {
         let path_segment_lengths: Vec<f32> = std::iter::once(0.0)

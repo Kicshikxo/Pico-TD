@@ -1,9 +1,9 @@
 use bevy::prelude::*;
 use bevy_asset_loader::asset_collection::AssetCollection;
 use rand::Rng;
-// use rand::Rng;
 
 #[derive(AssetCollection, Resource)]
+#[allow(unused)]
 pub struct GameAudioAssets {
     #[asset(path = "embedded://audio/game/shoot_variant_0.ogg")]
     pub shoot_variant_0: Handle<AudioSource>,

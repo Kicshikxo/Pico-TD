@@ -22,10 +22,10 @@ ui.change_locale:
 
 ui.english_language:
     en: "English"
-    ru: "Английский"
+    ru: "English"
 
 ui.russian_language:
-    en: "Russian"
+    en: "Русский"
     ru: "Русский"
 
 ui.music_volume:
@@ -47,6 +47,10 @@ ui.select_level:
 ui.upload_level:
     en: "Upload level"
     ru: "Загрузить уровень"
+
+ui.pause:
+    en: "Pause"
+    ru: "Пауза"
 
 ui.back_to_menu:
     en: "Back to menu"

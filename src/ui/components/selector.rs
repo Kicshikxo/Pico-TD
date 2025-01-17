@@ -26,6 +26,7 @@ pub struct UiSelectorItem {
 }
 
 #[derive(Default)]
+#[allow(unused)]
 pub enum UiSelectorItemValue {
     #[default]
     None,
@@ -89,12 +90,10 @@ impl Default for UiSelector {
     }
 }
 
+#[allow(unused)]
 impl UiSelector {
-    pub fn new(options: Vec<UiSelectorItem>) -> UiSelector {
-        Self {
-            options,
-            ..default()
-        }
+    pub fn new() -> UiSelector {
+        Self { ..default() }
     }
     fn on_add(mut world: DeferredWorld, entity: Entity, _component_id: ComponentId) {
         let selector = world.get::<Self>(entity).unwrap();
@@ -128,6 +127,14 @@ impl UiSelector {
                     ))
                     .with_child(UiText::new(">"));
             });
+    }
+    pub fn with_options(mut self, options: Vec<UiSelectorItem>) -> Self {
+        self.options = options;
+        self
+    }
+    pub fn add_option(mut self, option: UiSelectorItem) -> Self {
+        self.options.push(option);
+        self
     }
     pub fn with_default_index(mut self, index: usize) -> Self {
         self.current_index = index;

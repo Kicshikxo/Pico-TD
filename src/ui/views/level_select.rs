@@ -10,7 +10,8 @@ use crate::{
     game::GameState,
     ui::{
         components::{
-            button::UiButton,
+            button::{UiButton, UiButtonVariant},
+            container::{UiContainer, UiContainerVariant},
             text::{UiText, UiTextSize},
         },
         UiState,
@@ -88,33 +89,18 @@ fn ui_init(
         ))
         .with_children(|parent| {
             parent
-                .spawn((
-                    Node {
-                        width: Val::Px(320.0),
-                        align_items: AlignItems::Center,
-                        justify_content: JustifyContent::Center,
-                        flex_direction: FlexDirection::Column,
-                        row_gap: Val::Px(12.0),
-                        padding: UiRect::all(Val::Px(24.0)),
-                        ..default()
-                    },
-                    ImageNode {
-                        image: ui_assets.large_tilemap.clone(),
-                        texture_atlas: Some(TextureAtlas {
-                            index: 22,
-                            layout: ui_assets.large_tilemap_atlas.clone(),
-                        }),
-                        image_mode: NodeImageMode::Sliced(TextureSlicer {
-                            border: BorderRect::square(10.0),
-                            max_corner_scale: 2.5,
-                            ..default()
-                        }),
-                        ..default()
-                    },
-                ))
+                .spawn(
+                    UiContainer::new()
+                        .with_variant(UiContainerVariant::Primary)
+                        .with_width(Val::Px(320.0))
+                        .with_padding(UiRect::all(Val::Px(24.0)))
+                        .with_row_gap(Val::Px(12.0))
+                        .center()
+                        .column(),
+                )
                 .with_children(|parent| {
                     parent.spawn((
-                        Button,
+                        UiButton::new().with_variant(UiButtonVariant::None),
                         LevelSelectButtonAction::BackToMenu,
                         Node {
                             position_type: PositionType::Absolute,
@@ -133,26 +119,7 @@ fn ui_init(
                         },
                     ));
                     parent
-                        .spawn((
-                            Node {
-                                width: Val::Percent(100.0),
-                                padding: UiRect::all(Val::Px(8.0)),
-                                ..default()
-                            },
-                            ImageNode {
-                                image: ui_assets.large_tilemap.clone(),
-                                texture_atlas: Some(TextureAtlas {
-                                    index: 3,
-                                    layout: ui_assets.large_tilemap_atlas.clone(),
-                                }),
-                                image_mode: NodeImageMode::Sliced(TextureSlicer {
-                                    border: BorderRect::square(10.0),
-                                    max_corner_scale: 2.5,
-                                    ..default()
-                                }),
-                                ..default()
-                            },
-                        ))
+                        .spawn(UiContainer::new().with_padding(UiRect::all(Val::Px(8.0))))
                         .with_child(UiText::new("ui.select_level"));
                     parent
                         .spawn(Node {
@@ -170,14 +137,14 @@ fn ui_init(
                                 let level = levels_assets_loader.get(level_handle).unwrap();
 
                                 parent
-                                    .spawn((Node {
+                                    .spawn(Node {
                                         flex_direction: FlexDirection::Column,
                                         ..default()
-                                    },))
+                                    })
                                     .with_children(|parent| {
                                         parent
                                             .spawn((
-                                                Button,
+                                                UiButton::new().with_variant(UiButtonVariant::None),
                                                 LevelSelectButtonAction::SelectLevel {
                                                     level_index,
                                                 },
@@ -237,7 +204,7 @@ fn ui_destroy(mut commands: Commands, query: Query<Entity, With<RootUiComponent>
 fn ui_update(
     interaction_query: Query<
         (&Interaction, &LevelSelectButtonAction),
-        (Changed<Interaction>, With<Button>),
+        (Changed<Interaction>, With<UiButton>),
     >,
     levels_assets: Res<LevelsAssets>,
     levels_assets_loader: Res<Assets<Level>>,

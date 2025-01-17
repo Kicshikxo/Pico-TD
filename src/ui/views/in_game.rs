@@ -53,7 +53,7 @@ fn ui_init(mut commands: Commands) {
                             InGameButtonAction::OpenInGameSettings,
                             UiButton::new().with_padding(UiRect::axes(Val::Px(16.0), Val::Px(8.0))),
                         ))
-                        .with_child(UiText::new("ui.settings").with_size(UiTextSize::Small));
+                        .with_child(UiText::new("ui.pause").with_size(UiTextSize::Small));
                 });
         });
 }
@@ -67,7 +67,7 @@ fn ui_destroy(mut commands: Commands, query: Query<Entity, With<RootUiComponent>
 fn ui_update(
     interaction_query: Query<
         (&Interaction, &InGameButtonAction),
-        (Changed<Interaction>, With<Button>),
+        (Changed<Interaction>, With<UiButton>),
     >,
     mut next_ui_state: ResMut<NextState<UiState>>,
     mut next_game_state: ResMut<NextState<GameState>>,

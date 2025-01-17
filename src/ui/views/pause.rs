@@ -1,10 +1,14 @@
-use bevy::{prelude::*, ui::widget::NodeImageMode};
+use bevy::prelude::*;
 
 use crate::{
     assets::ui::UiAssets,
     game::{BackgroundSound, GameState, MainTilemap},
     ui::{
-        components::{button::UiButton, text::UiText},
+        components::{
+            button::{UiButton, UiButtonVariant},
+            container::{UiContainer, UiContainerVariant},
+            text::UiText,
+        },
         UiState,
     },
 };
@@ -50,33 +54,18 @@ fn ui_init(
         ))
         .with_children(|parent| {
             parent
-                .spawn((
-                    Node {
-                        width: Val::Px(320.0),
-                        align_items: AlignItems::Center,
-                        justify_content: JustifyContent::Center,
-                        flex_direction: FlexDirection::Column,
-                        row_gap: Val::Px(12.0),
-                        padding: UiRect::all(Val::Px(24.0)),
-                        ..default()
-                    },
-                    ImageNode {
-                        image: ui_assets.large_tilemap.clone(),
-                        texture_atlas: Some(TextureAtlas {
-                            index: 22,
-                            layout: ui_assets.large_tilemap_atlas.clone(),
-                        }),
-                        image_mode: NodeImageMode::Sliced(TextureSlicer {
-                            border: BorderRect::square(10.0),
-                            max_corner_scale: 2.5,
-                            ..default()
-                        }),
-                        ..default()
-                    },
-                ))
+                .spawn(
+                    UiContainer::new()
+                        .with_variant(UiContainerVariant::Primary)
+                        .with_width(Val::Px(320.0))
+                        .with_padding(UiRect::all(Val::Px(24.0)))
+                        .with_row_gap(Val::Px(12.0))
+                        .center()
+                        .column(),
+                )
                 .with_children(|parent| {
                     parent.spawn((
-                        Button,
+                        UiButton::new().with_variant(UiButtonVariant::None),
                         PauseButtonAction::Close,
                         Node {
                             position_type: PositionType::Absolute,
@@ -95,27 +84,8 @@ fn ui_init(
                         },
                     ));
                     parent
-                        .spawn((
-                            Node {
-                                width: Val::Percent(100.0),
-                                padding: UiRect::all(Val::Px(8.0)),
-                                ..default()
-                            },
-                            ImageNode {
-                                image: ui_assets.large_tilemap.clone(),
-                                texture_atlas: Some(TextureAtlas {
-                                    index: 3,
-                                    layout: ui_assets.large_tilemap_atlas.clone(),
-                                }),
-                                image_mode: NodeImageMode::Sliced(TextureSlicer {
-                                    border: BorderRect::square(10.0),
-                                    max_corner_scale: 2.5,
-                                    ..default()
-                                }),
-                                ..default()
-                            },
-                        ))
-                        .with_child(UiText::new("ui.settings"));
+                        .spawn(UiContainer::new().with_padding(UiRect::all(Val::Px(8.0))))
+                        .with_child(UiText::new("ui.pause"));
                     parent
                         .spawn((PauseButtonAction::BackToMenu, UiButton::new()))
                         .with_child(UiText::new("ui.back_to_menu"));
@@ -140,7 +110,7 @@ fn ui_update(
     mut commands: Commands,
     interaction_query: Query<
         (&Interaction, &PauseButtonAction),
-        (Changed<Interaction>, With<Button>),
+        (Changed<Interaction>, With<UiButton>),
     >,
     main_tilemap: Query<Entity, With<MainTilemap>>,
     mut next_ui_state: ResMut<NextState<UiState>>,

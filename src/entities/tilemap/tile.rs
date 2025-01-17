@@ -5,6 +5,7 @@ use crate::game::{GameState, MainTilemap};
 use super::{position::TilePosition, Tilemap};
 
 #[derive(Clone, Copy, PartialEq, Debug)]
+#[allow(unused)]
 pub enum TileVariant {
     Ground,
     Road,
@@ -40,16 +41,7 @@ impl From<char> for Tile {
     }
 }
 
-impl Tile {
-    pub fn new(variant: TileVariant) -> Self {
-        Self { variant }
-    }
-    pub fn unknown() -> Self {
-        Self {
-            variant: TileVariant::Unknown,
-        }
-    }
-}
+impl Tile {}
 
 pub struct TilePligin;
 

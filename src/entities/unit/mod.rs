@@ -10,6 +10,7 @@ use crate::game::GameState;
 use super::tilemap::{movement::TileMovement, position::TilePosition};
 
 #[derive(Clone, Copy, PartialEq, Debug)]
+#[allow(unused)]
 pub enum UnitVariant {
     Soldier,
     Truck,

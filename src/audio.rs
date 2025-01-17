@@ -10,7 +10,6 @@ use serde::{Deserialize, Serialize};
 pub struct GameAudioVolume {
     music_volume: f32,
     sfx_volume: f32,
-    pub mute: bool,
 }
 
 impl GameAudioVolume {
@@ -33,7 +32,6 @@ impl Default for GameAudioVolume {
         Self {
             music_volume: 1.0,
             sfx_volume: 1.0,
-            mute: false,
         }
     }
 }

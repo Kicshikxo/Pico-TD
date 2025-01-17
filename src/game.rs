@@ -204,6 +204,7 @@ fn start_game(
     next_game_state.set(GameState::InGame);
 }
 
+#[allow(unused)]
 fn update_cursor_position(
     mut commands: Commands,
     main_camera: Query<(&Camera, &GlobalTransform)>,
@@ -248,6 +249,7 @@ fn update_cursor_position(
     }
 }
 
+#[allow(unused)]
 fn main_update(
     mut commands: Commands,
     mut gizmos: Gizmos,

@@ -6,6 +6,8 @@ use crate::{
     audio::GameAudioVolume,
     ui::{
         components::{
+            button::{UiButton, UiButtonVariant},
+            container::{UiContainer, UiContainerVariant},
             selector::{UiSelector, UiSelectorItem, UiSelectorItemValue},
             text::UiText,
         },
@@ -73,33 +75,18 @@ fn ui_init(
         ))
         .with_children(|parent| {
             parent
-                .spawn((
-                    Node {
-                        width: Val::Px(320.0),
-                        align_items: AlignItems::Center,
-                        justify_content: JustifyContent::Center,
-                        flex_direction: FlexDirection::Column,
-                        row_gap: Val::Px(12.0),
-                        padding: UiRect::all(Val::Px(24.0)),
-                        ..default()
-                    },
-                    ImageNode {
-                        image: ui_assets.large_tilemap.clone(),
-                        texture_atlas: Some(TextureAtlas {
-                            index: 22,
-                            layout: ui_assets.large_tilemap_atlas.clone(),
-                        }),
-                        image_mode: NodeImageMode::Sliced(TextureSlicer {
-                            border: BorderRect::square(10.0),
-                            max_corner_scale: 2.5,
-                            ..default()
-                        }),
-                        ..default()
-                    },
-                ))
+                .spawn(
+                    UiContainer::new()
+                        .with_variant(UiContainerVariant::Primary)
+                        .with_width(Val::Px(320.0))
+                        .with_padding(UiRect::all(Val::Px(24.0)))
+                        .with_row_gap(Val::Px(12.0))
+                        .center()
+                        .column(),
+                )
                 .with_children(|parent| {
                     parent.spawn((
-                        Button,
+                        UiButton::new().with_variant(UiButtonVariant::None),
                         SettingsButtonAction::BackToMenu,
                         Node {
                             position_type: PositionType::Absolute,
@@ -118,66 +105,70 @@ fn ui_init(
                         },
                     ));
                     parent
-                        .spawn((
-                            Node {
-                                width: Val::Percent(100.0),
-                                padding: UiRect::all(Val::Px(8.0)),
-                                ..default()
-                            },
-                            ImageNode {
-                                image: ui_assets.large_tilemap.clone(),
-                                texture_atlas: Some(TextureAtlas {
-                                    index: 3,
-                                    layout: ui_assets.large_tilemap_atlas.clone(),
-                                }),
-                                image_mode: NodeImageMode::Sliced(TextureSlicer {
-                                    border: BorderRect::square(10.0),
-                                    max_corner_scale: 2.5,
-                                    ..default()
-                                }),
-                                ..default()
-                            },
-                        ))
+                        .spawn(UiContainer::new().with_padding(UiRect::all(Val::Px(8.0))))
                         .with_child(UiText::new("ui.settings"));
-                    parent.spawn(UiText::new("ui.change_locale"));
-                    parent.spawn((
-                        LocaleSelector,
-                        UiSelector::new(vec![
-                            UiSelectorItem::new("ui.english_language".to_string())
-                                .with_value(UiSelectorItemValue::String(Locale::En.to_string())),
-                            UiSelectorItem::new("ui.russian_language".to_string())
-                                .with_value(UiSelectorItemValue::String(Locale::Ru.to_string())),
-                        ])
-                        .with_default_index(i18n.get_current() as usize),
-                    ));
-                    parent.spawn(UiText::new("ui.sfx_volume"));
-                    parent.spawn((
-                        SfxVolumeSelector,
-                        UiSelector::new(
-                            (0..=10)
-                                .map(|index| {
-                                    UiSelectorItem::new(format!("{}%", index * 10)).with_value(
-                                        UiSelectorItemValue::Number(index as f32 / 10.0),
+
+                    parent
+                        .spawn(Node {
+                            width: Val::Percent(100.0),
+                            flex_direction: FlexDirection::Column,
+                            row_gap: Val::Px(4.0),
+                            ..default()
+                        })
+                        .with_children(|parent| {
+                            parent.spawn(UiText::new("ui.change_locale"));
+                            parent.spawn((
+                                LocaleSelector,
+                                UiSelector::new()
+                                    .with_options(vec![
+                                        UiSelectorItem::new("ui.english_language".to_string())
+                                            .with_value(UiSelectorItemValue::String(
+                                                Locale::En.to_string(),
+                                            )),
+                                        UiSelectorItem::new("ui.russian_language".to_string())
+                                            .with_value(UiSelectorItemValue::String(
+                                                Locale::Ru.to_string(),
+                                            )),
+                                    ])
+                                    .with_default_index(i18n.get_current() as usize),
+                            ));
+                            parent.spawn(UiText::new("ui.sfx_volume"));
+                            parent.spawn((
+                                SfxVolumeSelector,
+                                UiSelector::new()
+                                    .with_options(
+                                        (0..=10)
+                                            .map(|index| {
+                                                UiSelectorItem::new(format!("{}%", index * 10))
+                                                    .with_value(UiSelectorItemValue::Number(
+                                                        index as f32 / 10.0,
+                                                    ))
+                                            })
+                                            .collect(),
                                     )
-                                })
-                                .collect(),
-                        )
-                        .with_default_index((game_audio_volume.get_sfx_volume() * 10.0) as usize),
-                    ));
-                    parent.spawn(UiText::new("ui.music_volume"));
-                    parent.spawn((
-                        MusicVolumeSelector,
-                        UiSelector::new(
-                            (0..=10)
-                                .map(|index| {
-                                    UiSelectorItem::new(format!("{}%", index * 10)).with_value(
-                                        UiSelectorItemValue::Number(index as f32 / 10.0),
+                                    .with_default_index(
+                                        (game_audio_volume.get_sfx_volume() * 10.0) as usize,
+                                    ),
+                            ));
+                            parent.spawn(UiText::new("ui.music_volume"));
+                            parent.spawn((
+                                MusicVolumeSelector,
+                                UiSelector::new()
+                                    .with_options(
+                                        (0..=10)
+                                            .map(|index| {
+                                                UiSelectorItem::new(format!("{}%", index * 10))
+                                                    .with_value(UiSelectorItemValue::Number(
+                                                        index as f32 / 10.0,
+                                                    ))
+                                            })
+                                            .collect(),
                                     )
-                                })
-                                .collect(),
-                        )
-                        .with_default_index((game_audio_volume.get_music_volume() * 10.0) as usize),
-                    ));
+                                    .with_default_index(
+                                        (game_audio_volume.get_music_volume() * 10.0) as usize,
+                                    ),
+                            ));
+                        });
                 });
         });
 }
@@ -191,7 +182,7 @@ fn ui_destroy(mut commands: Commands, query: Query<Entity, With<RootUiComponent>
 fn ui_update(
     interaction_query: Query<
         (&Interaction, &SettingsButtonAction),
-        (Changed<Interaction>, With<Button>),
+        (Changed<Interaction>, With<UiButton>),
     >,
     mut locale_selector: Query<
         &mut UiSelector,

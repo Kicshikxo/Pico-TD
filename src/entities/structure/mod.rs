@@ -19,6 +19,7 @@ use super::{
 };
 
 #[derive(Clone, Copy, PartialEq, Debug)]
+#[allow(unused)]
 pub enum StructureVariant {
     Tower,
     None,
@@ -40,12 +41,13 @@ impl Default for Structure {
             variant: StructureVariant::None,
             damage: 0,
             fire_radius: 0.0,
-            fire_rate: Duration::from_secs(0),
-            cooldown: Duration::from_secs(0),
+            fire_rate: Duration::ZERO,
+            cooldown: Duration::ZERO,
         }
     }
 }
 
+#[allow(unused)]
 impl Structure {
     pub fn new(
         variant: StructureVariant,
@@ -99,11 +101,11 @@ fn update_structure(
     );
 
     for (mut structure, structure_tile_position, mut structure_transform) in structures.iter_mut() {
-        if structure.cooldown > Duration::from_secs(0) {
+        if structure.cooldown > Duration::ZERO {
             structure.cooldown = structure
                 .cooldown
                 .checked_sub(Duration::from_secs_f32(time.delta_secs()))
-                .unwrap_or(Duration::from_secs(0));
+                .unwrap_or_default();
             continue;
         }
 
@@ -113,8 +115,10 @@ fn update_structure(
                 .distance(unit_tile_position.as_vec2())
                 <= structure.fire_radius
             {
+                let projectile_duration = Duration::from_secs_f32(0.1);
+
                 let unit_progress_on_hit = unit_movement.get_progress()
-                    + Duration::from_secs_f32(0.1).as_secs_f32()
+                    + projectile_duration.as_secs_f32()
                         / unit_movement.get_duration().as_secs_f32();
 
                 commands
@@ -126,7 +130,7 @@ fn update_structure(
                                 structure_tile_position.as_vec2(),
                                 unit_movement.position_at_progress(unit_progress_on_hit),
                             ],
-                            Duration::from_secs_f32(0.1),
+                            projectile_duration,
                         ),
                         Transform::from_scale(Vec3::ZERO),
                         Sprite {

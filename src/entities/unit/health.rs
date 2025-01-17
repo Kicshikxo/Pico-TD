@@ -18,6 +18,7 @@ impl Default for UnitHealth {
     }
 }
 
+#[allow(unused)]
 impl UnitHealth {
     pub fn new(max: u32) -> Self {
         Self {

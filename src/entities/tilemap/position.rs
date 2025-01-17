@@ -18,6 +18,7 @@ impl Default for TilePosition {
     }
 }
 
+#[allow(unused)]
 impl TilePosition {
     pub fn new(x: f32, y: f32) -> Self {
         Self { x, y, ..default() }

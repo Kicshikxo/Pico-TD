@@ -23,6 +23,7 @@ pub struct Tilemap {
     need_update: bool,
 }
 
+#[allow(unused)]
 impl Tilemap {
     pub fn new(size: UVec2, tile_size: UVec2) -> Self {
         Self {

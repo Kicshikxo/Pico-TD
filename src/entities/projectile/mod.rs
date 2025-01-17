@@ -9,16 +9,27 @@ use super::{
     unit::{health::UnitHealth, Unit},
 };
 
-#[derive(Component, Clone, Debug)]
+#[derive(Clone, Copy, PartialEq, Debug)]
+#[allow(unused)]
+pub enum ProjectileVariant {
+    Bullet,
+}
+
+#[derive(Component)]
 #[require(Sprite)]
 pub struct Projectile {
+    variant: ProjectileVariant,
     target: Entity,
     damage: u32,
 }
 
 impl Projectile {
     pub fn new(target: Entity, damage: u32) -> Self {
-        Self { target, damage }
+        Self {
+            variant: ProjectileVariant::Bullet,
+            target,
+            damage,
+        }
     }
 }
 

@@ -1,8 +1,9 @@
+use std::sync::{Arc, Mutex};
+
 use bevy::{
     audio::{PlaybackMode, Volume},
     ecs::{component::ComponentId, world::DeferredWorld},
     prelude::*,
-    state::commands,
     ui::widget::NodeImageMode,
 };
 use bevy_persistent::Persistent;
@@ -12,8 +13,11 @@ use crate::{
     audio::GameAudioVolume,
 };
 
-#[derive(Clone)]
+#[derive(Default, Clone, PartialEq)]
+#[allow(unused)]
 pub enum UiButtonVariant {
+    None,
+    #[default]
     Primary,
     Success,
     Danger,
@@ -22,6 +26,7 @@ pub enum UiButtonVariant {
 impl UiButtonVariant {
     pub fn as_index(&self) -> usize {
         match self {
+            UiButtonVariant::None => 0,
             UiButtonVariant::Primary => 65,
             UiButtonVariant::Success => 64,
             UiButtonVariant::Danger => 63,
@@ -36,19 +41,22 @@ pub struct UiButton {
     width: Val,
     height: Val,
     padding: UiRect,
+    on_click: Option<Arc<Mutex<dyn FnMut() + Send + Sync>>>,
 }
 
 impl Default for UiButton {
     fn default() -> Self {
         Self {
-            variant: UiButtonVariant::Primary,
+            variant: UiButtonVariant::default(),
             width: Val::Percent(100.0),
             height: Val::Auto,
             padding: UiRect::axes(Val::Px(24.0), Val::Px(12.0)),
+            on_click: None,
         }
     }
 }
 
+#[allow(unused)]
 impl UiButton {
     pub fn new() -> Self {
         Self { ..default() }
@@ -65,30 +73,33 @@ impl UiButton {
         let image = ui_assets.small_tilemap.clone();
         let layout = ui_assets.small_tilemap_atlas.clone();
 
-        world.commands().entity(entity).insert((
-            Button,
-            Node {
-                width,
-                height,
-                padding,
-                justify_content: JustifyContent::Center,
-                align_items: AlignItems::Center,
-                ..default()
-            },
-            ImageNode {
-                image,
-                texture_atlas: Some(TextureAtlas {
-                    index: variant.as_index(),
-                    layout,
-                }),
-                image_mode: NodeImageMode::Sliced(TextureSlicer {
-                    border: BorderRect::square(6.0),
-                    max_corner_scale: 2.5,
+        world.commands().entity(entity).insert(Button);
+
+        if variant != UiButtonVariant::None {
+            world.commands().entity(entity).insert((
+                Node {
+                    width,
+                    height,
+                    padding,
+                    justify_content: JustifyContent::Center,
+                    align_items: AlignItems::Center,
                     ..default()
-                }),
-                ..default()
-            },
-        ));
+                },
+                ImageNode {
+                    image,
+                    texture_atlas: Some(TextureAtlas {
+                        index: variant.as_index(),
+                        layout,
+                    }),
+                    image_mode: NodeImageMode::Sliced(TextureSlicer {
+                        border: BorderRect::square(6.0),
+                        max_corner_scale: 2.5,
+                        ..default()
+                    }),
+                    ..default()
+                },
+            ));
+        }
     }
     pub fn with_variant(mut self, variant: UiButtonVariant) -> Self {
         self.variant = variant;
@@ -106,60 +117,14 @@ impl UiButton {
         self.padding = padding;
         self
     }
+    pub fn on_click<F>(mut self, f: F) -> Self
+    where
+        F: FnMut() + Send + Sync + 'static,
+    {
+        self.on_click = Some(Arc::new(Mutex::new(f)));
+        self
+    }
 }
-
-// impl UiButton {
-//     pub fn new(
-//         ui_assets: &UiAssets,
-//         variant: UiButtonVariant,
-//         on_click: Option<fn()>,
-//     ) -> (Button, UiButton, Node, ImageNode) {
-//         (
-//             Button,
-//             UiButton { on_click },
-//             Node {
-//                 width: Val::Percent(100.0),
-//                 padding: UiRect::axes(Val::Px(24.0), Val::Px(12.0)),
-//                 ..default()
-//             },
-//             ImageNode {
-//                 image: ui_assets.small_tilemap.clone(),
-//                 texture_atlas: Some(TextureAtlas {
-//                     index: match variant {
-//                         UiButtonVariant::Primary => 65,
-//                         UiButtonVariant::Success => 64,
-//                         UiButtonVariant::Danger => 63,
-//                     },
-//                     layout: ui_assets.small_tilemap_atlas.clone(),
-//                 }),
-//                 image_mode: NodeImageMode::Sliced(TextureSlicer {
-//                     border: BorderRect::square(6.0),
-//                     max_corner_scale: 2.5,
-//                     ..default()
-//                 }),
-//                 ..default()
-//             },
-//         )
-//     }
-//     pub fn primary(
-//         ui_assets: &UiAssets,
-//         on_click: Option<fn()>,
-//     ) -> (Button, UiButton, Node, ImageNode) {
-//         Self::new(ui_assets, UiButtonVariant::Primary, on_click)
-//     }
-//     pub fn success(
-//         ui_assets: &UiAssets,
-//         on_click: Option<fn()>,
-//     ) -> (Button, UiButton, Node, ImageNode) {
-//         Self::new(ui_assets, UiButtonVariant::Success, on_click)
-//     }
-//     pub fn danger(
-//         ui_assets: &UiAssets,
-//         on_click: Option<fn()>,
-//     ) -> (Button, UiButton, Node, ImageNode) {
-//         Self::new(ui_assets, UiButtonVariant::Danger, on_click)
-//     }
-// }
 
 pub struct UiButtonPlugin;
 
@@ -172,13 +137,13 @@ impl Plugin for UiButtonPlugin {
 fn button_update(
     mut commands: Commands,
     mut interaction_query: Query<
-        (&Interaction, &mut ImageNode),
-        (Changed<Interaction>, With<Button>),
+        (&Interaction, &mut UiButton, &mut ImageNode),
+        (Changed<Interaction>, With<UiButton>),
     >,
     ui_audio_assets: Option<Res<UiAudioAssets>>,
     game_audio_volume: Res<Persistent<GameAudioVolume>>,
 ) {
-    for (interaction, mut image_node) in &mut interaction_query {
+    for (interaction, ui_button, mut image_node) in &mut interaction_query {
         image_node.color = match *interaction {
             Interaction::Pressed => Color::srgb(0.9, 0.9, 0.9).into(),
             Interaction::Hovered => Color::srgb(0.95, 0.95, 0.95).into(),
@@ -194,6 +159,10 @@ fn button_update(
                         ..default()
                     },
                 ));
+            }
+            if let Some(on_click) = ui_button.on_click.as_ref() {
+                let mut callback = on_click.lock().unwrap();
+                callback();
             }
         }
     }
