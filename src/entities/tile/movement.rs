@@ -51,13 +51,16 @@ impl TileMovement {
             })
             .collect();
 
-        Self {
+        let mut tile_movement = Self {
             path,
             path_segment_lengths,
             path_cumulative_lengths,
             duration,
             ..default()
-        }
+        };
+
+        tile_movement.update_progress(0.0);
+        tile_movement
     }
     pub fn get_position(&self) -> Vec2 {
         self.position
