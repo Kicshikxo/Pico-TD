@@ -1,13 +1,16 @@
+pub mod tile;
+
 use std::collections::HashMap;
 
 use bevy::{
     ecs::{component::ComponentId, world::DeferredWorld},
     prelude::*,
 };
+use tile::{TilemapTile, TilemapTileVariant};
 
-use crate::{assets::entities::tile::TileAssets, game::GameState};
+use crate::{assets::entities::tile::TilemapTileAssets, game::GameState};
 
-use super::tile::{position::TilePosition, Tile, TileVariant};
+use super::tile::position::TilePosition;
 
 #[derive(Component, Clone, Debug)]
 #[component(on_add = Tilemap::on_add)]
@@ -16,7 +19,7 @@ pub struct Tilemap {
     size: UVec2,
     tiles: HashMap<IVec2, Entity>,
     tile_size: UVec2,
-    need_update: bool,
+    update_required: bool,
 }
 
 #[allow(unused)]
@@ -26,7 +29,7 @@ impl Tilemap {
             size,
             tiles: HashMap::new(),
             tile_size,
-            need_update: true,
+            update_required: true,
         }
     }
     fn on_add(mut world: DeferredWorld, entity: Entity, _component_id: ComponentId) {
@@ -46,17 +49,17 @@ impl Tilemap {
         self.tile_size
     }
     pub fn set_tile(&mut self, position: TilePosition, entity: Entity) {
-        self.need_update = true;
+        self.update_required = true;
         self.tiles.insert(position.as_ivec2(), entity);
     }
     pub fn get_tile(&self, position: TilePosition) -> Option<Entity> {
         self.tiles.get(&position.as_ivec2()).copied()
     }
-    pub fn get_need_update(&self) -> bool {
-        self.need_update
+    pub fn get_update_required(&self) -> bool {
+        self.update_required
     }
-    pub fn set_need_update(&mut self, value: bool) {
-        self.need_update = value;
+    pub fn set_update_required(&mut self, value: bool) {
+        self.update_required = value;
     }
 }
 
@@ -70,24 +73,24 @@ impl Plugin for TilemapPlugin {
 
 fn update_tilemap(
     mut tilemaps: Query<&mut Tilemap>,
-    mut tiles: Query<(&Tile, &mut Sprite, &mut Transform)>,
-    tile_assets: Res<TileAssets>,
+    mut tiles: Query<(&TilemapTile, &mut Sprite, &mut Transform)>,
+    tile_assets: Res<TilemapTileAssets>,
 ) {
     for mut tilemap in tilemaps.iter_mut() {
-        if tilemap.get_need_update() == false {
+        if tilemap.get_update_required() == false {
             continue;
         }
 
         for (tile_position, tile_entity) in tilemap.get_tiles() {
-            let nearby_tile = |dx: i32, dy: i32| -> TileVariant {
+            let nearby_tile = |dx: i32, dy: i32| -> TilemapTileVariant {
                 tilemap
                     .get_tile(TilePosition::from_ivec2(tile_position + IVec2::new(dx, dy)))
                     .and_then(|entity| tiles.get(entity).ok())
                     .map(|(tile, _, _)| tile.get_variant())
-                    .unwrap_or(TileVariant::Unknown)
+                    .unwrap_or(TilemapTileVariant::Unknown)
             };
 
-            let tiles_around: [[TileVariant; 3]; 3] = [
+            let tiles_around: [[TilemapTileVariant; 3]; 3] = [
                 [nearby_tile(-1, 1), nearby_tile(0, 1), nearby_tile(1, 1)],
                 [nearby_tile(-1, 0), nearby_tile(0, 0), nearby_tile(1, 0)],
                 [nearby_tile(-1, -1), nearby_tile(0, -1), nearby_tile(1, -1)],
@@ -96,14 +99,16 @@ fn update_tilemap(
             if let Ok((tile, mut tile_sprite, mut tile_transform)) = tiles.get_mut(*tile_entity) {
                 if let Some(texture_atlas) = tile_sprite.texture_atlas.as_mut() {
                     texture_atlas.index = match tile.get_variant() {
-                        TileVariant::Ground => {
+                        TilemapTileVariant::Ground => {
                             tile_assets.get_ground_tile_index(tiles_around) as usize
                         }
-                        TileVariant::Road => tile_assets.get_road_tile_index(tiles_around) as usize,
-                        TileVariant::Water => {
+                        TilemapTileVariant::Road => {
+                            tile_assets.get_road_tile_index(tiles_around) as usize
+                        }
+                        TilemapTileVariant::Water => {
                             tile_assets.get_water_tile_index(tiles_around) as usize
                         }
-                        TileVariant::Unknown => 0,
+                        TilemapTileVariant::Unknown => 0,
                     };
                 }
 
@@ -113,6 +118,6 @@ fn update_tilemap(
             }
         }
 
-        tilemap.set_need_update(false);
+        tilemap.set_update_required(false);
     }
 }

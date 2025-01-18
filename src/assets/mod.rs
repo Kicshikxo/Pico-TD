@@ -10,7 +10,7 @@ use levels::{LevelsAssets, LevelsPlugin};
 
 use crate::game::GameState;
 use audio::{game::GameAudioAssets, ui::UiAudioAssets};
-use entities::tile::TileAssets;
+use entities::tile::TilemapTileAssets;
 use ui::UiAssets;
 
 pub struct AssetsPlugin;
@@ -20,7 +20,7 @@ impl Plugin for AssetsPlugin {
         app.add_plugins((EmbeddedAssetPlugin::default(), LevelsPlugin));
         app.add_loading_state(
             LoadingState::new(GameState::AssetsLoading)
-                .load_collection::<TileAssets>()
+                .load_collection::<TilemapTileAssets>()
                 .load_collection::<UiAssets>()
                 .load_collection::<UiAudioAssets>()
                 .load_collection::<GameAudioAssets>()

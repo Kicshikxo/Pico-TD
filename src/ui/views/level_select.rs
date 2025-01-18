@@ -120,7 +120,7 @@ fn ui_init(
                     ));
                     parent
                         .spawn(UiContainer::new().with_padding(UiRect::all(Val::Px(8.0))))
-                        .with_child(UiText::new("ui.select_level"));
+                        .with_child(UiText::new("ui.level_select.select_level"));
                     parent
                         .spawn(Node {
                             display: Display::Grid,
@@ -144,10 +144,10 @@ fn ui_init(
                                     .with_children(|parent| {
                                         parent
                                             .spawn((
-                                                UiButton::new().with_variant(UiButtonVariant::None),
                                                 LevelSelectButtonAction::SelectLevel {
                                                     level_index,
                                                 },
+                                                UiButton::new().with_variant(UiButtonVariant::None),
                                                 Node {
                                                     width: Val::Percent(100.0),
                                                     aspect_ratio: Some(1.0),
@@ -190,7 +190,7 @@ fn ui_init(
                     #[cfg(not(target_arch = "wasm32"))]
                     parent
                         .spawn((LevelSelectButtonAction::UploadLevel, UiButton::new()))
-                        .with_child(UiText::new("ui.upload_level"));
+                        .with_child(UiText::new("ui.level_select.upload_level"));
                 });
         });
 }

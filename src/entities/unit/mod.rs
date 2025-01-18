@@ -17,7 +17,7 @@ pub enum UnitVariant {
     Tank,
 }
 
-#[derive(Component, Clone)]
+#[derive(Component)]
 #[require(UnitHealth, TileMovement, TilePosition)]
 pub struct Unit {
     variant: UnitVariant,
@@ -41,11 +41,10 @@ impl Plugin for UnitPlugin {
 }
 
 fn update_unit_movement(
+    mut units: Query<(&TileMovement, &mut TilePosition, &mut Transform), With<Unit>>,
     time: Res<Time>,
-    mut units: Query<(&mut TileMovement, &mut TilePosition, &mut Transform), With<Unit>>,
 ) {
-    for (mut unit_movement, mut unit_tile_position, mut unit_transform) in units.iter_mut() {
-        unit_movement.update_progress(time.delta_secs());
+    for (unit_movement, mut unit_tile_position, mut unit_transform) in units.iter_mut() {
         unit_tile_position.set_from_vec2(unit_movement.get_position());
 
         let (current_z, _current_y, _current_x) = unit_transform.rotation.to_euler(EulerRot::ZYX);

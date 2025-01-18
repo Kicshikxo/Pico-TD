@@ -26,5 +26,7 @@ pub enum UiState {
     LevelSelect,
     Settings,
     InGame,
+    StructureSelect,
+    StructureInfo,
     InGameSettings,
 }

@@ -37,6 +37,7 @@ pub struct UiContainer {
     align_items: AlignItems,
     justify_content: JustifyContent,
     flex_direction: FlexDirection,
+    aspect_ratio: Option<f32>,
     row_gap: Val,
     column_gap: Val,
 }
@@ -51,6 +52,7 @@ impl Default for UiContainer {
             align_items: AlignItems::Start,
             justify_content: JustifyContent::Start,
             flex_direction: FlexDirection::Row,
+            aspect_ratio: None,
             row_gap: Val::ZERO,
             column_gap: Val::ZERO,
         }
@@ -72,6 +74,7 @@ impl UiContainer {
         let align_items = ui_container.align_items;
         let justify_content = ui_container.justify_content;
         let flex_direction = ui_container.flex_direction;
+        let aspect_ratio = ui_container.aspect_ratio;
         let row_gap = ui_container.row_gap;
         let column_gap = ui_container.column_gap;
 
@@ -87,6 +90,7 @@ impl UiContainer {
                 align_items,
                 justify_content,
                 flex_direction,
+                aspect_ratio,
                 row_gap,
                 column_gap,
                 ..default()
@@ -132,6 +136,10 @@ impl UiContainer {
     }
     pub fn with_flex_direction(mut self, flex_direction: FlexDirection) -> Self {
         self.flex_direction = flex_direction;
+        self
+    }
+    pub fn with_aspect_ratio(mut self, aspect_ratio: f32) -> Self {
+        self.aspect_ratio = Some(aspect_ratio);
         self
     }
     pub fn with_row_gap(mut self, row_gap: Val) -> Self {

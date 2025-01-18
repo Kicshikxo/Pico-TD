@@ -71,18 +71,20 @@ fn ui_init(mut commands: Commands, ui_assets: Res<UiAssets>) {
                 .with_children(|parent| {
                     parent
                         .spawn(UiContainer::new().with_padding(UiRect::all(Val::Px(8.0))))
-                        .with_child(UiText::new("ui.game_title").with_size(UiTextSize::ExtraLarge));
+                        .with_child(
+                            UiText::new("ui.menu.game_title").with_size(UiTextSize::ExtraLarge),
+                        );
 
                     parent
                         .spawn((
                             MenuButtonAction::Start,
                             UiButton::new().with_variant(UiButtonVariant::Success),
                         ))
-                        .with_child(UiText::new("ui.start_game").with_size(UiTextSize::Large));
+                        .with_child(UiText::new("ui.menu.start_game").with_size(UiTextSize::Large));
 
                     parent
                         .spawn((MenuButtonAction::Settings, UiButton::new()))
-                        .with_child(UiText::new("ui.settings").with_size(UiTextSize::Large));
+                        .with_child(UiText::new("ui.menu.settings").with_size(UiTextSize::Large));
 
                     #[cfg(not(target_arch = "wasm32"))]
                     parent
@@ -90,7 +92,7 @@ fn ui_init(mut commands: Commands, ui_assets: Res<UiAssets>) {
                             MenuButtonAction::Exit,
                             UiButton::new().with_variant(UiButtonVariant::Danger),
                         ))
-                        .with_child(UiText::new("ui.exit_game").with_size(UiTextSize::Large));
+                        .with_child(UiText::new("ui.menu.exit_game").with_size(UiTextSize::Large));
                 });
         });
 }

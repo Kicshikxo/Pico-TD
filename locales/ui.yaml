@@ -1,57 +1,78 @@
 _version: 2
 
-ui.game_title:
+ui.menu.game_title:
     en: "Pico TD"
     ru: "Pico TD"
-
-ui.start_game:
+ui.menu.start_game:
     en: "Start game"
     ru: "Начать игру"
-
-ui.settings:
+ui.menu.settings:
     en: "Settings"
     ru: "Настройки"
-
-ui.exit_game:
+ui.menu.exit_game:
     en: "Exit game"
     ru: "Выйти из игры"
 
-ui.change_locale:
+ui.settings.title:
+    en: "Settings"
+    ru: "Настройки"
+ui.settings.change_locale:
     en: "Change language"
     ru: "Сменить язык"
-
-ui.english_language:
+ui.settings.english_language:
     en: "English"
     ru: "English"
-
-ui.russian_language:
+ui.settings.russian_language:
     en: "Русский"
     ru: "Русский"
-
-ui.music_volume:
+ui.settings.music_volume:
     en: "Music volume"
     ru: "Громкость музыки"
-
-ui.sfx_volume:
+ui.settings.sfx_volume:
     en: "SFX volume"
     ru: "Громкость звуков"
 
-ui.current_locale:
-    en: "Current language: %{text}"
-    ru: "Текущий язык: %{text}"
-
-ui.select_level:
+ui.level_select.select_level:
     en: "Select level"
     ru: "Выберите уровень"
 
-ui.upload_level:
+ui.level_select.upload_level:
     en: "Upload level"
     ru: "Загрузить уровень"
 
-ui.pause:
+ui.in_game.pause:
     en: "Pause"
     ru: "Пауза"
 
-ui.back_to_menu:
+ui.structure_select.title:
+    en: "Select structure"
+    ru: "Выберите структуру"
+
+ui.structure_info.title:
+    en: "Structure info"
+    ru: "Информация"
+ui.structure_info.structure_name:
+    en: "Name: %{name}"
+    ru: "Название: %{name}"
+ui.structure_info.structure_damage:
+    en: "Damage: %{damage}"
+    ru: "Урон: %{damage}"
+ui.structure_info.structure_fire_radius:
+    en: "Fire radius: %{fire_radius}"
+    ru: "Радиус стрельбы: %{fire_radius}"
+ui.structure_info.structure_fire_rate:
+    en: "Fire rate: %{fire_rate}/s"
+    ru: "Скорострельность: %{fire_rate}/с"
+ui.structure_info.upgrade_structure:
+    en: "Upgrade"
+    ru: "Улучшить"
+ui.structure_info.sell_structure:
+    en: "Sell"
+    ru: "Продать"
+
+ui.pause.title:
+    en: "Pause"
+    ru: "Пауза"
+ui.pause.back_to_menu:
     en: "Back to menu"
     ru: "Вернуться в меню"

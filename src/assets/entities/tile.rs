@@ -2,11 +2,11 @@ use bevy::prelude::*;
 use bevy_asset_loader::asset_collection::AssetCollection;
 use rand::Rng;
 
-use crate::entities::tile::TileVariant;
+use crate::entities::tilemap::tile::TilemapTileVariant;
 
 #[derive(AssetCollection, Resource)]
 #[allow(unused)]
-pub struct TileAssets {
+pub struct TilemapTileAssets {
     #[asset(texture_atlas_layout(tile_size_x = 16, tile_size_y = 16, columns = 18, rows = 11))]
     pub forest_tilemap_layout: Handle<TextureAtlasLayout>,
     #[asset(path = "embedded://images/tiles/forest_tilemap.png")]
@@ -18,7 +18,7 @@ pub struct TileAssets {
     pub show_tilemap: Handle<Image>,
 }
 
-pub enum TileRoadVariant {
+pub enum TilemapTileRoadVariant {
     Road = 108,
 
     RoadTop = 162,
@@ -42,7 +42,7 @@ pub enum TileRoadVariant {
     RoadTopRightDownLeft = 146,
 }
 
-pub enum TileWaterVariant {
+pub enum TilemapTileWaterVariant {
     Water = 37,
     // WaterShoreTop = 19,
     // WaterShoreRight = 38,
@@ -63,7 +63,7 @@ pub enum TileWaterVariant {
     // WaterShoreLeftTopDown = 74,
 }
 
-pub enum TileGroundVariant {
+pub enum TilemapTileGroundVariant {
     Ground = 0,
     GroundWithGrass = 1,
     GroundWithFlowers = 2,
@@ -88,46 +88,52 @@ pub enum TileGroundVariant {
     // GroundShoreTopRightBottomLeftDiagonal = 95,
 }
 
-impl TileAssets {
-    pub fn get_road_tile_index(&self, tiles_around: [[TileVariant; 3]; 3]) -> TileRoadVariant {
-        let road_top = tiles_around[0][1] == TileVariant::Road;
-        let road_right = tiles_around[1][2] == TileVariant::Road;
-        let road_down = tiles_around[2][1] == TileVariant::Road;
-        let road_left = tiles_around[1][0] == TileVariant::Road;
+impl TilemapTileAssets {
+    pub fn get_road_tile_index(
+        &self,
+        tiles_around: [[TilemapTileVariant; 3]; 3],
+    ) -> TilemapTileRoadVariant {
+        let road_top = tiles_around[0][1] == TilemapTileVariant::Road;
+        let road_right = tiles_around[1][2] == TilemapTileVariant::Road;
+        let road_down = tiles_around[2][1] == TilemapTileVariant::Road;
+        let road_left = tiles_around[1][0] == TilemapTileVariant::Road;
 
         match (road_top, road_right, road_down, road_left) {
-            (false, false, false, false) => TileRoadVariant::Road,
+            (false, false, false, false) => TilemapTileRoadVariant::Road,
 
-            (true, false, false, false) => TileRoadVariant::RoadTop,
-            (false, true, false, false) => TileRoadVariant::RoadRight,
-            (false, false, true, false) => TileRoadVariant::RoadDown,
-            (false, false, false, true) => TileRoadVariant::RoadLeft,
+            (true, false, false, false) => TilemapTileRoadVariant::RoadTop,
+            (false, true, false, false) => TilemapTileRoadVariant::RoadRight,
+            (false, false, true, false) => TilemapTileRoadVariant::RoadDown,
+            (false, false, false, true) => TilemapTileRoadVariant::RoadLeft,
 
-            (true, false, true, false) => TileRoadVariant::RoadTopDown,
-            (false, true, false, true) => TileRoadVariant::RoadLeftRight,
+            (true, false, true, false) => TilemapTileRoadVariant::RoadTopDown,
+            (false, true, false, true) => TilemapTileRoadVariant::RoadLeftRight,
 
-            (true, false, false, true) => TileRoadVariant::RoadTopLeft,
-            (true, true, false, false) => TileRoadVariant::RoadTopRight,
-            (false, false, true, true) => TileRoadVariant::RoadDownLeft,
-            (false, true, true, false) => TileRoadVariant::RoadDownRight,
+            (true, false, false, true) => TilemapTileRoadVariant::RoadTopLeft,
+            (true, true, false, false) => TilemapTileRoadVariant::RoadTopRight,
+            (false, false, true, true) => TilemapTileRoadVariant::RoadDownLeft,
+            (false, true, true, false) => TilemapTileRoadVariant::RoadDownRight,
 
-            (true, true, false, true) => TileRoadVariant::RoadTopLeftRight,
-            (true, true, true, false) => TileRoadVariant::RoadRightTopDown,
-            (false, true, true, true) => TileRoadVariant::RoadDownLeftRight,
-            (true, false, true, true) => TileRoadVariant::RoadLeftTopDown,
+            (true, true, false, true) => TilemapTileRoadVariant::RoadTopLeftRight,
+            (true, true, true, false) => TilemapTileRoadVariant::RoadRightTopDown,
+            (false, true, true, true) => TilemapTileRoadVariant::RoadDownLeftRight,
+            (true, false, true, true) => TilemapTileRoadVariant::RoadLeftTopDown,
 
-            (true, true, true, true) => TileRoadVariant::RoadTopRightDownLeft,
+            (true, true, true, true) => TilemapTileRoadVariant::RoadTopRightDownLeft,
         }
     }
     #[allow(unused)]
-    pub fn get_water_tile_index(&self, tiles_around: [[TileVariant; 3]; 3]) -> TileWaterVariant {
-        return TileWaterVariant::Water;
+    pub fn get_water_tile_index(
+        &self,
+        tiles_around: [[TilemapTileVariant; 3]; 3],
+    ) -> TilemapTileWaterVariant {
+        return TilemapTileWaterVariant::Water;
 
         // let [[ground_top_left, ground_top, ground_top_right], [ground_left, _, ground_right], [ground_bottom_left, ground_bottom, ground_bottom_right]] =
         //     tiles_around.map(|row| {
         //         row.map(|tile| match tile {
-        //             TileVariant::Ground => true,
-        //             TileVariant::Road => true,
+        //             TilemapTileVariant::Ground => true,
+        //             TilemapTileVariant::Road => true,
         //             _ => false,
         //         })
         //     });
@@ -157,29 +163,32 @@ impl TileAssets {
         //     _ => TileWaterVariant::Water,
         // }
     }
-    pub fn get_ground_tile_index(&self, tiles_around: [[TileVariant; 3]; 3]) -> TileGroundVariant {
+    pub fn get_ground_tile_index(
+        &self,
+        tiles_around: [[TilemapTileVariant; 3]; 3],
+    ) -> TilemapTileGroundVariant {
         let [[water_top_left, water_top, water_top_right], [water_left, _, water_right], [water_bottom_left, water_bottom, water_bottom_right]] =
-            tiles_around.map(|row| row.map(|tile| tile == TileVariant::Water));
+            tiles_around.map(|row| row.map(|tile| tile == TilemapTileVariant::Water));
 
-        // let water_top_left = tiles_around[0][0] == TileVariant::Water;
-        // let water_top = tiles_around[0][1] == TileVariant::Water;
-        // let water_top_right = tiles_around[0][2] == TileVariant::Water;
-        // let water_left = tiles_around[1][0] == TileVariant::Water;
-        // let water_right = tiles_around[1][2] == TileVariant::Water;
-        // let water_bottom_left = tiles_around[2][0] == TileVariant::Water;
-        // let water_bottom = tiles_around[2][1] == TileVariant::Water;
-        // let water_bottom_right = tiles_around[2][2] == TileVariant::Water;
+        // let water_top_left = tiles_around[0][0] == TilemapTileVariant::Water;
+        // let water_top = tiles_around[0][1] == TilemapTileVariant::Water;
+        // let water_top_right = tiles_around[0][2] == TilemapTileVariant::Water;
+        // let water_left = tiles_around[1][0] == TilemapTileVariant::Water;
+        // let water_right = tiles_around[1][2] == TilemapTileVariant::Water;
+        // let water_bottom_left = tiles_around[2][0] == TilemapTileVariant::Water;
+        // let water_bottom = tiles_around[2][1] == TilemapTileVariant::Water;
+        // let water_bottom_right = tiles_around[2][2] == TilemapTileVariant::Water;
 
         match (water_top, water_right, water_bottom, water_left) {
-            (false, false, true, false) => TileGroundVariant::GroundShoreTop,
-            (false, false, false, true) => TileGroundVariant::GroundShoreRight,
-            (true, false, false, false) => TileGroundVariant::GroundShoreBottom,
-            (false, true, false, false) => TileGroundVariant::GroundShoreLeft,
+            (false, false, true, false) => TilemapTileGroundVariant::GroundShoreTop,
+            (false, false, false, true) => TilemapTileGroundVariant::GroundShoreRight,
+            (true, false, false, false) => TilemapTileGroundVariant::GroundShoreBottom,
+            (false, true, false, false) => TilemapTileGroundVariant::GroundShoreLeft,
 
-            (false, true, true, false) => TileGroundVariant::GroundShoreTopLeft,
-            (false, false, true, true) => TileGroundVariant::GroundShoreTopRight,
-            (true, true, false, false) => TileGroundVariant::GroundShoreBottomLeft,
-            (true, false, false, true) => TileGroundVariant::GroundShoreBottomRight,
+            (false, true, true, false) => TilemapTileGroundVariant::GroundShoreTopLeft,
+            (false, false, true, true) => TilemapTileGroundVariant::GroundShoreTopRight,
+            (true, true, false, false) => TilemapTileGroundVariant::GroundShoreBottomLeft,
+            (true, false, false, true) => TilemapTileGroundVariant::GroundShoreBottomRight,
 
             // (true, true, true, true) => &self.ground_shore_left_top_right_bottom,
             _ => match (
@@ -188,22 +197,28 @@ impl TileAssets {
                 water_bottom_left,
                 water_bottom_right,
             ) {
-                (false, false, false, true) => TileGroundVariant::GroundShoreTopLeftDiagonal,
-                (false, false, true, false) => TileGroundVariant::GroundShoreTopRightDiagonal,
-                (false, true, false, false) => TileGroundVariant::GroundShoreBottomLeftDiagonal,
-                (true, false, false, false) => TileGroundVariant::GroundShoreBottomRightDiagonal,
+                (false, false, false, true) => TilemapTileGroundVariant::GroundShoreTopLeftDiagonal,
+                (false, false, true, false) => {
+                    TilemapTileGroundVariant::GroundShoreTopRightDiagonal
+                }
+                (false, true, false, false) => {
+                    TilemapTileGroundVariant::GroundShoreBottomLeftDiagonal
+                }
+                (true, false, false, false) => {
+                    TilemapTileGroundVariant::GroundShoreBottomRightDiagonal
+                }
 
                 // (true, false, false, true) => &self.ground_shore_top_left_bottom_right_diagonal,
                 // (false, true, true, false) => &self.ground_shore_top_right_bottom_left_diagonal,
                 _ => {
                     if rand::thread_rng().gen_bool(1.0 / 5.0) {
                         if rand::thread_rng().gen_bool(1.0 / 5.0) {
-                            TileGroundVariant::GroundWithFlowers
+                            TilemapTileGroundVariant::GroundWithFlowers
                         } else {
-                            TileGroundVariant::GroundWithGrass
+                            TilemapTileGroundVariant::GroundWithGrass
                         }
                     } else {
-                        TileGroundVariant::Ground
+                        TilemapTileGroundVariant::Ground
                     }
                 }
             },

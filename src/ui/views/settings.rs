@@ -106,7 +106,7 @@ fn ui_init(
                     ));
                     parent
                         .spawn(UiContainer::new().with_padding(UiRect::all(Val::Px(8.0))))
-                        .with_child(UiText::new("ui.settings"));
+                        .with_child(UiText::new("ui.settings.title"));
 
                     parent
                         .spawn(Node {
@@ -116,56 +116,61 @@ fn ui_init(
                             ..default()
                         })
                         .with_children(|parent| {
-                            parent.spawn(UiText::new("ui.change_locale"));
+                            parent.spawn(UiText::new("ui.settings.change_locale"));
                             parent.spawn((
                                 LocaleSelector,
                                 UiSelector::new()
                                     .with_options(vec![
-                                        UiSelectorItem::new("ui.english_language".to_string())
-                                            .with_value(UiSelectorItemValue::String(
-                                                Locale::En.to_string(),
-                                            )),
-                                        UiSelectorItem::new("ui.russian_language".to_string())
-                                            .with_value(UiSelectorItemValue::String(
-                                                Locale::Ru.to_string(),
-                                            )),
+                                        UiSelectorItem::new(
+                                            "ui.settings.english_language".to_string(),
+                                        )
+                                        .with_value(
+                                            UiSelectorItemValue::String(Locale::En.to_string()),
+                                        ),
+                                        UiSelectorItem::new(
+                                            "ui.settings.russian_language".to_string(),
+                                        )
+                                        .with_value(
+                                            UiSelectorItemValue::String(Locale::Ru.to_string()),
+                                        ),
                                     ])
-                                    .with_default_index(i18n.get_current() as usize),
+                                    .with_default_index(i18n.get_current() as usize)
+                                    .cycle(),
                             ));
-                            parent.spawn(UiText::new("ui.sfx_volume"));
+                            parent.spawn(UiText::new("ui.settings.sfx_volume"));
                             parent.spawn((
                                 SfxVolumeSelector,
                                 UiSelector::new()
                                     .with_options(
-                                        (0..=10)
+                                        (0..=20)
                                             .map(|index| {
-                                                UiSelectorItem::new(format!("{}%", index * 10))
+                                                UiSelectorItem::new(format!("{}%", index * 5))
                                                     .with_value(UiSelectorItemValue::Number(
-                                                        index as f32 / 10.0,
+                                                        index as f32 / 20.0,
                                                     ))
                                             })
                                             .collect(),
                                     )
                                     .with_default_index(
-                                        (game_audio_volume.get_sfx_volume() * 10.0) as usize,
+                                        (game_audio_volume.get_sfx_volume() * 20.0) as usize,
                                     ),
                             ));
-                            parent.spawn(UiText::new("ui.music_volume"));
+                            parent.spawn(UiText::new("ui.settings.music_volume"));
                             parent.spawn((
                                 MusicVolumeSelector,
                                 UiSelector::new()
                                     .with_options(
-                                        (0..=10)
+                                        (0..=20)
                                             .map(|index| {
-                                                UiSelectorItem::new(format!("{}%", index * 10))
+                                                UiSelectorItem::new(format!("{}%", index * 5))
                                                     .with_value(UiSelectorItemValue::Number(
-                                                        index as f32 / 10.0,
+                                                        index as f32 / 20.0,
                                                     ))
                                             })
                                             .collect(),
                                     )
                                     .with_default_index(
-                                        (game_audio_volume.get_music_volume() * 10.0) as usize,
+                                        (game_audio_volume.get_music_volume() * 20.0) as usize,
                                     ),
                             ));
                         });

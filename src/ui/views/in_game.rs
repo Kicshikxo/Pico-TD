@@ -53,7 +53,7 @@ fn ui_init(mut commands: Commands) {
                             InGameButtonAction::OpenInGameSettings,
                             UiButton::new().with_padding(UiRect::axes(Val::Px(16.0), Val::Px(8.0))),
                         ))
-                        .with_child(UiText::new("ui.pause").with_size(UiTextSize::Small));
+                        .with_child(UiText::new("ui.in_game.pause").with_size(UiTextSize::Small));
                 });
         });
 }

@@ -2,7 +2,7 @@ use bevy::prelude::*;
 
 use crate::{
     assets::ui::UiAssets,
-    game::{BackgroundSound, GameState, MainTilemap},
+    game::{BackgroundSound, GameState, GameTilemap},
     ui::{
         components::{
             button::{UiButton, UiButtonVariant},
@@ -85,10 +85,10 @@ fn ui_init(
                     ));
                     parent
                         .spawn(UiContainer::new().with_padding(UiRect::all(Val::Px(8.0))))
-                        .with_child(UiText::new("ui.pause"));
+                        .with_child(UiText::new("ui.pause.title"));
                     parent
                         .spawn((PauseButtonAction::BackToMenu, UiButton::new()))
-                        .with_child(UiText::new("ui.back_to_menu"));
+                        .with_child(UiText::new("ui.pause.back_to_menu"));
                 });
         });
 }
@@ -112,7 +112,7 @@ fn ui_update(
         (&Interaction, &PauseButtonAction),
         (Changed<Interaction>, With<UiButton>),
     >,
-    main_tilemap: Query<Entity, With<MainTilemap>>,
+    game_tilemap: Query<Entity, With<GameTilemap>>,
     mut next_ui_state: ResMut<NextState<UiState>>,
     mut next_game_state: ResMut<NextState<GameState>>,
 ) {
@@ -124,7 +124,7 @@ fn ui_update(
                     next_game_state.set(GameState::InGame);
                 }
                 PauseButtonAction::BackToMenu => {
-                    commands.entity(main_tilemap.single()).despawn_recursive();
+                    commands.entity(game_tilemap.single()).despawn_recursive();
 
                     next_ui_state.set(UiState::Menu);
                     next_game_state.set(GameState::Pause);

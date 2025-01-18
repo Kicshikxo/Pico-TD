@@ -50,24 +50,22 @@ fn update_projectile(
         (
             &Projectile,
             Entity,
-            &mut TileMovement,
+            &TileMovement,
             &mut TilePosition,
             &mut Transform,
         ),
         With<Projectile>,
     >,
     mut units: Query<&mut UnitHealth, With<Unit>>,
-    time: Res<Time>,
 ) {
     for (
         projectile,
         projectile_entity,
-        mut projectile_movement,
+        projectile_movement,
         mut projectile_tile_position,
         mut projectile_transform,
     ) in projectiles.iter_mut()
     {
-        projectile_movement.update_progress(time.delta_secs());
         if projectile_movement.get_progress() >= 1.0 {
             commands.entity(projectile_entity).despawn();
             if let Ok(mut unit_health) = units.get_mut(projectile.target) {

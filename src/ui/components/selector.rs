@@ -75,7 +75,8 @@ impl UiSelectorItem {
 pub struct UiSelector {
     current_index: usize,
     options: Vec<UiSelectorItem>,
-    need_update: bool,
+    cycle: bool,
+    update_required: bool,
     value_changed: bool,
 }
 
@@ -84,7 +85,8 @@ impl Default for UiSelector {
         Self {
             current_index: 0,
             options: Vec::new(),
-            need_update: true,
+            cycle: false,
+            update_required: true,
             value_changed: false,
         }
     }
@@ -140,22 +142,38 @@ impl UiSelector {
         self.current_index = index;
         self
     }
+    pub fn cycle(mut self) -> Self {
+        self.cycle = true;
+        self
+    }
     pub fn select_previous(&mut self) {
-        self.current_index = self.current_index.saturating_sub(1);
-        self.need_update = true;
+        if self.current_index == 0 && self.cycle == false {
+            return;
+        }
+        self.current_index = if self.cycle && self.current_index == 0 {
+            self.options.len().saturating_sub(1)
+        } else {
+            self.current_index.saturating_sub(1)
+        };
+        self.update_required = true;
         self.value_changed = true;
     }
     pub fn select_next(&mut self) {
-        self.current_index = self
-            .current_index
-            .saturating_add(1)
-            .min(self.options.len().saturating_sub(1));
-        self.need_update = true;
+        let last_index = self.options.len().saturating_sub(1);
+        if self.current_index == last_index && self.cycle == false {
+            return;
+        }
+        self.current_index = if self.cycle && self.current_index == last_index {
+            0
+        } else {
+            self.current_index.saturating_add(1).min(last_index)
+        };
+        self.update_required = true;
         self.value_changed = true;
     }
     pub fn set_index(&mut self, index: usize) {
         self.current_index = index;
-        self.need_update = true;
+        self.update_required = true;
         self.value_changed = true;
     }
     pub fn get_current_index(&self) -> usize {
@@ -164,11 +182,11 @@ impl UiSelector {
     pub fn get_current_item(&self) -> Option<&UiSelectorItem> {
         self.options.get(self.current_index)
     }
-    pub fn get_need_update(&self) -> bool {
-        self.need_update
+    pub fn get_update_required(&self) -> bool {
+        self.update_required
     }
-    pub fn set_need_update(&mut self, value: bool) {
-        self.need_update = value;
+    pub fn set_update_required(&mut self, value: bool) {
+        self.update_required = value;
     }
     pub fn get_value_changed(&mut self) -> bool {
         if self.value_changed {
@@ -223,7 +241,7 @@ fn selector_update(
         }
     }
     for (mut selector, selector_children) in ui_selector.iter_mut() {
-        if selector.get_need_update() == false {
+        if selector.get_update_required() == false {
             continue;
         }
 
@@ -239,6 +257,6 @@ fn selector_update(
                 text.0 = text_i18n.translate();
             }
         }
-        selector.set_need_update(false);
+        selector.set_update_required(false);
     }
 }

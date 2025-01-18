@@ -2,6 +2,7 @@ use std::time::Duration;
 
 use bevy::{
     audio::{PlaybackMode, Volume},
+    input::{mouse::MouseButtonInput, ButtonState},
     prelude::*,
 };
 use bevy_persistent::Persistent;
@@ -9,7 +10,7 @@ use bevy_persistent::Persistent;
 use crate::{
     assets::{
         audio::game::GameAudioAssets,
-        entities::tile::TileAssets,
+        entities::tile::TilemapTileAssets,
         levels::{Level, LevelsAssets},
         AssetsPlugin,
     },
@@ -51,10 +52,15 @@ impl Plugin for GamePlugin {
 }
 
 #[derive(Component)]
-pub struct MainTilemap;
+pub struct GameTilemap;
 
 #[derive(Component)]
 pub struct BackgroundSound;
+
+#[derive(Resource)]
+pub struct SelectedStructure {
+    pub position: TilePosition,
+}
 
 #[derive(States, Default, Debug, Clone, PartialEq, Eq, Hash)]
 pub enum GameState {
@@ -86,7 +92,6 @@ fn setup(
 
 fn start_game(
     mut commands: Commands,
-    tile_assets: Res<TileAssets>,
     seleted_level: Res<Level>,
     game_audio_assets: Res<GameAudioAssets>,
     game_audio_volume: Res<Persistent<GameAudioVolume>>,
@@ -107,13 +112,15 @@ fn start_game(
 
     for x in 0..seleted_level.size.x {
         for y in 0..seleted_level.size.y {
-            let tile = seleted_level.map[y as usize][x as usize];
+            let tilemap_tile = seleted_level.map[y as usize][x as usize];
             tilemap.set_tile(
                 TilePosition::new(x as f32, y as f32),
                 commands
                     .spawn((
-                        TileSprite::new(TileSpriteVariant::Tilemap(tile.get_variant().into())),
-                        tile,
+                        TileSprite::new(TileSpriteVariant::Tilemap(
+                            tilemap_tile.get_variant().into(),
+                        )),
+                        tilemap_tile,
                     ))
                     .id(),
             );
@@ -121,7 +128,7 @@ fn start_game(
     }
 
     commands.entity(tilemap_entity).insert((
-        MainTilemap,
+        GameTilemap,
         Transform::from_translation(
             (tilemap.get_size() * tilemap.get_tile_size() - tilemap.get_tile_size())
                 .extend(0)
@@ -131,9 +138,7 @@ fn start_game(
         tilemap,
     ));
 
-    info!("Tilemap id: {}", tilemap_entity);
-
-    for i in 0..5 {
+    for i in 0..8 {
         commands.entity(tilemap_entity).with_children(|parent| {
             parent
                 .spawn((
@@ -141,7 +146,7 @@ fn start_game(
                     UnitHealth::new(100),
                     TileMovement::new(
                         seleted_level.paths[0].clone(),
-                        Duration::from_secs(10 + 5 * i),
+                        Duration::from_secs(10 + 3 * i),
                     ),
                     TileSprite::new(TileSpriteVariant::Unit(UnitTileSpriteVariant::Truck)),
                 ))
@@ -151,30 +156,11 @@ fn start_game(
 
     for structure_position in seleted_level.structure_points.iter() {
         commands.entity(tilemap_entity).with_child((
-            Structure::new(
-                StructureVariant::Soldier,
-                10,
-                3.0,
-                Duration::from_secs_f32(0.5),
-            ),
+            Structure::new(StructureVariant::Empty),
             TilePosition::new(structure_position.x, structure_position.y),
             TileSprite::new(TileSpriteVariant::Structure(
-                StructureTileSpriteVariant::Soldier,
+                StructureTileSpriteVariant::Empty,
             )),
-        ));
-    }
-
-    for tree_points in seleted_level.tree_points.iter() {
-        commands.entity(tilemap_entity).with_child((
-            TilePosition::new(tree_points.x, tree_points.y),
-            Sprite {
-                image: tile_assets.forest_tilemap.clone(),
-                texture_atlas: Some(TextureAtlas {
-                    layout: tile_assets.forest_tilemap_layout.clone(),
-                    index: 94,
-                }),
-                ..default()
-            },
         ));
     }
 
@@ -191,48 +177,63 @@ fn start_game(
     next_game_state.set(GameState::InGame);
 }
 
-#[allow(unused)]
 fn update_cursor_position(
     mut commands: Commands,
+    window: Single<&Window>,
     main_camera: Query<(&Camera, &GlobalTransform)>,
-    main_tilemap: Query<(&Tilemap, &Transform), With<MainTilemap>>,
-    mut cursor_moved_events: EventReader<CursorMoved>,
+    game_tilemap: Query<(&Tilemap, &Transform), With<GameTilemap>>,
+    structures: Query<(&Structure, &TilePosition)>,
+    mut mouse_button_events: EventReader<MouseButtonInput>,
+    mut next_ui_state: ResMut<NextState<UiState>>,
+    mut next_game_state: ResMut<NextState<GameState>>,
 ) {
-    if cursor_moved_events.is_empty() {
+    if mouse_button_events.is_empty() {
         return;
     }
 
     let Ok((camera, camera_transform)) = main_camera.get_single() else {
         return;
     };
-    let Ok((tilemap, tilemap_transform)) = main_tilemap.get_single() else {
+    let Ok((tilemap, tilemap_transform)) = game_tilemap.get_single() else {
         return;
     };
 
-    for cursor_moved in cursor_moved_events.read() {
-        let Ok(cursor_position) =
-            camera.viewport_to_world_2d(camera_transform, cursor_moved.position)
-        else {
-            continue;
-        };
+    for mouse_click in mouse_button_events.read() {
+        if mouse_click.button == MouseButton::Left && mouse_click.state == ButtonState::Pressed {
+            let Ok(cursor_position) = camera.viewport_to_world_2d(
+                camera_transform,
+                window.cursor_position().unwrap_or(Vec2::ZERO),
+            ) else {
+                continue;
+            };
 
-        let cursor_in_tilemap_position = tilemap_transform
-            .compute_matrix()
-            .inverse()
-            .transform_point3(cursor_position.extend(0.0))
-            .xy();
+            let cursor_in_tilemap_position = tilemap_transform
+                .compute_matrix()
+                .inverse()
+                .transform_point3(
+                    (cursor_position - tilemap.get_tile_size().as_vec2() / 2.0).extend(0.0),
+                )
+                .xy();
 
-        let Some(tile) = tilemap.get_tile(TilePosition::from_vec2(
-            (cursor_in_tilemap_position / tilemap.get_tile_size().as_vec2()).ceil(),
-        )) else {
-            continue;
-        };
+            let cursor_tile_position =
+                TilePosition::from_tilemap_position(tilemap, cursor_in_tilemap_position);
 
-        // info!("Tile entity: {}", tile);
-        info!(
-            "Tile position: {}",
-            (cursor_in_tilemap_position / tilemap.get_tile_size().as_vec2()).ceil()
-        );
+            for (structure, structure_tile_position) in structures.iter() {
+                if structure_tile_position.as_vec2() == cursor_tile_position.as_vec2().ceil() {
+                    commands.insert_resource(SelectedStructure {
+                        position: *structure_tile_position,
+                    });
+                    if structure.get_variant() == StructureVariant::Empty {
+                        next_ui_state.set(UiState::StructureSelect);
+                    } else {
+                        next_ui_state.set(UiState::StructureInfo);
+                    }
+                    next_game_state.set(GameState::Pause);
+
+                    break;
+                }
+            }
+        }
     }
 }
 

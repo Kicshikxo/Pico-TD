@@ -4,11 +4,13 @@ use bevy::{
 };
 
 use crate::{
-    assets::entities::tile::TileAssets,
-    entities::{projectile::ProjectileVariant, structure::StructureVariant, unit::UnitVariant},
+    assets::entities::tile::TilemapTileAssets,
+    entities::{
+        projectile::ProjectileVariant, structure::StructureVariant,
+        tilemap::tile::TilemapTileVariant, unit::UnitVariant,
+    },
+    game::GameState,
 };
-
-use super::TileVariant;
 
 #[derive(Clone, Copy, PartialEq, Debug)]
 pub enum ProjectileTileSpriteVariant {
@@ -32,12 +34,16 @@ impl ProjectileTileSpriteVariant {
 #[derive(Clone, Copy, PartialEq, Debug)]
 pub enum StructureTileSpriteVariant {
     Soldier,
+    SoldierFast,
+    SoldierStrong,
     Empty,
 }
 impl From<StructureVariant> for StructureTileSpriteVariant {
     fn from(variant: StructureVariant) -> Self {
         match variant {
             StructureVariant::Soldier => StructureTileSpriteVariant::Soldier,
+            StructureVariant::SoldierFast => StructureTileSpriteVariant::SoldierFast,
+            StructureVariant::SoldierStrong => StructureTileSpriteVariant::SoldierStrong,
             StructureVariant::Empty => StructureTileSpriteVariant::Empty,
         }
     }
@@ -46,6 +52,8 @@ impl StructureTileSpriteVariant {
     pub fn as_index(&self) -> usize {
         match self {
             StructureTileSpriteVariant::Soldier => 106,
+            StructureTileSpriteVariant::SoldierFast => 178,
+            StructureTileSpriteVariant::SoldierStrong => 160,
             StructureTileSpriteVariant::Empty => 197,
         }
     }
@@ -58,13 +66,13 @@ pub enum TilemapTileSpriteVariant {
     Water,
     Unknown,
 }
-impl From<TileVariant> for TilemapTileSpriteVariant {
-    fn from(variant: TileVariant) -> Self {
+impl From<TilemapTileVariant> for TilemapTileSpriteVariant {
+    fn from(variant: TilemapTileVariant) -> Self {
         match variant {
-            TileVariant::Ground => TilemapTileSpriteVariant::Ground,
-            TileVariant::Road => TilemapTileSpriteVariant::Road,
-            TileVariant::Water => TilemapTileSpriteVariant::Water,
-            TileVariant::Unknown => TilemapTileSpriteVariant::Unknown,
+            TilemapTileVariant::Ground => TilemapTileSpriteVariant::Ground,
+            TilemapTileVariant::Road => TilemapTileSpriteVariant::Road,
+            TilemapTileVariant::Water => TilemapTileSpriteVariant::Water,
+            TilemapTileVariant::Unknown => TilemapTileSpriteVariant::Unknown,
         }
     }
 }
@@ -117,7 +125,7 @@ pub enum TileSpriteVariant {
 #[component(on_add = TileSprite::on_add)]
 pub struct TileSprite {
     variant: TileSpriteVariant,
-    need_update: bool,
+    update_required: bool,
 }
 
 #[allow(unused)]
@@ -125,12 +133,12 @@ impl TileSprite {
     pub fn new(variant: TileSpriteVariant) -> Self {
         Self {
             variant,
-            need_update: false,
+            update_required: false,
         }
     }
     pub fn on_add(mut world: DeferredWorld, entity: Entity, _component_id: ComponentId) {
         let tile_sprite = world.get::<Self>(entity).unwrap();
-        let tile_assets = world.get_resource::<TileAssets>().unwrap();
+        let tile_assets = world.get_resource::<TilemapTileAssets>().unwrap();
 
         let image = match tile_sprite.variant {
             _ => tile_assets.forest_tilemap.clone(),
@@ -146,6 +154,10 @@ impl TileSprite {
             ..default()
         });
     }
+    // !
+    // pub fn get_image(&self) -> Handle<Image> {
+
+    // }
     pub fn get_index(&self) -> usize {
         match self.variant {
             TileSpriteVariant::Projectile(variant) => variant.as_index(),
@@ -156,12 +168,37 @@ impl TileSprite {
     }
     pub fn set_variant(&mut self, variant: TileSpriteVariant) {
         self.variant = variant;
-        self.need_update = true;
+        self.update_required = true;
     }
-    pub fn get_need_update(&self) -> bool {
-        self.need_update
+    pub fn get_update_required(&self) -> bool {
+        self.update_required
     }
-    pub fn set_need_update(&mut self, value: bool) {
-        self.need_update = value;
+    pub fn set_update_required(&mut self, value: bool) {
+        self.update_required = value;
+    }
+}
+
+pub struct TileSpritePlugin;
+
+impl Plugin for TileSpritePlugin {
+    fn build(&self, app: &mut App) {
+        app.add_systems(
+            Update,
+            update_tile_sprite.run_if(in_state(GameState::InGame)),
+        );
+    }
+}
+
+fn update_tile_sprite(mut tile_sprites: Query<(&mut TileSprite, &mut Sprite)>) {
+    for (mut tile_sprite, mut sprite) in tile_sprites.iter_mut() {
+        if tile_sprite.get_update_required() == false {
+            continue;
+        }
+
+        if let Some(texture_atlas) = sprite.texture_atlas.as_mut() {
+            texture_atlas.index = tile_sprite.get_index();
+        }
+
+        tile_sprite.set_update_required(false);
     }
 }

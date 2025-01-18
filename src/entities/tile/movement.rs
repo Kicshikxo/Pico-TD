@@ -3,6 +3,7 @@ use std::time::Duration;
 use bevy::prelude::*;
 
 use super::position::TilePosition;
+use crate::game::GameState;
 
 #[derive(Component, Clone, Debug)]
 #[require(TilePosition)]
@@ -114,5 +115,22 @@ impl TileMovement {
 
         segment_start
             + (segment_end - segment_start) * ((target_distance - start_distance) / segment_length)
+    }
+}
+
+pub struct TileMovementPlugin;
+
+impl Plugin for TileMovementPlugin {
+    fn build(&self, app: &mut App) {
+        app.add_systems(
+            Update,
+            update_tile_movement.run_if(in_state(GameState::InGame)),
+        );
+    }
+}
+
+fn update_tile_movement(mut tile_movements: Query<&mut TileMovement>, time: Res<Time>) {
+    for mut movement in tile_movements.iter_mut() {
+        movement.update_progress(time.delta_secs());
     }
 }

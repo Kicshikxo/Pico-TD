@@ -4,7 +4,7 @@ use bevy::{
 };
 use bevy_asset_loader::asset_collection::AssetCollection;
 
-use crate::entities::tile::Tile;
+use crate::entities::tilemap::tile::TilemapTile;
 
 #[derive(AssetCollection, Resource)]
 pub struct LevelsAssets {
@@ -34,10 +34,9 @@ impl Plugin for LevelsPlugin {
 pub struct Level {
     pub name: String,
     pub size: UVec2,
-    pub map: Vec<Vec<Tile>>,
+    pub map: Vec<Vec<TilemapTile>>,
     pub paths: Vec<Vec<Vec2>>,
     pub structure_points: Vec<Vec2>,
-    pub tree_points: Vec<Vec2>,
     pub error: Option<String>,
 }
 
@@ -49,7 +48,6 @@ impl Default for Level {
             map: Vec::new(),
             paths: Vec::new(),
             structure_points: Vec::new(),
-            tree_points: Vec::new(),
             error: None,
         }
     }
@@ -62,7 +60,6 @@ pub struct LevelAsset {
     pub map: Vec<String>,
     pub paths: Option<Vec<Vec<Vec2>>>,
     pub structure_points: Option<Vec<Vec2>>,
-    pub tree_points: Option<Vec<Vec2>>,
     pub error: Option<String>,
 }
 
@@ -74,7 +71,6 @@ impl Default for LevelAsset {
             map: Vec::new(),
             paths: None,
             structure_points: None,
-            tree_points: None,
             error: None,
         }
     }
@@ -113,11 +109,11 @@ impl AssetLoader for LevelsLoader {
             LevelAsset::error(error.to_string())
         });
 
-        let map: Vec<Vec<Tile>> = level_asset
+        let map: Vec<Vec<TilemapTile>> = level_asset
             .map
             .iter()
             .rev()
-            .map(|row| row.chars().map(Tile::from).collect())
+            .map(|row| row.chars().map(TilemapTile::from).collect())
             .collect();
 
         Ok(Level {
@@ -126,7 +122,6 @@ impl AssetLoader for LevelsLoader {
             map,
             paths: level_asset.paths.unwrap_or_default(),
             structure_points: level_asset.structure_points.unwrap_or_default(),
-            tree_points: level_asset.tree_points.unwrap_or_default(),
             error: level_asset.error,
         })
     }
