@@ -2,7 +2,7 @@ use bevy::prelude::*;
 
 use crate::{
     assets::ui::UiAssets,
-    game::{BackgroundSound, GameState, GameTilemap},
+    game::{GameBackgroundSound, GameState, GameTilemap},
     ui::{
         components::{
             button::{UiButton, UiButtonVariant},
@@ -17,9 +17,9 @@ pub struct PauseViewUiPlugin;
 
 impl Plugin for PauseViewUiPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(OnEnter(UiState::InGameSettings), ui_init)
-            .add_systems(OnExit(UiState::InGameSettings), ui_destroy)
-            .add_systems(Update, ui_update.run_if(in_state(UiState::InGameSettings)));
+        app.add_systems(OnEnter(UiState::Pause), ui_init)
+            .add_systems(OnExit(UiState::Pause), ui_destroy)
+            .add_systems(Update, ui_update.run_if(in_state(UiState::Pause)));
     }
 }
 
@@ -35,7 +35,7 @@ enum PauseButtonAction {
 fn ui_init(
     mut commands: Commands,
     ui_assets: Res<UiAssets>,
-    mut background_sound: Query<&mut AudioSink, With<BackgroundSound>>,
+    mut background_sound: Query<&mut AudioSink, With<GameBackgroundSound>>,
 ) {
     if let Ok(background_sound_sink) = background_sound.get_single_mut() {
         background_sound_sink.pause();
@@ -84,7 +84,11 @@ fn ui_init(
                         },
                     ));
                     parent
-                        .spawn(UiContainer::new().with_padding(UiRect::all(Val::Px(8.0))))
+                        .spawn(
+                            UiContainer::new()
+                                .with_variant(UiContainerVariant::Secondary)
+                                .with_padding(UiRect::all(Val::Px(8.0))),
+                        )
                         .with_child(UiText::new("ui.pause.title"));
                     parent
                         .spawn((PauseButtonAction::BackToMenu, UiButton::new()))
@@ -96,7 +100,7 @@ fn ui_init(
 fn ui_destroy(
     mut commands: Commands,
     query: Query<Entity, With<RootUiComponent>>,
-    mut background_sound: Query<&mut AudioSink, With<BackgroundSound>>,
+    mut background_sound: Query<&mut AudioSink, With<GameBackgroundSound>>,
 ) {
     if let Ok(background_sound_sink) = background_sound.get_single_mut() {
         background_sound_sink.play();

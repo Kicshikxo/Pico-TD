@@ -8,16 +8,17 @@ use bevy_persistent::Persistent;
 
 use crate::{
     assets::audio::game::GameAudioAssets,
-    audio::GameAudioVolume,
+    audio::{GameAudio, GameAudioVolume},
     entities::projectile::Projectile,
     game::{GameState, GameTilemap},
 };
 
 use super::{
+    projectile::ProjectileVariant,
     tile::{
         movement::TileMovement,
         position::TilePosition,
-        sprite::{ProjectileTileSpriteVariant, TileSprite, TileSpriteVariant},
+        sprite::{TileSprite, TileSpriteVariant},
     },
     unit::Unit,
 };
@@ -40,28 +41,28 @@ pub enum StructureVariant {
 impl StructureVariant {
     pub fn to_string(&self) -> String {
         match self {
-            StructureVariant::Soldier => "soldier".to_string(),
-            StructureVariant::SoldierFast => "soldier fast".to_string(),
-            StructureVariant::SoldierStrong => "soldier strong".to_string(),
-            StructureVariant::Empty => "empty".to_string(),
+            StructureVariant::Soldier => "ui.structure.soldier".to_string(),
+            StructureVariant::SoldierFast => "ui.structure.soldier_fast".to_string(),
+            StructureVariant::SoldierStrong => "ui.structure.soldier_strong".to_string(),
+            StructureVariant::Empty => "ui.structure.empty".to_string(),
         }
     }
     pub fn get_config(&self) -> StructureVariantConfig {
         match self {
             StructureVariant::Soldier => StructureVariantConfig {
-                damage: 10,
+                damage: 25,
                 fire_radius: 3.0,
                 fire_rate: Duration::from_secs_f32(0.5),
             },
             StructureVariant::SoldierFast => StructureVariantConfig {
                 damage: 10,
                 fire_radius: 3.0,
-                fire_rate: Duration::from_secs_f32(0.25),
+                fire_rate: Duration::from_secs_f32(0.2),
             },
             StructureVariant::SoldierStrong => StructureVariantConfig {
                 damage: 50,
                 fire_radius: 3.0,
-                fire_rate: Duration::from_secs_f32(1.5),
+                fire_rate: Duration::from_secs_f32(1.0),
             },
             StructureVariant::Empty => StructureVariantConfig {
                 damage: 0,
@@ -150,7 +151,21 @@ pub struct StructurePlugin;
 
 impl Plugin for StructurePlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(Update, update_structure.run_if(in_state(GameState::InGame)));
+        app.add_systems(
+            Update,
+            (init_structure, update_structure).run_if(in_state(GameState::InGame)),
+        );
+    }
+}
+
+fn init_structure(
+    mut commands: Commands,
+    structures: Query<(Entity, &Structure), Added<Structure>>,
+) {
+    for (structure_entity, structure) in structures.iter() {
+        commands
+            .entity(structure_entity)
+            .insert(TileSprite::new(structure.get_variant().into()));
     }
 }
 
@@ -164,6 +179,7 @@ fn update_structure(
     )>,
     game_tilemap: Query<Entity, With<GameTilemap>>,
     units: Query<(Entity, &TileMovement, &TilePosition), With<Unit>>,
+    game_audio: Single<Entity, With<GameAudio>>,
     game_audio_assets: Res<GameAudioAssets>,
     game_audio_volume: Res<Persistent<GameAudioVolume>>,
     time: Res<Time>,
@@ -176,11 +192,16 @@ fn update_structure(
             .unwrap_or(std::cmp::Ordering::Equal)
     });
 
-    for (mut structure, structure_tile_position, mut tile_sprite, mut structure_transform) in
-        structures.iter_mut()
+    for (
+        mut structure,
+        structure_tile_position,
+        mut structure_tile_sprite,
+        mut structure_transform,
+    ) in structures.iter_mut()
     {
         if structure.get_update_required() == true {
-            tile_sprite.set_variant(TileSpriteVariant::Structure(structure.get_variant().into()));
+            structure_tile_sprite
+                .set_variant(TileSpriteVariant::Structure(structure.get_variant().into()));
             let config = structure.get_variant().get_config();
             structure.set_damage(config.damage);
             structure.set_fire_radius(config.fire_radius);
@@ -214,23 +235,24 @@ fn update_structure(
                 commands
                     .entity(game_tilemap.get_single().unwrap())
                     .with_child((
-                        Projectile::new(*unit_entity, structure.get_damage()),
+                        Projectile::new(
+                            ProjectileVariant::Bullet,
+                            *unit_entity,
+                            structure.get_damage(),
+                        ),
                         TileMovement::new(
                             vec![
                                 structure_tile_position.as_vec2(),
                                 unit_movement.position_at_progress(unit_progress_on_hit),
                             ],
                             projectile_duration,
+                            None,
                         ),
-                        TileSprite::new(TileSpriteVariant::Projectile(
-                            ProjectileTileSpriteVariant::Bullet,
-                        )),
-                        Transform::from_scale(Vec3::ZERO),
                     ));
-                commands.spawn((
+                commands.entity(*game_audio).with_child((
                     AudioPlayer::new(game_audio_assets.get_random_shoot().clone()),
                     PlaybackSettings {
-                        mode: PlaybackMode::Once,
+                        mode: PlaybackMode::Remove,
                         volume: Volume::new(game_audio_volume.get_sfx_volume()),
                         ..default()
                     },

@@ -76,7 +76,7 @@ fn ui_update(
         if *interaction == Interaction::Pressed {
             match button_action {
                 InGameButtonAction::OpenInGameSettings => {
-                    next_ui_state.set(UiState::InGameSettings);
+                    next_ui_state.set(UiState::Pause);
                     next_game_state.set(GameState::Pause);
                 }
             }

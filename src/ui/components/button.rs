@@ -1,8 +1,5 @@
-// use std::sync::{Arc, Mutex};
-
 use bevy::{
     audio::{PlaybackMode, Volume},
-    ecs::{component::ComponentId, world::DeferredWorld},
     prelude::*,
     ui::widget::NodeImageMode,
 };
@@ -10,7 +7,7 @@ use bevy_persistent::Persistent;
 
 use crate::{
     assets::{audio::ui::UiAudioAssets, ui::UiAssets},
-    audio::GameAudioVolume,
+    audio::{GameAudio, GameAudioVolume},
 };
 
 #[derive(Default, Clone, PartialEq)]
@@ -35,13 +32,12 @@ impl UiButtonVariant {
 }
 
 #[derive(Component)]
-#[component(on_add = UiButton::on_add)]
+#[require(Node)]
 pub struct UiButton {
     variant: UiButtonVariant,
     width: Val,
     height: Val,
     padding: UiRect,
-    // on_click: Option<Arc<Mutex<dyn FnMut() + Send + Sync>>>,
 }
 
 impl Default for UiButton {
@@ -51,7 +47,6 @@ impl Default for UiButton {
             width: Val::Percent(100.0),
             height: Val::Auto,
             padding: UiRect::axes(Val::Px(24.0), Val::Px(12.0)),
-            // on_click: None,
         }
     }
 }
@@ -60,46 +55,6 @@ impl Default for UiButton {
 impl UiButton {
     pub fn new() -> Self {
         Self { ..default() }
-    }
-    fn on_add(mut world: DeferredWorld, entity: Entity, _component_id: ComponentId) {
-        let ui_button = world.get::<Self>(entity).unwrap();
-        let ui_assets = world.get_resource::<UiAssets>().unwrap();
-
-        let width = ui_button.width;
-        let height = ui_button.height;
-        let padding = ui_button.padding;
-
-        let variant = ui_button.variant.clone();
-        let image = ui_assets.small_tilemap.clone();
-        let layout = ui_assets.small_tilemap_atlas.clone();
-
-        world.commands().entity(entity).insert(Button);
-
-        if variant != UiButtonVariant::None {
-            world.commands().entity(entity).insert((
-                Node {
-                    width,
-                    height,
-                    padding,
-                    justify_content: JustifyContent::Center,
-                    align_items: AlignItems::Center,
-                    ..default()
-                },
-                ImageNode {
-                    image,
-                    texture_atlas: Some(TextureAtlas {
-                        index: variant.as_index(),
-                        layout,
-                    }),
-                    image_mode: NodeImageMode::Sliced(TextureSlicer {
-                        border: BorderRect::square(6.0),
-                        max_corner_scale: 2.5,
-                        ..default()
-                    }),
-                    ..default()
-                },
-            ));
-        }
     }
     pub fn with_variant(mut self, variant: UiButtonVariant) -> Self {
         self.variant = variant;
@@ -117,29 +72,64 @@ impl UiButton {
         self.padding = padding;
         self
     }
-    // pub fn on_click<F>(mut self, f: F) -> Self
-    // where
-    //     F: FnMut() + Send + Sync + 'static,
-    // {
-    //     self.on_click = Some(Arc::new(Mutex::new(f)));
-    //     self
-    // }
 }
 
 pub struct UiButtonPlugin;
 
 impl Plugin for UiButtonPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(Update, button_update);
+        app.add_systems(PostUpdate, init_ui_button);
+        app.add_systems(Update, update_ui_button);
     }
 }
 
-fn button_update(
+fn init_ui_button(
+    mut commands: Commands,
+    ui_buttons: Query<(Entity, &UiButton), Added<UiButton>>,
+    ui_assets: Option<Res<UiAssets>>,
+) {
+    for (ui_button_entity, ui_button) in ui_buttons.iter() {
+        let Some(ui_assets) = &ui_assets else {
+            return;
+        };
+
+        commands.entity(ui_button_entity).insert(Button);
+
+        if ui_button.variant != UiButtonVariant::None {
+            commands.entity(ui_button_entity).insert((
+                Node {
+                    width: ui_button.width,
+                    height: ui_button.height,
+                    padding: ui_button.padding,
+                    justify_content: JustifyContent::Center,
+                    align_items: AlignItems::Center,
+                    ..default()
+                },
+                ImageNode {
+                    image: ui_assets.small_tilemap.clone(),
+                    texture_atlas: Some(TextureAtlas {
+                        index: ui_button.variant.as_index(),
+                        layout: ui_assets.small_tilemap_atlas.clone(),
+                    }),
+                    image_mode: NodeImageMode::Sliced(TextureSlicer {
+                        border: BorderRect::square(6.0),
+                        max_corner_scale: 2.5,
+                        ..default()
+                    }),
+                    ..default()
+                },
+            ));
+        }
+    }
+}
+
+fn update_ui_button(
     mut commands: Commands,
     mut interaction_query: Query<
         (&Interaction, &mut ImageNode),
         (Changed<Interaction>, With<UiButton>),
     >,
+    game_audio: Single<Entity, With<GameAudio>>,
     ui_audio_assets: Option<Res<UiAudioAssets>>,
     game_audio_volume: Res<Persistent<GameAudioVolume>>,
 ) {
@@ -151,19 +141,15 @@ fn button_update(
         };
         if *interaction == Interaction::Pressed {
             if let Some(ui_audio_assets) = ui_audio_assets.as_ref() {
-                commands.spawn((
+                commands.entity(*game_audio).with_child((
                     AudioPlayer::new(ui_audio_assets.button_click.clone()),
                     PlaybackSettings {
-                        mode: PlaybackMode::Once,
+                        mode: PlaybackMode::Remove,
                         volume: Volume::new(game_audio_volume.get_sfx_volume()),
                         ..default()
                     },
                 ));
             }
-            // if let Some(on_click) = ui_button.on_click.as_ref() {
-            //     let mut callback = on_click.lock().unwrap();
-            //     callback();
-            // }
         }
     }
 }

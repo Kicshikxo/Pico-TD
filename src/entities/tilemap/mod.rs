@@ -2,18 +2,17 @@ pub mod tile;
 
 use std::collections::HashMap;
 
-use bevy::{
-    ecs::{component::ComponentId, world::DeferredWorld},
-    prelude::*,
-};
+use bevy::prelude::*;
 use tile::{TilemapTile, TilemapTileVariant};
 
-use crate::{assets::entities::tile::TilemapTileAssets, game::GameState};
+use crate::{
+    assets::{entities::tile::TilemapTileAssets, levels::Level},
+    game::GameState,
+};
 
-use super::tile::position::TilePosition;
+use super::tile::{position::TilePosition, sprite::TileSprite};
 
 #[derive(Component, Clone, Debug)]
-#[component(on_add = Tilemap::on_add)]
 #[require(Transform, InheritedVisibility)]
 pub struct Tilemap {
     size: UVec2,
@@ -22,21 +21,24 @@ pub struct Tilemap {
     update_required: bool,
 }
 
+impl Default for Tilemap {
+    fn default() -> Self {
+        Self {
+            size: UVec2::ZERO,
+            tiles: HashMap::new(),
+            tile_size: UVec2::ZERO,
+            update_required: true,
+        }
+    }
+}
+
 #[allow(unused)]
 impl Tilemap {
     pub fn new(size: UVec2, tile_size: UVec2) -> Self {
         Self {
             size,
-            tiles: HashMap::new(),
             tile_size,
-            update_required: true,
-        }
-    }
-    fn on_add(mut world: DeferredWorld, entity: Entity, _component_id: ComponentId) {
-        let tiles = world.get::<Self>(entity).unwrap().tiles.clone();
-
-        for tile in tiles.values() {
-            world.commands().entity(entity).add_child(*tile);
+            ..default()
         }
     }
     pub fn get_size(&self) -> UVec2 {
@@ -48,9 +50,9 @@ impl Tilemap {
     pub fn get_tile_size(&self) -> UVec2 {
         self.tile_size
     }
-    pub fn set_tile(&mut self, position: TilePosition, entity: Entity) {
+    pub fn set_tile(&mut self, position: IVec2, entity: Entity) {
         self.update_required = true;
-        self.tiles.insert(position.as_ivec2(), entity);
+        self.tiles.insert(position, entity);
     }
     pub fn get_tile(&self, position: TilePosition) -> Option<Entity> {
         self.tiles.get(&position.as_ivec2()).copied()
@@ -67,7 +69,47 @@ pub struct TilemapPlugin;
 
 impl Plugin for TilemapPlugin {
     fn build(&self, app: &mut App) {
+        app.add_systems(Update, init_tilemap);
         app.add_systems(Update, update_tilemap.run_if(in_state(GameState::InGame)));
+    }
+}
+
+fn init_tilemap(
+    mut commands: Commands,
+    mut tilemaps: Query<(Entity, &mut Tilemap), Added<Tilemap>>,
+    selected_level: Res<Level>,
+) {
+    for (tilemap_entity, mut tilemap) in tilemaps.iter_mut() {
+        if selected_level.error.is_some() {
+            return;
+        }
+
+        for x in 0..selected_level.size.x {
+            for y in 0..selected_level.size.y {
+                let tilemap_tile = selected_level.map[y as usize][x as usize];
+                let tilemap_tile_entity = commands
+                    .spawn((
+                        TileSprite::new(tilemap_tile.get_variant().into()),
+                        tilemap_tile,
+                    ))
+                    .id();
+
+                commands
+                    .entity(tilemap_entity)
+                    .add_child(tilemap_tile_entity);
+
+                tilemap.set_tile(IVec2::new(x as i32, y as i32), tilemap_tile_entity);
+            }
+        }
+
+        commands
+            .entity(tilemap_entity)
+            .insert(Transform::from_translation(
+                (tilemap.get_size() * tilemap.get_tile_size() - tilemap.get_tile_size())
+                    .extend(0)
+                    .as_vec3()
+                    / -2.0,
+            ));
     }
 }
 

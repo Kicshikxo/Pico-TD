@@ -70,7 +70,11 @@ fn ui_init(mut commands: Commands, ui_assets: Res<UiAssets>) {
                 )
                 .with_children(|parent| {
                     parent
-                        .spawn(UiContainer::new().with_padding(UiRect::all(Val::Px(8.0))))
+                        .spawn(
+                            UiContainer::new()
+                                .with_variant(UiContainerVariant::Secondary)
+                                .with_padding(UiRect::all(Val::Px(8.0))),
+                        )
                         .with_child(
                             UiText::new("ui.menu.game_title").with_size(UiTextSize::ExtraLarge),
                         );

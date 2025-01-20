@@ -4,10 +4,7 @@ use crate::{
     assets::{entities::tile::TilemapTileAssets, ui::UiAssets},
     entities::{
         structure::{Structure, StructureVariant},
-        tile::{
-            position::TilePosition,
-            sprite::{TileSprite, TileSpriteVariant},
-        },
+        tile::{position::TilePosition, sprite::TileSprite},
     },
     game::{GameState, SelectedStructure},
     ui::{
@@ -91,8 +88,129 @@ fn ui_init(
                         },
                     ));
                     parent
-                        .spawn(UiContainer::new().with_padding(UiRect::all(Val::Px(8.0))))
+                        .spawn(
+                            UiContainer::new()
+                                .with_variant(UiContainerVariant::Secondary)
+                                .with_padding(UiRect::all(Val::Px(8.0))),
+                        )
                         .with_child(UiText::new("ui.structure_info.title"));
+
+                    if let Some(selected_structure) = selected_structure {
+                        for (structure, tile_position) in structures.iter() {
+                            if tile_position.as_vec2() == selected_structure.position.as_vec2() {
+                                parent
+                                    .spawn(Node {
+                                        width: Val::Percent(100.0),
+                                        column_gap: Val::Px(8.0),
+                                        ..default()
+                                    })
+                                    .with_children(|parent| {
+                                        parent
+                                            .spawn(
+                                                UiContainer::new()
+                                                    .with_variant(UiContainerVariant::Secondary)
+                                                    .with_width(Val::Px(64.0))
+                                                    .with_height(Val::Px(64.0))
+                                                    .center(),
+                                            )
+                                            .with_child((
+                                                Node {
+                                                    width: Val::Px(32.0),
+                                                    height: Val::Px(32.0),
+                                                    ..default()
+                                                },
+                                                ImageNode {
+                                                    image: tile_assets.forest_tilemap.clone(),
+                                                    texture_atlas: Some(TextureAtlas {
+                                                        index: TileSprite::new(
+                                                            structure.get_variant().into(),
+                                                        )
+                                                        .get_index(),
+                                                        layout: tile_assets
+                                                            .forest_tilemap_layout
+                                                            .clone(),
+                                                    }),
+                                                    ..default()
+                                                },
+                                            ));
+
+                                        parent
+                                            .spawn(Node {
+                                                flex_direction: FlexDirection::Column,
+                                                ..default()
+                                            })
+                                            .with_children(|parent| {
+                                                parent
+                                                    .spawn(Node {
+                                                        column_gap: Val::Px(8.0),
+                                                        ..default()
+                                                    })
+                                                    .with_children(|parent| {
+                                                        parent.spawn(
+                                                            UiText::new(
+                                                                "ui.structure_info.structure_name",
+                                                            )
+                                                            .with_width(Val::Auto)
+                                                            .with_size(UiTextSize::Small)
+                                                            .with_justify(JustifyText::Left),
+                                                        );
+                                                        parent.spawn(
+                                                            UiText::new(
+                                                                &structure
+                                                                    .get_variant()
+                                                                    .to_string(),
+                                                            )
+                                                            .with_width(Val::Auto)
+                                                            .with_size(UiTextSize::Small)
+                                                            .with_justify(JustifyText::Left),
+                                                        );
+                                                    });
+                                                parent.spawn(
+                                                    UiText::new(
+                                                        "ui.structure_info.structure_damage",
+                                                    )
+                                                    .with_arg(
+                                                        "damage",
+                                                        structure.get_damage().to_string(),
+                                                    )
+                                                    .with_size(UiTextSize::Small)
+                                                    .with_justify(JustifyText::Left),
+                                                );
+                                                parent.spawn(
+                                                    UiText::new(
+                                                        "ui.structure_info.structure_fire_radius",
+                                                    )
+                                                    .with_arg(
+                                                        "fire_radius",
+                                                        structure.get_fire_radius().to_string(),
+                                                    )
+                                                    .with_size(UiTextSize::Small)
+                                                    .with_justify(JustifyText::Left),
+                                                );
+                                                parent.spawn(
+                                                    UiText::new(
+                                                        "ui.structure_info.structure_fire_rate",
+                                                    )
+                                                    .with_arg(
+                                                        "fire_rate",
+                                                        ((1.0
+                                                            / structure
+                                                                .get_fire_rate()
+                                                                .as_secs_f32()
+                                                            * 100.0)
+                                                            .round()
+                                                            / 100.0)
+                                                            .to_string(),
+                                                    )
+                                                    .with_size(UiTextSize::Small)
+                                                    .with_justify(JustifyText::Left),
+                                                );
+                                            });
+                                    });
+                                break;
+                            }
+                        }
+                    }
 
                     parent
                         .spawn(Node {
@@ -102,119 +220,21 @@ fn ui_init(
                             ..default()
                         })
                         .with_children(|parent| {
-                            if let Some(selected_structure) = selected_structure {
-                                for (structure, tile_position) in structures.iter() {
-                                    if tile_position.as_vec2()
-                                        == selected_structure.position.as_vec2()
-                                    {
-                                        parent
-                                            .spawn(Node {
-                                                width: Val::Percent(100.0),
-                                                column_gap: Val::Px(8.0),
-                                                ..default()
-                                            })
-                                            .with_children(|parent| {
-                                                parent
-                                                    .spawn(UiContainer::new()
-                                                        .with_width(Val::Px(64.0))
-                                                        .with_height(Val::Px(64.0))
-                                                        .center())
-                                                    .with_child((
-                                                        Node {
-                                                            width: Val::Px(32.0),
-                                                            height: Val::Px(32.0),
-                                                            ..default()
-                                                        },
-                                                        ImageNode {
-                                                            image: tile_assets
-                                                                .forest_tilemap
-                                                                .clone(),
-                                                            texture_atlas: Some(TextureAtlas {
-                                                                index: TileSprite::new(
-                                                                    TileSpriteVariant::Structure(
-                                                                        structure
-                                                                            .get_variant()
-                                                                            .into(),
-                                                                    ),
-                                                                )
-                                                                .get_index(),
-                                                                layout: tile_assets
-                                                                    .forest_tilemap_layout
-                                                                    .clone(),
-                                                            }),
-                                                            ..default()
-                                                        },
-                                                    ));
-
-                                                parent
-                                                    .spawn(Node {
-                                                        // width: Val::Percent(100.0),
-                                                        flex_direction: FlexDirection::Column,
-                                                        ..default()
-                                                    })
-                                                    .with_children(|parent| {
-                                                        parent.spawn(
-                                                            UiText::new(
-                                                                "ui.structure_info.structure_name",
-                                                            )
-                                                            .with_arg(
-                                                                "name",
-                                                                structure.get_variant().to_string(),
-                                                            )
-                                                            .with_size(UiTextSize::Small)
-                                                            .with_justify(JustifyText::Left),
-                                                        );
-                                                        parent.spawn(
-                                                            UiText::new(
-                                                                "ui.structure_info.structure_damage",
-                                                            )
-                                                            .with_arg(
-                                                                "damage",
-                                                                structure.get_damage().to_string(),
-                                                            )
-                                                            .with_size(UiTextSize::Small)
-                                                            .with_justify(JustifyText::Left),
-                                                        );
-                                                        parent.spawn(
-                                                            UiText::new(
-                                                                "ui.structure_info.structure_fire_radius",
-                                                            )
-                                                            .with_arg(
-                                                                "fire_radius",
-                                                                structure.get_fire_radius().to_string(),
-                                                            )
-                                                            .with_size(UiTextSize::Small)
-                                                            .with_justify(JustifyText::Left),
-                                                        );
-                                                        parent.spawn(
-                                                            UiText::new(
-                                                                "ui.structure_info.structure_fire_rate",
-                                                            )
-                                                            .with_arg(
-                                                                "fire_rate",
-                                                                ((1.0 / structure.get_fire_rate().as_secs_f32() * 100.0).round() / 100.0).to_string(),
-                                                            )
-                                                            .with_size(UiTextSize::Small)
-                                                            .with_justify(JustifyText::Left),
-                                                        );
-                                                    });
-                                            });
-                                        break;
-                                    }
-                                }
-                            }
-
                             parent
                                 .spawn((
                                     StructureInfoButtonAction::UpgradeStructure,
-                                    UiButton::new().with_variant(UiButtonVariant::Success),
+                                    UiButton::new()
+                                        .with_variant(UiButtonVariant::Success)
+                                        .with_padding(UiRect::all(Val::Px(8.0))),
                                 ))
                                 .with_child(UiText::new("ui.structure_info.upgrade_structure"));
 
                             parent
                                 .spawn((
                                     StructureInfoButtonAction::SellStructure,
-                                    UiButton::new().with_variant(UiButtonVariant::Danger),
+                                    UiButton::new()
+                                        .with_variant(UiButtonVariant::Danger)
+                                        .with_padding(UiRect::all(Val::Px(8.0))),
                                 ))
                                 .with_child(UiText::new("ui.structure_info.sell_structure"));
                         });

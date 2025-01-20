@@ -4,10 +4,7 @@ use crate::{
     assets::{entities::tile::TilemapTileAssets, ui::UiAssets},
     entities::{
         structure::{Structure, StructureVariant},
-        tile::{
-            position::TilePosition,
-            sprite::{TileSprite, TileSpriteVariant},
-        },
+        tile::{position::TilePosition, sprite::TileSprite},
     },
     game::{GameState, SelectedStructure},
     ui::{
@@ -84,7 +81,11 @@ fn ui_init(mut commands: Commands, ui_assets: Res<UiAssets>, tile_assets: Res<Ti
                         },
                     ));
                     parent
-                        .spawn(UiContainer::new().with_padding(UiRect::all(Val::Px(8.0))))
+                        .spawn(
+                            UiContainer::new()
+                                .with_variant(UiContainerVariant::Secondary)
+                                .with_padding(UiRect::all(Val::Px(8.0))),
+                        )
                         .with_child(UiText::new("ui.structure_select.title"));
 
                     parent
@@ -114,7 +115,10 @@ fn ui_init(mut commands: Commands, ui_assets: Res<UiAssets>, tile_assets: Res<Ti
                                             .spawn((
                                                 StructureSelectButtonAction::Select(variant),
                                                 UiButton::new().with_variant(UiButtonVariant::None),
-                                                UiContainer::new().with_aspect_ratio(1.0).center(),
+                                                UiContainer::new()
+                                                    .with_variant(UiContainerVariant::Secondary)
+                                                    .with_aspect_ratio(1.0)
+                                                    .center(),
                                             ))
                                             .with_child((
                                                 Node {
@@ -125,12 +129,8 @@ fn ui_init(mut commands: Commands, ui_assets: Res<UiAssets>, tile_assets: Res<Ti
                                                 ImageNode {
                                                     image: tile_assets.forest_tilemap.clone(),
                                                     texture_atlas: Some(TextureAtlas {
-                                                        index: TileSprite::new(
-                                                            TileSpriteVariant::Structure(
-                                                                variant.into(),
-                                                            ),
-                                                        )
-                                                        .get_index(),
+                                                        index: TileSprite::new(variant.into())
+                                                            .get_index(),
                                                         layout: tile_assets
                                                             .forest_tilemap_layout
                                                             .clone(),

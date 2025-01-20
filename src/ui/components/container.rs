@@ -1,17 +1,14 @@
-use bevy::{
-    ecs::{component::ComponentId, world::DeferredWorld},
-    prelude::*,
-    ui::widget::NodeImageMode,
-};
+use bevy::{prelude::*, ui::widget::NodeImageMode};
 
 use crate::assets::ui::UiAssets;
 
-#[derive(Default, Clone)]
+#[derive(Default, Clone, PartialEq)]
 #[allow(unused)]
 pub enum UiContainerVariant {
     #[default]
-    Default,
+    None,
     Primary,
+    Secondary,
     Success,
     Danger,
 }
@@ -19,8 +16,9 @@ pub enum UiContainerVariant {
 impl UiContainerVariant {
     pub fn as_index(&self) -> usize {
         match self {
-            UiContainerVariant::Default => 3,
+            UiContainerVariant::None => 0,
             UiContainerVariant::Primary => 22,
+            UiContainerVariant::Secondary => 3,
             UiContainerVariant::Success => 21,
             UiContainerVariant::Danger => 20,
         }
@@ -28,7 +26,7 @@ impl UiContainerVariant {
 }
 
 #[derive(Component)]
-#[component(on_add = UiContainer::on_add)]
+#[require(Node)]
 pub struct UiContainer {
     variant: UiContainerVariant,
     width: Val,
@@ -63,52 +61,6 @@ impl Default for UiContainer {
 impl UiContainer {
     pub fn new() -> Self {
         Self { ..default() }
-    }
-    fn on_add(mut world: DeferredWorld, entity: Entity, _component_id: ComponentId) {
-        let ui_container = world.get::<Self>(entity).unwrap();
-        let ui_assets = world.get_resource::<UiAssets>().unwrap();
-
-        let width = ui_container.width;
-        let height = ui_container.height;
-        let padding = ui_container.padding;
-        let align_items = ui_container.align_items;
-        let justify_content = ui_container.justify_content;
-        let flex_direction = ui_container.flex_direction;
-        let aspect_ratio = ui_container.aspect_ratio;
-        let row_gap = ui_container.row_gap;
-        let column_gap = ui_container.column_gap;
-
-        let variant = ui_container.variant.clone();
-        let image = ui_assets.large_tilemap.clone();
-        let layout = ui_assets.large_tilemap_atlas.clone();
-
-        world.commands().entity(entity).insert((
-            Node {
-                width,
-                height,
-                padding,
-                align_items,
-                justify_content,
-                flex_direction,
-                aspect_ratio,
-                row_gap,
-                column_gap,
-                ..default()
-            },
-            ImageNode {
-                image,
-                texture_atlas: Some(TextureAtlas {
-                    index: variant.as_index(),
-                    layout,
-                }),
-                image_mode: NodeImageMode::Sliced(TextureSlicer {
-                    border: BorderRect::square(10.0),
-                    max_corner_scale: 2.5,
-                    ..default()
-                }),
-                ..default()
-            },
-        ));
     }
     pub fn with_variant(mut self, variant: UiContainerVariant) -> Self {
         self.variant = variant;
@@ -163,5 +115,54 @@ impl UiContainer {
         self.row_gap = gap;
         self.column_gap = gap;
         self
+    }
+}
+
+pub struct UiContainerPlugin;
+
+impl Plugin for UiContainerPlugin {
+    fn build(&self, app: &mut App) {
+        app.add_systems(PostUpdate, init_ui_container);
+    }
+}
+
+fn init_ui_container(
+    mut commands: Commands,
+    ui_containers: Query<(Entity, &UiContainer), Added<UiContainer>>,
+    ui_assets: Option<Res<UiAssets>>,
+) {
+    for (ui_container_entity, ui_container) in ui_containers.iter() {
+        let Some(ui_assets) = &ui_assets else {
+            return;
+        };
+
+        commands.entity(ui_container_entity).insert(Node {
+            width: ui_container.width,
+            height: ui_container.height,
+            padding: ui_container.padding,
+            align_items: ui_container.align_items,
+            justify_content: ui_container.justify_content,
+            flex_direction: ui_container.flex_direction,
+            aspect_ratio: ui_container.aspect_ratio,
+            row_gap: ui_container.row_gap,
+            column_gap: ui_container.column_gap,
+            ..default()
+        });
+
+        if ui_container.variant != UiContainerVariant::None {
+            commands.entity(ui_container_entity).insert(ImageNode {
+                image: ui_assets.large_tilemap.clone(),
+                texture_atlas: Some(TextureAtlas {
+                    index: ui_container.variant.as_index(),
+                    layout: ui_assets.large_tilemap_atlas.clone(),
+                }),
+                image_mode: NodeImageMode::Sliced(TextureSlicer {
+                    border: BorderRect::square(10.0),
+                    max_corner_scale: 2.5,
+                    ..default()
+                }),
+                ..default()
+            });
+        }
     }
 }

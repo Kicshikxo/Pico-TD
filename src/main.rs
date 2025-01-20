@@ -9,7 +9,6 @@ use bevy::{
     prelude::*,
     window::{EnabledButtons, PresentMode, WindowResolution, WindowTheme},
 };
-// use bevy_inspector_egui::quick::WorldInspectorPlugin;
 
 use game::GamePlugin;
 
@@ -41,6 +40,6 @@ fn main() {
                 .set(ImagePlugin::default_nearest()),
             GamePlugin,
         ))
-        // .add_plugins(WorldInspectorPlugin::new())
+        // .add_plugins(bevy_inspector_egui::quick::WorldInspectorPlugin::new())
         .run();
 }

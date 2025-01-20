@@ -52,8 +52,8 @@ ui.structure_info.title:
     en: "Structure info"
     ru: "Информация"
 ui.structure_info.structure_name:
-    en: "Name: %{name}"
-    ru: "Название: %{name}"
+    en: "Name:"
+    ru: "Название:"
 ui.structure_info.structure_damage:
     en: "Damage: %{damage}"
     ru: "Урон: %{damage}"
@@ -69,6 +69,19 @@ ui.structure_info.upgrade_structure:
 ui.structure_info.sell_structure:
     en: "Sell"
     ru: "Продать"
+
+ui.structure.soldier:
+    en: "Soldier"
+    ru: "Солдат"
+ui.structure.soldier_fast:
+    en: "Soldier fast"
+    ru: "Солдат быстрый"
+ui.structure.soldier_strong:
+    en: "Soldier strong"
+    ru: "Солдат сильный"
+ui.structure.empty:
+    en: "Empty"
+    ru: "Пусто"
 
 ui.pause.title:
     en: "Pause"

@@ -1,15 +1,11 @@
-use bevy::{
-    ecs::{
-        component::{Component, ComponentId},
-        world::DeferredWorld,
-    },
-    prelude::*,
-};
+use bevy::prelude::*;
 
 use crate::ui::{
     components::{button::UiButton, text::UiText},
     i18n::I18nComponent,
 };
+
+use super::text::UiTextSize;
 
 #[derive(Component)]
 pub struct UiSelectorDecreaseButton;
@@ -71,7 +67,8 @@ impl UiSelectorItem {
 }
 
 #[derive(Component)]
-#[component(on_add = UiSelector::on_add)]
+#[require(Node)]
+
 pub struct UiSelector {
     current_index: usize,
     options: Vec<UiSelectorItem>,
@@ -96,39 +93,6 @@ impl Default for UiSelector {
 impl UiSelector {
     pub fn new() -> UiSelector {
         Self { ..default() }
-    }
-    fn on_add(mut world: DeferredWorld, entity: Entity, _component_id: ComponentId) {
-        let selector = world.get::<Self>(entity).unwrap();
-        let current_option_text = selector.get_current_item().unwrap().text.clone();
-
-        world
-            .commands()
-            .entity(entity)
-            .insert(Node {
-                width: Val::Percent(100.0),
-                align_items: AlignItems::Center,
-                justify_content: JustifyContent::SpaceBetween,
-                ..default()
-            })
-            .with_children(|parent| {
-                parent
-                    .spawn((
-                        UiSelectorDecreaseButton,
-                        UiButton::new()
-                            .with_width(Val::Auto)
-                            .with_padding(UiRect::axes(Val::Px(16.0), Val::Px(8.0))),
-                    ))
-                    .with_child(UiText::new("<"));
-                parent.spawn((UiSelectorText, UiText::new(&current_option_text)));
-                parent
-                    .spawn((
-                        UiSelectorIncreaseButton,
-                        UiButton::new()
-                            .with_width(Val::Auto)
-                            .with_padding(UiRect::axes(Val::Px(16.0), Val::Px(8.0))),
-                    ))
-                    .with_child(UiText::new(">"));
-            });
     }
     pub fn with_options(mut self, options: Vec<UiSelectorItem>) -> Self {
         self.options = options;
@@ -202,11 +166,53 @@ pub struct UiSelectorPlugin;
 
 impl Plugin for UiSelectorPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(Update, selector_update);
+        app.add_systems(PostUpdate, init_ui_selector);
+        app.add_systems(Update, update_ui_selector);
     }
 }
 
-fn selector_update(
+fn init_ui_selector(
+    mut commands: Commands,
+    ui_selectors: Query<(Entity, &UiSelector), Added<UiSelector>>,
+) {
+    for (ui_selector_entity, ui_selector) in ui_selectors.iter() {
+        commands
+            .entity(ui_selector_entity)
+            .insert(Node {
+                width: Val::Percent(100.0),
+                height: Val::Px(48.0),
+                align_items: AlignItems::Center,
+                justify_content: JustifyContent::SpaceBetween,
+                ..default()
+            })
+            .with_children(|parent| {
+                parent
+                    .spawn((
+                        UiSelectorDecreaseButton,
+                        UiButton::new()
+                            .with_width(Val::Px(48.0 + UiTextSize::Medium.as_f32()))
+                            .with_height(Val::Px(48.0))
+                            .with_padding(UiRect::ZERO),
+                    ))
+                    .with_child(UiText::new("<").without_i18n());
+                parent.spawn((
+                    UiSelectorText,
+                    UiText::new(&ui_selector.get_current_item().unwrap().text),
+                ));
+                parent
+                    .spawn((
+                        UiSelectorIncreaseButton,
+                        UiButton::new()
+                            .with_width(Val::Px(48.0 + UiTextSize::Medium.as_f32()))
+                            .with_height(Val::Px(48.0))
+                            .with_padding(UiRect::ZERO),
+                    ))
+                    .with_child(UiText::new(">").without_i18n());
+            });
+    }
+}
+
+fn update_ui_selector(
     decrease_button_interaction: Query<
         (&Interaction, &Parent),
         (

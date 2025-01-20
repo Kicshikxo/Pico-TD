@@ -119,7 +119,11 @@ fn ui_init(
                         },
                     ));
                     parent
-                        .spawn(UiContainer::new().with_padding(UiRect::all(Val::Px(8.0))))
+                        .spawn(
+                            UiContainer::new()
+                                .with_variant(UiContainerVariant::Secondary)
+                                .with_padding(UiRect::all(Val::Px(8.0))),
+                        )
                         .with_child(UiText::new("ui.level_select.select_level"));
                     parent
                         .spawn(Node {

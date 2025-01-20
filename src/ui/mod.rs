@@ -28,5 +28,5 @@ pub enum UiState {
     InGame,
     StructureSelect,
     StructureInfo,
-    InGameSettings,
+    Pause,
 }

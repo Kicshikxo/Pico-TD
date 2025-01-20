@@ -14,6 +14,7 @@ pub struct TileMovement {
     position: Vec2,
     previous_position: Vec2,
     duration: Duration,
+    delay: Duration,
     progress: f32,
     elapsed_time: Duration,
 }
@@ -27,6 +28,7 @@ impl Default for TileMovement {
             position: Vec2::default(),
             previous_position: Vec2::default(),
             duration: Duration::ZERO,
+            delay: Duration::ZERO,
             progress: 0.0,
             elapsed_time: Duration::ZERO,
         }
@@ -35,7 +37,7 @@ impl Default for TileMovement {
 
 #[allow(unused)]
 impl TileMovement {
-    pub fn new(path: Vec<Vec2>, duration: Duration) -> Self {
+    pub fn new(path: Vec<Vec2>, duration: Duration, delay: Option<Duration>) -> Self {
         let path_segment_lengths: Vec<f32> = std::iter::once(0.0)
             .chain(
                 path.windows(2)
@@ -56,10 +58,11 @@ impl TileMovement {
             path_segment_lengths,
             path_cumulative_lengths,
             duration,
+            delay: delay.unwrap_or(Duration::ZERO),
             ..default()
         };
 
-        tile_movement.update_progress(0.0);
+        tile_movement.update_current_position();
         tile_movement
     }
     pub fn get_position(&self) -> Vec2 {
@@ -81,8 +84,9 @@ impl TileMovement {
     }
     pub fn update_progress(&mut self, delta_time: f32) {
         self.elapsed_time += Duration::from_secs_f32(delta_time);
-        self.progress =
-            (self.elapsed_time.as_secs_f32() / self.duration.as_secs_f32()).clamp(0.0, 1.0);
+        self.progress = ((self.elapsed_time.as_secs_f32() - self.delay.as_secs_f32())
+            / self.duration.as_secs_f32())
+        .clamp(0.0, 1.0);
         self.update_current_position();
     }
     pub fn update_current_position(&mut self) {

@@ -38,7 +38,7 @@ impl UnitHealth {
         self.damage_indicator = false;
     }
     pub fn heal(&mut self, heal: u32) {
-        self.current = self.current.saturating_add(heal).max(self.max);
+        self.current = self.current.saturating_add(heal).min(self.max);
     }
     pub fn get_current(&self) -> u32 {
         self.current
@@ -46,8 +46,25 @@ impl UnitHealth {
     pub fn get_max(&self) -> u32 {
         self.max
     }
+    pub fn set_max(&mut self, max: u32) {
+        self.max = max;
+    }
 }
 
 #[derive(Component, Clone, Debug)]
 #[require(Sprite, Transform)]
-pub struct UnitHealthBar;
+pub struct UnitHealthBar {
+    unit_entity: Entity,
+}
+
+impl UnitHealthBar {
+    pub fn new(unit_entity: Entity) -> Self {
+        Self { unit_entity }
+    }
+    pub fn get_unit_entity(&self) -> Entity {
+        self.unit_entity
+    }
+}
+// #[derive(Component, Clone, Debug)]
+// #[require(Sprite, Transform)]
+// pub struct UnitHealthBar;

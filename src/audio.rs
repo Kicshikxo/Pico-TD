@@ -1,6 +1,6 @@
 use std::path::Path;
 
-use bevy::prelude::*;
+use bevy::{audio::Volume, prelude::*};
 use bevy_persistent::prelude::*;
 
 use directories::ProjectDirs;
@@ -36,6 +36,9 @@ impl GameAudioVolume {
     }
 }
 
+#[derive(Component)]
+pub struct GameAudio;
+
 pub struct GameAudioPlugin;
 impl Plugin for GameAudioPlugin {
     fn build(&self, app: &mut App) {
@@ -56,5 +59,31 @@ impl Plugin for GameAudioPlugin {
                 .build()
                 .unwrap(),
         );
+
+        app.add_systems(Startup, init_game_audio).add_systems(
+            Update,
+            update_game_audio.run_if(resource_changed::<Persistent<GameAudioVolume>>),
+        );
+    }
+}
+
+fn init_game_audio(mut commands: Commands) {
+    commands.spawn(GameAudio);
+}
+
+fn update_game_audio(
+    game_audio: Query<&Children, With<GameAudio>>,
+    game_audio_volume: Res<Persistent<GameAudioVolume>>,
+    mut playback_settings: Query<&mut PlaybackSettings>,
+) {
+    if let Ok(game_audio_children) = game_audio.get_single() {
+        for game_audio_child in game_audio_children.iter() {
+            if let Ok(mut game_audio_child_playback_settings) =
+                playback_settings.get_mut(*game_audio_child)
+            {
+                game_audio_child_playback_settings.volume =
+                    Volume::new(game_audio_volume.get_sfx_volume());
+            }
+        }
     }
 }

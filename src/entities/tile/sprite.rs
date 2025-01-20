@@ -1,7 +1,4 @@
-use bevy::{
-    ecs::{component::ComponentId, world::DeferredWorld},
-    prelude::*,
-};
+use bevy::prelude::*;
 
 use crate::{
     assets::entities::tile::TilemapTileAssets,
@@ -89,15 +86,15 @@ impl TilemapTileSpriteVariant {
 
 #[derive(Clone, Copy, PartialEq, Debug)]
 pub enum UnitTileSpriteVariant {
-    Soldier,
     Truck,
+    Plane,
     Tank,
 }
 impl From<UnitVariant> for UnitTileSpriteVariant {
     fn from(variant: UnitVariant) -> Self {
         match variant {
-            UnitVariant::Soldier => UnitTileSpriteVariant::Soldier,
             UnitVariant::Truck => UnitTileSpriteVariant::Truck,
+            UnitVariant::Plane => UnitTileSpriteVariant::Plane,
             UnitVariant::Tank => UnitTileSpriteVariant::Tank,
         }
     }
@@ -105,8 +102,8 @@ impl From<UnitVariant> for UnitTileSpriteVariant {
 impl UnitTileSpriteVariant {
     pub fn as_index(&self) -> usize {
         match self {
-            UnitTileSpriteVariant::Soldier => 106,
             UnitTileSpriteVariant::Truck => 95,
+            UnitTileSpriteVariant::Plane => 100,
             UnitTileSpriteVariant::Tank => 98,
         }
     }
@@ -119,10 +116,29 @@ pub enum TileSpriteVariant {
     Tilemap(TilemapTileSpriteVariant),
     Unit(UnitTileSpriteVariant),
 }
+impl From<ProjectileVariant> for TileSpriteVariant {
+    fn from(variant: ProjectileVariant) -> Self {
+        Self::Projectile(variant.into())
+    }
+}
+impl From<StructureVariant> for TileSpriteVariant {
+    fn from(variant: StructureVariant) -> Self {
+        Self::Structure(variant.into())
+    }
+}
+impl From<TilemapTileVariant> for TileSpriteVariant {
+    fn from(variant: TilemapTileVariant) -> Self {
+        Self::Tilemap(variant.into())
+    }
+}
+impl From<UnitVariant> for TileSpriteVariant {
+    fn from(variant: UnitVariant) -> Self {
+        Self::Unit(variant.into())
+    }
+}
 
 #[derive(Component)]
 #[require(Sprite)]
-#[component(on_add = TileSprite::on_add)]
 pub struct TileSprite {
     variant: TileSpriteVariant,
     update_required: bool,
@@ -135,24 +151,6 @@ impl TileSprite {
             variant,
             update_required: false,
         }
-    }
-    pub fn on_add(mut world: DeferredWorld, entity: Entity, _component_id: ComponentId) {
-        let tile_sprite = world.get::<Self>(entity).unwrap();
-        let tile_assets = world.get_resource::<TilemapTileAssets>().unwrap();
-
-        let image = match tile_sprite.variant {
-            _ => tile_assets.forest_tilemap.clone(),
-        };
-        let layout = match tile_sprite.variant {
-            _ => tile_assets.forest_tilemap_layout.clone(),
-        };
-        let index = tile_sprite.get_index();
-
-        world.commands().entity(entity).insert(Sprite {
-            image,
-            texture_atlas: Some(TextureAtlas { layout, index }),
-            ..default()
-        });
     }
     // !
     // pub fn get_image(&self) -> Handle<Image> {
@@ -182,10 +180,36 @@ pub struct TileSpritePlugin;
 
 impl Plugin for TileSpritePlugin {
     fn build(&self, app: &mut App) {
+        app.add_systems(PostUpdate, init_tile_sprite);
         app.add_systems(
             Update,
             update_tile_sprite.run_if(in_state(GameState::InGame)),
         );
+    }
+}
+
+fn init_tile_sprite(
+    mut commands: Commands,
+    tile_sprites: Query<(Entity, &TileSprite), Added<TileSprite>>,
+    tile_assets: Option<Res<TilemapTileAssets>>,
+) {
+    for (tile_sprite_entity, tile_sprite) in tile_sprites.iter() {
+        let Some(tile_assets) = &tile_assets else {
+            return;
+        };
+        let image = match tile_sprite.variant {
+            _ => tile_assets.forest_tilemap.clone(),
+        };
+        let layout = match tile_sprite.variant {
+            _ => tile_assets.forest_tilemap_layout.clone(),
+        };
+        let index = tile_sprite.get_index();
+
+        commands.entity(tile_sprite_entity).insert(Sprite {
+            image,
+            texture_atlas: Some(TextureAtlas { layout, index }),
+            ..default()
+        });
     }
 }
 

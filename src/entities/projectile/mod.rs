@@ -5,7 +5,7 @@ use bevy::prelude::*;
 use crate::game::GameState;
 
 use super::{
-    tile::{movement::TileMovement, position::TilePosition},
+    tile::{movement::TileMovement, position::TilePosition, sprite::TileSprite},
     unit::{health::UnitHealth, Unit},
 };
 
@@ -24,12 +24,15 @@ pub struct Projectile {
 }
 
 impl Projectile {
-    pub fn new(target: Entity, damage: u32) -> Self {
+    pub fn new(variant: ProjectileVariant, target: Entity, damage: u32) -> Self {
         Self {
-            variant: ProjectileVariant::Bullet,
+            variant,
             target,
             damage,
         }
+    }
+    pub fn get_variant(&self) -> ProjectileVariant {
+        self.variant
     }
 }
 
@@ -37,10 +40,23 @@ pub struct ProjectilePlugin;
 
 impl Plugin for ProjectilePlugin {
     fn build(&self, app: &mut App) {
+        app.add_systems(Update, init_projectile);
         app.add_systems(
             Update,
             update_projectile.run_if(in_state(GameState::InGame)),
         );
+    }
+}
+
+fn init_projectile(
+    mut commands: Commands,
+    projectiles: Query<(Entity, &Projectile), Added<Projectile>>,
+) {
+    for (projectile_entity, projectile) in projectiles.iter() {
+        commands.entity(projectile_entity).insert((
+            TileSprite::new(projectile.get_variant().into()),
+            Transform::from_scale(Vec3::ZERO),
+        ));
     }
 }
 
@@ -67,7 +83,7 @@ fn update_projectile(
     ) in projectiles.iter_mut()
     {
         if projectile_movement.get_progress() >= 1.0 {
-            commands.entity(projectile_entity).despawn();
+            commands.entity(projectile_entity).despawn_recursive();
             if let Ok(mut unit_health) = units.get_mut(projectile.target) {
                 unit_health.damage(projectile.damage);
             }

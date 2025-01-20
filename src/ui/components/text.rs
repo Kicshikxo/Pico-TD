@@ -1,7 +1,4 @@
-use bevy::{
-    ecs::{component::ComponentId, world::DeferredWorld},
-    prelude::*,
-};
+use bevy::prelude::*;
 
 use crate::{assets::ui::UiAssets, ui::i18n::I18nComponent};
 
@@ -29,13 +26,14 @@ impl UiTextSize {
 }
 
 #[derive(Component)]
-#[component(on_add = UiText::on_add)]
+#[require(Node)]
 pub struct UiText {
     size: UiTextSize,
     justify: JustifyText,
     i18n_key: String,
     i18n_args: Vec<(String, String)>,
     enable_i18n: bool,
+    width: Val,
 }
 
 impl Default for UiText {
@@ -46,6 +44,7 @@ impl Default for UiText {
             i18n_key: String::new(),
             i18n_args: Vec::new(),
             enable_i18n: true,
+            width: Val::Percent(100.0),
         }
     }
 }
@@ -56,43 +55,6 @@ impl UiText {
         Self {
             i18n_key: i18n_key.into(),
             ..default()
-        }
-    }
-    fn on_add(mut world: DeferredWorld, entity: Entity, _component_id: ComponentId) {
-        let ui_text = world.get::<Self>(entity).unwrap();
-        let ui_assets = world.get_resource::<UiAssets>().unwrap();
-
-        let font = ui_assets.primary_font.clone();
-        let font_size = ui_text.size.as_f32();
-        let justify = ui_text.justify.clone();
-
-        let i18n_key = ui_text.i18n_key.clone();
-        let i18n_args = ui_text.i18n_args.clone();
-        let enable_i18n = ui_text.enable_i18n.clone();
-
-        world.commands().entity(entity).insert((
-            Node {
-                width: Val::Percent(100.0),
-                ..default()
-            },
-            TextFont {
-                font,
-                font_size,
-                ..default()
-            },
-            TextLayout {
-                justify,
-                ..default()
-            },
-        ));
-        if enable_i18n {
-            let i18n_component = I18nComponent::new(i18n_key).with_args(i18n_args);
-            world
-                .commands()
-                .entity(entity)
-                .insert((Text::new(i18n_component.translate()), i18n_component));
-        } else {
-            world.commands().entity(entity).insert(Text::new(i18n_key));
         }
     }
     pub fn with_size(mut self, size: UiTextSize) -> Self {
@@ -110,5 +72,57 @@ impl UiText {
     pub fn without_i18n(mut self) -> Self {
         self.enable_i18n = false;
         self
+    }
+    pub fn with_width(mut self, width: Val) -> Self {
+        self.width = width;
+        self
+    }
+}
+
+pub struct UiTextPlugin;
+
+impl Plugin for UiTextPlugin {
+    fn build(&self, app: &mut App) {
+        app.add_systems(PostUpdate, init_ui_text);
+    }
+}
+
+fn init_ui_text(
+    mut commands: Commands,
+    ui_texts: Query<(Entity, &UiText), Added<UiText>>,
+    ui_assets: Option<Res<UiAssets>>,
+) {
+    for (ui_text_entity, ui_text) in ui_texts.iter() {
+        let Some(ui_assets) = &ui_assets else {
+            return;
+        };
+
+        commands.entity(ui_text_entity).insert((
+            Node {
+                width: ui_text.width,
+                ..default()
+            },
+            TextFont {
+                font: ui_assets.primary_font.clone(),
+                font_size: ui_text.size.as_f32(),
+                ..default()
+            },
+            TextLayout {
+                justify: ui_text.justify.clone(),
+                ..default()
+            },
+        ));
+
+        if ui_text.enable_i18n {
+            let i18n_component =
+                I18nComponent::new(ui_text.i18n_key.clone()).with_args(ui_text.i18n_args.clone());
+            commands
+                .entity(ui_text_entity)
+                .insert((Text::new(i18n_component.translate()), i18n_component));
+        } else {
+            commands
+                .entity(ui_text_entity)
+                .insert(Text::new(ui_text.i18n_key.clone()));
+        }
     }
 }
