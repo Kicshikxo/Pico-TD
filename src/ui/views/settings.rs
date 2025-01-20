@@ -6,7 +6,7 @@ use crate::{
     audio::GameAudioVolume,
     ui::{
         components::{
-            button::{UiButton, UiButtonVariant},
+            button::UiButton,
             container::{UiContainer, UiContainerVariant},
             selector::{UiSelector, UiSelectorItem, UiSelectorItemValue},
             text::UiText,
@@ -86,7 +86,7 @@ fn ui_init(
                 )
                 .with_children(|parent| {
                     parent.spawn((
-                        UiButton::new().with_variant(UiButtonVariant::None),
+                        UiButton::new(),
                         SettingsButtonAction::BackToMenu,
                         Node {
                             position_type: PositionType::Absolute,

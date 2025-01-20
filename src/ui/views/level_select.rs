@@ -100,7 +100,7 @@ fn ui_init(
                 )
                 .with_children(|parent| {
                     parent.spawn((
-                        UiButton::new().with_variant(UiButtonVariant::None),
+                        UiButton::new(),
                         LevelSelectButtonAction::BackToMenu,
                         Node {
                             position_type: PositionType::Absolute,
@@ -151,7 +151,7 @@ fn ui_init(
                                                 LevelSelectButtonAction::SelectLevel {
                                                     level_index,
                                                 },
-                                                UiButton::new().with_variant(UiButtonVariant::None),
+                                                UiButton::new(),
                                                 Node {
                                                     width: Val::Percent(100.0),
                                                     aspect_ratio: Some(1.0),
@@ -193,7 +193,10 @@ fn ui_init(
 
                     #[cfg(not(target_arch = "wasm32"))]
                     parent
-                        .spawn((LevelSelectButtonAction::UploadLevel, UiButton::new()))
+                        .spawn((
+                            LevelSelectButtonAction::UploadLevel,
+                            UiButton::new().with_variant(UiButtonVariant::Primary),
+                        ))
                         .with_child(UiText::new("ui.level_select.upload_level"));
                 });
         });

@@ -87,7 +87,10 @@ fn ui_init(mut commands: Commands, ui_assets: Res<UiAssets>) {
                         .with_child(UiText::new("ui.menu.start_game").with_size(UiTextSize::Large));
 
                     parent
-                        .spawn((MenuButtonAction::Settings, UiButton::new()))
+                        .spawn((
+                            MenuButtonAction::Settings,
+                            UiButton::new().with_variant(UiButtonVariant::Primary),
+                        ))
                         .with_child(UiText::new("ui.menu.settings").with_size(UiTextSize::Large));
 
                     #[cfg(not(target_arch = "wasm32"))]

@@ -13,8 +13,8 @@ use crate::{
 #[derive(Default, Clone, PartialEq)]
 #[allow(unused)]
 pub enum UiButtonVariant {
-    None,
     #[default]
+    None,
     Primary,
     Success,
     Danger,

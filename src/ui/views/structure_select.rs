@@ -9,7 +9,7 @@ use crate::{
     game::{GameState, SelectedStructure},
     ui::{
         components::{
-            button::{UiButton, UiButtonVariant},
+            button::UiButton,
             container::{UiContainer, UiContainerVariant},
             text::{UiText, UiTextSize},
         },
@@ -62,7 +62,7 @@ fn ui_init(mut commands: Commands, ui_assets: Res<UiAssets>, tile_assets: Res<Ti
                 )
                 .with_children(|parent| {
                     parent.spawn((
-                        UiButton::new().with_variant(UiButtonVariant::None),
+                        UiButton::new(),
                         StructureSelectButtonAction::Close,
                         Node {
                             position_type: PositionType::Absolute,
@@ -114,7 +114,7 @@ fn ui_init(mut commands: Commands, ui_assets: Res<UiAssets>, tile_assets: Res<Ti
                                         parent
                                             .spawn((
                                                 StructureSelectButtonAction::Select(variant),
-                                                UiButton::new().with_variant(UiButtonVariant::None),
+                                                UiButton::new(),
                                                 UiContainer::new()
                                                     .with_variant(UiContainerVariant::Secondary)
                                                     .with_aspect_ratio(1.0)

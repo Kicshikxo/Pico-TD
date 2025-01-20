@@ -69,7 +69,7 @@ fn ui_init(
                 )
                 .with_children(|parent| {
                     parent.spawn((
-                        UiButton::new().with_variant(UiButtonVariant::None),
+                        UiButton::new(),
                         StructureInfoButtonAction::Close,
                         Node {
                             position_type: PositionType::Absolute,

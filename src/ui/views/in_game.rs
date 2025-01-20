@@ -4,7 +4,7 @@ use crate::{
     game::GameState,
     ui::{
         components::{
-            button::UiButton,
+            button::{UiButton, UiButtonVariant},
             text::{UiText, UiTextSize},
         },
         UiState,
@@ -51,7 +51,9 @@ fn ui_init(mut commands: Commands) {
                     parent
                         .spawn((
                             InGameButtonAction::OpenInGameSettings,
-                            UiButton::new().with_padding(UiRect::axes(Val::Px(16.0), Val::Px(8.0))),
+                            UiButton::new()
+                                .with_variant(UiButtonVariant::Primary)
+                                .with_padding(UiRect::axes(Val::Px(16.0), Val::Px(8.0))),
                         ))
                         .with_child(UiText::new("ui.in_game.pause").with_size(UiTextSize::Small));
                 });

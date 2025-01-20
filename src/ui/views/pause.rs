@@ -65,7 +65,7 @@ fn ui_init(
                 )
                 .with_children(|parent| {
                     parent.spawn((
-                        UiButton::new().with_variant(UiButtonVariant::None),
+                        UiButton::new(),
                         PauseButtonAction::Close,
                         Node {
                             position_type: PositionType::Absolute,
@@ -91,7 +91,10 @@ fn ui_init(
                         )
                         .with_child(UiText::new("ui.pause.title"));
                     parent
-                        .spawn((PauseButtonAction::BackToMenu, UiButton::new()))
+                        .spawn((
+                            PauseButtonAction::BackToMenu,
+                            UiButton::new().with_variant(UiButtonVariant::Primary),
+                        ))
                         .with_child(UiText::new("ui.pause.back_to_menu"));
                 });
         });
