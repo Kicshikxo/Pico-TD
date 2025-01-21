@@ -24,7 +24,6 @@ impl UiContainerVariant {
         }
     }
 }
-
 #[derive(Component)]
 #[require(Node)]
 pub struct UiContainer {
@@ -122,7 +121,7 @@ pub struct UiContainerPlugin;
 
 impl Plugin for UiContainerPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(PostUpdate, init_ui_container);
+        app.add_systems(Update, init_ui_container);
     }
 }
 

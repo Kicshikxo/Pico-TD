@@ -166,7 +166,7 @@ pub struct UiSelectorPlugin;
 
 impl Plugin for UiSelectorPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(PostUpdate, init_ui_selector);
+        app.add_systems(Update, init_ui_selector);
         app.add_systems(Update, update_ui_selector);
     }
 }
