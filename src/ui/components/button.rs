@@ -78,7 +78,7 @@ pub struct UiButtonPlugin;
 
 impl Plugin for UiButtonPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(Update, init_ui_button);
+        app.add_systems(PostUpdate, init_ui_button);
         app.add_systems(Update, update_ui_button);
     }
 }
