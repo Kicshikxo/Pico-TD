@@ -18,7 +18,6 @@ impl Default for UnitHealth {
     }
 }
 
-#[allow(unused)]
 impl UnitHealth {
     pub fn new(max: u32) -> Self {
         Self {
@@ -65,6 +64,3 @@ impl UnitHealthBar {
         self.unit_entity
     }
 }
-// #[derive(Component, Clone, Debug)]
-// #[require(Sprite, Transform)]
-// pub struct UnitHealthBar;

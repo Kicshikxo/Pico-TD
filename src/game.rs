@@ -7,16 +7,15 @@ use bevy::{
 use bevy_persistent::Persistent;
 
 use crate::{
-    assets::{
-        audio::game::GameAudioAssets,
-        levels::{Level, LevelsAssets},
-        AssetsPlugin,
-    },
+    assets::{audio::game::GameAudioAssets, levels::Level, AssetsPlugin},
     audio::{GameAudioPlugin, GameAudioVolume},
     entities::{
-        structure::{Structure, StructureVariant},
+        structure::Structure,
         tile::{movement::TileMovement, position::TilePosition},
-        tilemap::Tilemap,
+        tilemap::{
+            tile::{TilemapTile, TilemapTileVariant},
+            Tilemap,
+        },
         unit::{Unit, UnitVariant},
         EntitiesPlugin,
     },
@@ -29,14 +28,19 @@ impl Plugin for GamePlugin {
     fn build(&self, app: &mut App) {
         app.add_plugins((AssetsPlugin, GameAudioPlugin, EntitiesPlugin, GameUiPlugin));
 
+        app.init_resource::<SelectedTile>();
+        app.init_resource::<SelectedStructure>();
+
         app.init_state::<GameState>();
         app.add_systems(OnEnter(GameState::Setup), setup)
             .add_systems(OnEnter(GameState::Start), start_game)
+            .add_systems(OnEnter(GameState::Pause), pause_game)
+            .add_systems(OnExit(GameState::Pause), resume_game)
             .add_systems(
                 Update,
-                update_cursor_position.run_if(in_state(GameState::InGame)),
-            )
-            .add_systems(Update, main_update.run_if(in_state(GameState::InGame)));
+                (update_selected_tile, update_selected_structure)
+                    .run_if(in_state(GameState::InGame)),
+            );
     }
 }
 
@@ -46,9 +50,14 @@ pub struct GameTilemap;
 #[derive(Component)]
 pub struct GameBackgroundSound;
 
-#[derive(Resource)]
+#[derive(Resource, Default)]
+pub struct SelectedTile {
+    pub tile_position: TilePosition,
+}
+
+#[derive(Resource, Default)]
 pub struct SelectedStructure {
-    pub position: TilePosition,
+    pub tile_position: TilePosition,
 }
 
 #[derive(States, Default, Debug, Clone, PartialEq, Eq, Hash)]
@@ -83,6 +92,7 @@ fn setup(
 
 fn start_game(
     mut commands: Commands,
+    game_tilemap: Query<Entity, With<GameTilemap>>,
     selected_level: Res<Level>,
     game_audio_assets: Res<GameAudioAssets>,
     game_audio_volume: Res<Persistent<GameAudioVolume>>,
@@ -95,6 +105,10 @@ fn start_game(
         return;
     }
 
+    if let Ok(tilemap_entity) = game_tilemap.get_single() {
+        commands.entity(tilemap_entity).despawn_recursive();
+    }
+
     let tilemap_entity = commands
         .spawn((
             GameTilemap,
@@ -102,7 +116,7 @@ fn start_game(
         ))
         .id();
 
-    for index in 0..5 {
+    for index in 0..10 {
         commands.entity(tilemap_entity).with_child((
             Unit::new(UnitVariant::Truck),
             TileMovement::new(
@@ -112,21 +126,24 @@ fn start_game(
             ),
         ));
     }
-    for index in 0..3 {
+    for index in 0..10 {
         commands.entity(tilemap_entity).with_child((
             Unit::new(UnitVariant::Plane),
             TileMovement::new(
                 selected_level.paths[0].clone(),
                 Duration::from_secs(20),
-                Some(Duration::from_secs_f32(0.33 * index as f32 + 0.33 * 6.0)),
+                Some(Duration::from_secs_f32(0.33 * index as f32 + 0.33 * 12.0)),
             ),
         ));
     }
-
-    for structure_position in selected_level.structure_points.iter() {
+    for index in 0..5 {
         commands.entity(tilemap_entity).with_child((
-            Structure::new(StructureVariant::Empty),
-            TilePosition::new(structure_position.x, structure_position.y),
+            Unit::new(UnitVariant::Tank),
+            TileMovement::new(
+                selected_level.paths[0].clone(),
+                Duration::from_secs(20),
+                Some(Duration::from_secs_f32(0.33 * index as f32 + 0.33 * 22.0)),
+            ),
         ));
     }
 
@@ -143,126 +160,104 @@ fn start_game(
     next_game_state.set(GameState::InGame);
 }
 
-fn update_cursor_position(
-    mut commands: Commands,
-    window: Query<&Window>,
-    main_camera: Query<(&Camera, &GlobalTransform)>,
-    game_tilemap: Query<(&Tilemap, &Transform), With<GameTilemap>>,
-    structures: Query<(&Structure, &TilePosition)>,
-    mouse_button_input: Res<ButtonInput<MouseButton>>,
-    mut next_ui_state: ResMut<NextState<UiState>>,
-    mut next_game_state: ResMut<NextState<GameState>>,
+fn pause_game(
+    mut background_sound: Query<&mut AudioSink, With<GameBackgroundSound>>,
+    ui_state: Res<State<UiState>>,
 ) {
-    if mouse_button_input.just_pressed(MouseButton::Left) == false {
+    if matches!(
+        ui_state.get(),
+        UiState::StructureSelect | UiState::StructureInfo
+    ) {
         return;
     }
+    if let Ok(background_sound_sink) = background_sound.get_single_mut() {
+        background_sound_sink.pause();
+    }
+}
 
-    let Ok(window) = window.get_single() else {
+fn resume_game(mut background_sound: Query<&mut AudioSink, With<GameBackgroundSound>>) {
+    if let Ok(background_sound_sink) = background_sound.get_single_mut() {
+        background_sound_sink.play();
+    }
+}
+
+fn update_selected_tile(
+    main_camera: Query<(&Camera, &GlobalTransform)>,
+    game_tilemap: Query<(&Tilemap, &Transform), With<GameTilemap>>,
+    mut selected_tile: ResMut<SelectedTile>,
+    mut cursor_moved_events: EventReader<CursorMoved>,
+) {
+    if cursor_moved_events.is_empty() {
         return;
-    };
+    }
     let Ok((camera, camera_transform)) = main_camera.get_single() else {
         return;
     };
     let Ok((tilemap, tilemap_transform)) = game_tilemap.get_single() else {
         return;
     };
-    let Ok(cursor_position) = camera.viewport_to_world_2d(
-        camera_transform,
-        window.cursor_position().unwrap_or(Vec2::ZERO),
-    ) else {
-        return;
-    };
 
-    let cursor_in_tilemap_position = tilemap_transform
-        .compute_matrix()
-        .inverse()
-        .transform_point3((cursor_position - tilemap.get_tile_size().as_vec2() / 2.0).extend(0.0))
-        .xy();
+    for cursor_moved in cursor_moved_events.read() {
+        let Ok(cursor_position) =
+            camera.viewport_to_world_2d(camera_transform, cursor_moved.position)
+        else {
+            continue;
+        };
 
-    let cursor_tile_position =
-        TilePosition::from_tilemap_position(tilemap, cursor_in_tilemap_position);
+        let cursor_in_tilemap_position = tilemap_transform
+            .compute_matrix()
+            .inverse()
+            .transform_point3(
+                (cursor_position - tilemap.get_tile_size().as_vec2() / 2.0).extend(0.0),
+            )
+            .xy();
 
-    for (structure, structure_tile_position) in structures.iter() {
-        if structure_tile_position.as_vec2() == cursor_tile_position.as_vec2().ceil() {
-            commands.insert_resource(SelectedStructure {
-                position: *structure_tile_position,
-            });
-            if structure.get_variant() == StructureVariant::Empty {
-                next_ui_state.set(UiState::StructureSelect);
-            } else {
-                next_ui_state.set(UiState::StructureInfo);
-            }
-            next_game_state.set(GameState::Pause);
+        let cursor_tile_position =
+            TilePosition::from_tilemap_position(tilemap, cursor_in_tilemap_position);
 
-            break;
-        }
+        selected_tile.tile_position = cursor_tile_position;
     }
 }
 
-#[allow(unused)]
-fn main_update(
-    mut commands: Commands,
-    mut gizmos: Gizmos,
-    structures: Query<(&Structure, &Transform)>,
-    levels_assets: Res<LevelsAssets>,
-    levels_assets_loader: Res<Assets<Level>>,
-    time: Res<Time>,
+fn update_selected_structure(
+    game_tilemap: Query<&Tilemap, With<GameTilemap>>,
+    tiles: Query<&TilemapTile>,
+    structures: Query<&TilePosition, With<Structure>>,
+    selected_tile: Res<SelectedTile>,
+    mut selected_structure: ResMut<SelectedStructure>,
+    mouse_button_input: Res<ButtonInput<MouseButton>>,
+    ui_interaction: Query<&Interaction, (Changed<Interaction>, With<Button>)>,
+    mut next_ui_state: ResMut<NextState<UiState>>,
+    mut next_game_state: ResMut<NextState<GameState>>,
 ) {
-    // let level: &Level = levels_assets_loader.get(&levels_assets.compain[0]).unwrap();
+    if mouse_button_input.just_pressed(MouseButton::Left) == false {
+        return;
+    }
+    if ui_interaction.is_empty() == false {
+        return;
+    }
+    // ! Refactor
+    let game_tilemap = game_tilemap.single();
+    if let Some(selected_tile_entity) = game_tilemap.get_tile(IVec2::new(
+        selected_tile.tile_position.as_ivec2().x,
+        game_tilemap.get_size().y as i32 - selected_tile.tile_position.as_ivec2().y - 1,
+    )) {
+        if let Ok(selected_tile) = tiles.get(selected_tile_entity) {
+            if selected_tile.get_variant() != TilemapTileVariant::Ground {
+                return;
+            }
+        }
+    }
 
-    // for (structure, structure_transform) in structures.iter() {
-    //     gizmos.circle_2d(
-    //         structure_transform.translation.xy(),
-    //         structure.get_radius() * 16.0,
-    //         Color::srgb(1.0, 0.0, 0.0),
-    //     );
-    // }
+    let structure_found = structures.iter().any(|structure_tile_position| {
+        structure_tile_position.as_vec2() == selected_tile.tile_position.as_vec2()
+    });
 
-    // for structure_point in level.structure_points.iter() {
-    //     gizmos.circle_2d(
-    //         Vec2::new(
-    //             structure_point.x as f32 * 16.0 - 10.0 * 16.0 + 16.0 / 2.0,
-    //             (structure_point.y as f32 * 16.0 - 10.0 * 16.0 + 16.0 / 2.0) * -1.0,
-    //         ),
-    //         8.0,
-    //         Color::srgb(1.0, 0.0, 0.0),
-    //     );
-    // }
-
-    // gizmos
-    //     .grid_2d(
-    //         Isometry2d::IDENTITY,
-    //         UVec2::new(20, 20),
-    //         Vec2::new(16.0, 16.0),
-    //         Color::srgb(0.0, 0.0, 0.0).with_alpha(0.5),
-    //     )
-    //     .outer_edges();
-
-    // for path in level.paths.windows(2) {
-    //     let from = Vec2::new(
-    //         path[0].x * 16.0 - 10.0 * 16.0 + 16.0 / 2.0,
-    //         (path[0].y * 16.0 - 10.0 * 16.0 + 16.0 / 2.0) * -1.0,
-    //     );
-    //     let to = Vec2::new(
-    //         path[1].x * 16.0 - 10.0 * 16.0 + 16.0 / 2.0,
-    //         (path[1].y * 16.0 - 10.0 * 16.0 + 16.0 / 2.0) * -1.0,
-    //     );
-    //     gizmos
-    //         .arrow_2d(from, to, Color::srgb(1.0, 0.0, 0.0))
-    //         .with_tip_length(4.0);
-    // }
-
-    // for progress in (0..=100).step_by(1) {
-    //     let enemy_position = enemy.movement.position_at_progress(progress as f32 / 100.0);
-    //     let gizmos_position = Vec2::new(
-    //         enemy_position.x * 16.0 - 10.0 * 16.0 + 16.0 / 2.0,
-    //         (enemy_position.y * 16.0 - 10.0 * 16.0 + 16.0 / 2.0) * -1.0,
-    //     );
-
-    //     gizmos.circle_2d(
-    //         gizmos_position,
-    //         4.0,
-    //         Color::srgb(1.0, progress as f32 / 100.0, 0.0),
-    //     );
-    // }
+    selected_structure.tile_position = selected_tile.tile_position;
+    next_ui_state.set(if structure_found {
+        UiState::StructureInfo
+    } else {
+        UiState::StructureSelect
+    });
+    next_game_state.set(GameState::Pause);
 }

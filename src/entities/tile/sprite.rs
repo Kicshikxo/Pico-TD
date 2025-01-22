@@ -10,130 +10,57 @@ use crate::{
 };
 
 #[derive(Clone, Copy, PartialEq, Debug)]
-pub enum ProjectileTileSpriteVariant {
-    Bullet,
-}
-impl From<ProjectileVariant> for ProjectileTileSpriteVariant {
-    fn from(variant: ProjectileVariant) -> Self {
-        match variant {
-            ProjectileVariant::Bullet => ProjectileTileSpriteVariant::Bullet,
-        }
-    }
-}
-impl ProjectileTileSpriteVariant {
-    pub fn as_index(&self) -> usize {
-        match self {
-            ProjectileTileSpriteVariant::Bullet => 191,
-        }
-    }
-}
-
-#[derive(Clone, Copy, PartialEq, Debug)]
-pub enum StructureTileSpriteVariant {
-    Soldier,
-    SoldierFast,
-    SoldierStrong,
-    Empty,
-}
-impl From<StructureVariant> for StructureTileSpriteVariant {
-    fn from(variant: StructureVariant) -> Self {
-        match variant {
-            StructureVariant::Soldier => StructureTileSpriteVariant::Soldier,
-            StructureVariant::SoldierFast => StructureTileSpriteVariant::SoldierFast,
-            StructureVariant::SoldierStrong => StructureTileSpriteVariant::SoldierStrong,
-            StructureVariant::Empty => StructureTileSpriteVariant::Empty,
-        }
-    }
-}
-impl StructureTileSpriteVariant {
-    pub fn as_index(&self) -> usize {
-        match self {
-            StructureTileSpriteVariant::Soldier => 106,
-            StructureTileSpriteVariant::SoldierFast => 178,
-            StructureTileSpriteVariant::SoldierStrong => 160,
-            StructureTileSpriteVariant::Empty => 197,
-        }
-    }
-}
-
-#[derive(Clone, Copy, PartialEq, Debug)]
-pub enum TilemapTileSpriteVariant {
-    Ground,
-    Road,
-    Water,
-    Unknown,
-}
-impl From<TilemapTileVariant> for TilemapTileSpriteVariant {
-    fn from(variant: TilemapTileVariant) -> Self {
-        match variant {
-            TilemapTileVariant::Ground => TilemapTileSpriteVariant::Ground,
-            TilemapTileVariant::Road => TilemapTileSpriteVariant::Road,
-            TilemapTileVariant::Water => TilemapTileSpriteVariant::Water,
-            TilemapTileVariant::Unknown => TilemapTileSpriteVariant::Unknown,
-        }
-    }
-}
-impl TilemapTileSpriteVariant {
-    pub fn as_index(&self) -> usize {
-        match self {
-            TilemapTileSpriteVariant::Ground => 0,
-            TilemapTileSpriteVariant::Road => 108,
-            TilemapTileSpriteVariant::Water => 37,
-            TilemapTileSpriteVariant::Unknown => 0,
-        }
-    }
-}
-
-#[derive(Clone, Copy, PartialEq, Debug)]
-pub enum UnitTileSpriteVariant {
-    Truck,
-    Plane,
-    Tank,
-}
-impl From<UnitVariant> for UnitTileSpriteVariant {
-    fn from(variant: UnitVariant) -> Self {
-        match variant {
-            UnitVariant::Truck => UnitTileSpriteVariant::Truck,
-            UnitVariant::Plane => UnitTileSpriteVariant::Plane,
-            UnitVariant::Tank => UnitTileSpriteVariant::Tank,
-        }
-    }
-}
-impl UnitTileSpriteVariant {
-    pub fn as_index(&self) -> usize {
-        match self {
-            UnitTileSpriteVariant::Truck => 95,
-            UnitTileSpriteVariant::Plane => 100,
-            UnitTileSpriteVariant::Tank => 98,
-        }
-    }
-}
-
-#[derive(Clone, Copy, PartialEq, Debug)]
 pub enum TileSpriteVariant {
-    Projectile(ProjectileTileSpriteVariant),
-    Structure(StructureTileSpriteVariant),
-    Tilemap(TilemapTileSpriteVariant),
-    Unit(UnitTileSpriteVariant),
+    Projectile(ProjectileVariant),
+    Structure(StructureVariant),
+    Tilemap(TilemapTileVariant),
+    Unit(UnitVariant),
 }
 impl From<ProjectileVariant> for TileSpriteVariant {
     fn from(variant: ProjectileVariant) -> Self {
-        Self::Projectile(variant.into())
+        Self::Projectile(variant)
     }
 }
 impl From<StructureVariant> for TileSpriteVariant {
     fn from(variant: StructureVariant) -> Self {
-        Self::Structure(variant.into())
+        Self::Structure(variant)
     }
 }
 impl From<TilemapTileVariant> for TileSpriteVariant {
     fn from(variant: TilemapTileVariant) -> Self {
-        Self::Tilemap(variant.into())
+        Self::Tilemap(variant)
     }
 }
 impl From<UnitVariant> for TileSpriteVariant {
     fn from(variant: UnitVariant) -> Self {
-        Self::Unit(variant.into())
+        Self::Unit(variant)
+    }
+}
+impl TileSpriteVariant {
+    pub fn as_index(&self) -> usize {
+        match self {
+            TileSpriteVariant::Projectile(variant) => match variant {
+                ProjectileVariant::Bullet => 120,
+            },
+            TileSpriteVariant::Structure(variant) => match variant {
+                StructureVariant::Soldier => 8,
+                StructureVariant::SoldierFast => 56,
+                StructureVariant::SoldierStrong => 44,
+            },
+            TileSpriteVariant::Tilemap(variant) => match variant {
+                TilemapTileVariant::Ground => 1,
+                TilemapTileVariant::Flower => 3,
+                TilemapTileVariant::Tree => 4,
+                TilemapTileVariant::Road => 48,
+                TilemapTileVariant::Water => 32,
+                TilemapTileVariant::Unknown => 0,
+            },
+            TileSpriteVariant::Unit(variant) => match variant {
+                UnitVariant::Truck => 60,
+                UnitVariant::Plane => 65,
+                UnitVariant::Tank => 63,
+            },
+        }
     }
 }
 
@@ -144,7 +71,6 @@ pub struct TileSprite {
     update_required: bool,
 }
 
-#[allow(unused)]
 impl TileSprite {
     pub fn new(variant: TileSpriteVariant) -> Self {
         Self {
@@ -152,17 +78,8 @@ impl TileSprite {
             update_required: false,
         }
     }
-    // !
-    // pub fn get_image(&self) -> Handle<Image> {
-
-    // }
-    pub fn get_index(&self) -> usize {
-        match self.variant {
-            TileSpriteVariant::Projectile(variant) => variant.as_index(),
-            TileSpriteVariant::Structure(variant) => variant.as_index(),
-            TileSpriteVariant::Tilemap(variant) => variant.as_index(),
-            TileSpriteVariant::Unit(variant) => variant.as_index(),
-        }
+    pub fn get_variant(&self) -> TileSpriteVariant {
+        self.variant
     }
     pub fn set_variant(&mut self, variant: TileSpriteVariant) {
         self.variant = variant;
@@ -198,12 +115,14 @@ fn init_tile_sprite(
             return;
         };
         let image = match tile_sprite.variant {
-            _ => tile_assets.forest_tilemap.clone(),
+            TileSpriteVariant::Tilemap(_) => tile_assets.tilemap.clone(),
+            _ => tile_assets.entities.clone(),
         };
         let layout = match tile_sprite.variant {
-            _ => tile_assets.forest_tilemap_layout.clone(),
+            TileSpriteVariant::Tilemap(_) => tile_assets.tilemap_layout.clone(),
+            _ => tile_assets.entities_layout.clone(),
         };
-        let index = tile_sprite.get_index();
+        let index = tile_sprite.get_variant().as_index();
 
         commands.entity(tile_sprite_entity).insert(Sprite {
             image,
@@ -220,7 +139,7 @@ fn update_tile_sprite(mut tile_sprites: Query<(&mut TileSprite, &mut Sprite)>) {
         }
 
         if let Some(texture_atlas) = sprite.texture_atlas.as_mut() {
-            texture_atlas.index = tile_sprite.get_index();
+            texture_atlas.index = tile_sprite.get_variant().as_index();
         }
 
         tile_sprite.set_update_required(false);

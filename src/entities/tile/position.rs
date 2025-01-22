@@ -48,7 +48,7 @@ impl TilePosition {
         let tilemap_size_y = tilemap.get_size().y as f32;
 
         Self {
-            x: position.x / tile_size_x,
+            x: (position.x / tile_size_x).ceil(),
             y: ((tilemap_size_y * tile_size_y - position.y - tile_size_y) / tile_size_y).floor(),
             ..default()
         }

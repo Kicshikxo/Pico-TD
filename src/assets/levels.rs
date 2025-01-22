@@ -36,7 +36,6 @@ pub struct Level {
     pub size: UVec2,
     pub map: Vec<Vec<TilemapTile>>,
     pub paths: Vec<Vec<Vec2>>,
-    pub structure_points: Vec<Vec2>,
     pub error: Option<String>,
 }
 
@@ -47,7 +46,6 @@ impl Default for Level {
             size: UVec2::new(0, 0),
             map: Vec::new(),
             paths: Vec::new(),
-            structure_points: Vec::new(),
             error: None,
         }
     }
@@ -59,7 +57,6 @@ pub struct LevelAsset {
     pub size: UVec2,
     pub map: Vec<String>,
     pub paths: Option<Vec<Vec<Vec2>>>,
-    pub structure_points: Option<Vec<Vec2>>,
     pub error: Option<String>,
 }
 
@@ -70,7 +67,6 @@ impl Default for LevelAsset {
             size: UVec2::new(0, 0),
             map: Vec::new(),
             paths: None,
-            structure_points: None,
             error: None,
         }
     }
@@ -121,7 +117,6 @@ impl AssetLoader for LevelsLoader {
             size: level_asset.size,
             map,
             paths: level_asset.paths.unwrap_or_default(),
-            structure_points: level_asset.structure_points.unwrap_or_default(),
             error: level_asset.error,
         })
     }

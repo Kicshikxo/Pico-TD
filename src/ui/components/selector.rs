@@ -22,7 +22,6 @@ pub struct UiSelectorItem {
 }
 
 #[derive(Default)]
-#[allow(unused)]
 pub enum UiSelectorItemValue {
     #[default]
     None,
@@ -50,7 +49,7 @@ impl UiSelectorItemValue {
 impl Default for UiSelectorItem {
     fn default() -> Self {
         Self {
-            text: "".to_string(),
+            text: String::new(),
             value: UiSelectorItemValue::default(),
         }
     }

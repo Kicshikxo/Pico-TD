@@ -35,7 +35,6 @@ impl Default for TileMovement {
     }
 }
 
-#[allow(unused)]
 impl TileMovement {
     pub fn new(path: Vec<Vec2>, duration: Duration, delay: Option<Duration>) -> Self {
         let path_segment_lengths: Vec<f32> = std::iter::once(0.0)
@@ -77,6 +76,7 @@ impl TileMovement {
     pub fn get_progress(&self) -> f32 {
         self.progress
     }
+    #[allow(unused)]
     pub fn set_progress(&mut self, progress: f32) {
         self.progress = progress.clamp(0.0, 1.0);
         self.elapsed_time = Duration::from_secs_f32(self.duration.as_secs_f32() * self.progress);

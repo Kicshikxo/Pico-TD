@@ -30,12 +30,10 @@ pub struct StructureVariantConfig {
 }
 
 #[derive(Clone, Copy, PartialEq, Debug)]
-#[allow(unused)]
 pub enum StructureVariant {
     Soldier,
     SoldierFast,
     SoldierStrong,
-    Empty,
 }
 
 impl StructureVariant {
@@ -44,7 +42,6 @@ impl StructureVariant {
             StructureVariant::Soldier => "ui.structure.soldier".to_string(),
             StructureVariant::SoldierFast => "ui.structure.soldier_fast".to_string(),
             StructureVariant::SoldierStrong => "ui.structure.soldier_strong".to_string(),
-            StructureVariant::Empty => "ui.structure.empty".to_string(),
         }
     }
     pub fn get_config(&self) -> StructureVariantConfig {
@@ -64,11 +61,6 @@ impl StructureVariant {
                 fire_radius: 3.0,
                 fire_rate: Duration::from_secs_f32(1.0),
             },
-            StructureVariant::Empty => StructureVariantConfig {
-                damage: 0,
-                fire_radius: 0.0,
-                fire_rate: Duration::ZERO,
-            },
         }
     }
 }
@@ -84,25 +76,17 @@ pub struct Structure {
     update_required: bool,
 }
 
-impl Default for Structure {
-    fn default() -> Self {
-        Self {
-            variant: StructureVariant::Empty,
-            damage: 0,
-            fire_radius: 0.0,
-            fire_rate: Duration::ZERO,
-            cooldown: Duration::ZERO,
-            update_required: true,
-        }
-    }
-}
-
-#[allow(unused)]
 impl Structure {
     pub fn new(variant: StructureVariant) -> Self {
+        let config = variant.get_config();
+
         Self {
             variant,
-            ..default()
+            damage: config.damage,
+            fire_radius: config.fire_radius,
+            fire_rate: config.fire_rate,
+            cooldown: Duration::ZERO,
+            update_required: false,
         }
     }
     pub fn get_variant(&self) -> StructureVariant {
@@ -129,12 +113,6 @@ impl Structure {
     }
     pub fn get_fire_rate(&self) -> Duration {
         self.fire_rate
-    }
-    pub fn get_cooldown(&self) -> Duration {
-        self.cooldown
-    }
-    pub fn set_cooldown(&mut self, cooldown: Duration) {
-        self.cooldown = cooldown;
     }
     pub fn update_cooldown(&mut self) {
         self.cooldown = self.fire_rate;
@@ -209,9 +187,6 @@ fn update_structure(
             structure.set_update_required(false);
         }
 
-        if structure.get_variant() == StructureVariant::Empty {
-            continue;
-        }
         if structure.cooldown > Duration::ZERO {
             structure.cooldown = structure
                 .cooldown

@@ -79,9 +79,6 @@ ui.structure.soldier_fast:
 ui.structure.soldier_strong:
     en: "Soldier strong"
     ru: "Солдат сильный"
-ui.structure.empty:
-    en: "Empty"
-    ru: "Пусто"
 
 ui.pause.title:
     en: "Pause"

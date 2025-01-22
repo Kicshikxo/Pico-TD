@@ -10,7 +10,7 @@ use crate::{
     game::GameState,
 };
 
-use super::tile::{position::TilePosition, sprite::TileSprite};
+use super::tile::sprite::TileSprite;
 
 #[derive(Component, Clone, Debug)]
 #[require(Transform, InheritedVisibility)]
@@ -32,7 +32,6 @@ impl Default for Tilemap {
     }
 }
 
-#[allow(unused)]
 impl Tilemap {
     pub fn new(size: UVec2, tile_size: UVec2) -> Self {
         Self {
@@ -54,8 +53,8 @@ impl Tilemap {
         self.update_required = true;
         self.tiles.insert(position, entity);
     }
-    pub fn get_tile(&self, position: TilePosition) -> Option<Entity> {
-        self.tiles.get(&position.as_ivec2()).copied()
+    pub fn get_tile(&self, position: IVec2) -> Option<Entity> {
+        self.tiles.get(&position).copied()
     }
     pub fn get_update_required(&self) -> bool {
         self.update_required
@@ -126,7 +125,7 @@ fn update_tilemap(
         for (tile_position, tile_entity) in tilemap.get_tiles() {
             let nearby_tile = |dx: i32, dy: i32| -> TilemapTileVariant {
                 tilemap
-                    .get_tile(TilePosition::from_ivec2(tile_position + IVec2::new(dx, dy)))
+                    .get_tile(tile_position + IVec2::new(dx, dy))
                     .and_then(|entity| tiles.get(entity).ok())
                     .map(|(tile, _, _)| tile.get_variant())
                     .unwrap_or(TilemapTileVariant::Unknown)
@@ -140,18 +139,8 @@ fn update_tilemap(
 
             if let Ok((tile, mut tile_sprite, mut tile_transform)) = tiles.get_mut(*tile_entity) {
                 if let Some(texture_atlas) = tile_sprite.texture_atlas.as_mut() {
-                    texture_atlas.index = match tile.get_variant() {
-                        TilemapTileVariant::Ground => {
-                            tile_assets.get_ground_tile_index(tiles_around) as usize
-                        }
-                        TilemapTileVariant::Road => {
-                            tile_assets.get_road_tile_index(tiles_around) as usize
-                        }
-                        TilemapTileVariant::Water => {
-                            tile_assets.get_water_tile_index(tiles_around) as usize
-                        }
-                        TilemapTileVariant::Unknown => 0,
-                    };
+                    texture_atlas.index =
+                        tile_assets.get_tile_index(tile.get_variant(), tiles_around)
                 }
 
                 tile_transform.translation = (tile_position * tilemap.tile_size.as_ivec2())

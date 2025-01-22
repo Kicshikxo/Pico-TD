@@ -5,258 +5,288 @@ use rand::Rng;
 use crate::entities::tilemap::tile::TilemapTileVariant;
 
 #[derive(AssetCollection, Resource)]
-#[allow(unused)]
 pub struct TilemapTileAssets {
-    #[asset(texture_atlas_layout(tile_size_x = 16, tile_size_y = 16, columns = 18, rows = 11))]
-    pub forest_tilemap_layout: Handle<TextureAtlasLayout>,
-    #[asset(path = "embedded://images/tiles/forest_tilemap.png")]
-    pub forest_tilemap: Handle<Image>,
+    #[asset(path = "embedded://images/tiles/tilemap_tiles.png")]
+    pub tilemap: Handle<Image>,
+    #[asset(texture_atlas_layout(tile_size_x = 16, tile_size_y = 16, columns = 8, rows = 10))]
+    pub tilemap_layout: Handle<TextureAtlasLayout>,
 
+    #[asset(path = "embedded://images/tiles/entities.png")]
+    pub entities: Handle<Image>,
     #[asset(texture_atlas_layout(tile_size_x = 16, tile_size_y = 16, columns = 12, rows = 11))]
-    pub show_tilemap_layout: Handle<TextureAtlasLayout>,
-    #[asset(path = "embedded://images/tiles/snow_tilemap.png")]
-    pub show_tilemap: Handle<Image>,
+    pub entities_layout: Handle<TextureAtlasLayout>,
 }
 
 pub enum TilemapTileRoadVariant {
-    Road = 108,
+    Road = 48,
 
-    RoadTop = 162,
-    RoadRight = 109,
-    RoadDown = 126,
-    RoadLeft = 111,
+    RoadTop = 72,
+    RoadRight = 49,
+    RoadBottom = 56,
+    RoadLeft = 51,
 
-    RoadTopDown = 144,
-    RoadLeftRight = 110,
+    RoadTopBottom = 64,
+    RoadLeftRight = 50,
 
-    RoadTopLeft = 165,
-    RoadTopRight = 163,
-    RoadDownLeft = 129,
-    RoadDownRight = 127,
+    RoadTopLeft = 75,
+    RoadTopRight = 73,
+    RoadBottomLeft = 59,
+    RoadBottomRight = 57,
 
-    RoadTopLeftRight = 164,
-    RoadRightTopDown = 145,
-    RoadDownLeftRight = 128,
-    RoadLeftTopDown = 147,
+    RoadTopLeftRight = 74,
+    RoadRightTopBottom = 65,
+    RoadBottomLeftRight = 58,
+    RoadLeftTopBottom = 67,
 
-    RoadTopRightDownLeft = 146,
+    RoadTopRightBottomLeft = 66,
 }
 
 pub enum TilemapTileWaterVariant {
-    Water = 37,
-    // WaterShoreTop = 19,
-    // WaterShoreRight = 38,
-    // WaterShoreDown = 55,
-    // WaterShoreLeft = 36,
+    Water = 6,
 
-    // WaterShoreTopDown = 73,
-    // WaterShoreLeftRight = 57,
+    WaterShoreTop = 12,
+    WaterShoreTopDiagonalLeft = 20,
+    WaterShoreTopDiagonalRight = 28,
+    WaterShoreTopDiagonalLeftRight = 36,
 
-    // WaterShoreTopLeft = 18,
-    // WaterShoreTopRight = 20,
-    // WaterShoreDownLeft = 54,
-    // WaterShoreDownRight = 56,
+    WaterShoreRight = 13,
+    WaterShoreRightDiagonalTop = 21,
+    WaterShoreRightDiagonalBottom = 29,
+    WaterShoreRightDiagonalTopBottom = 37,
 
-    // WaterShoreTopLeftRight = 23,
-    // WaterShoreRightTopDown = 58,
-    // WaterShoreDownLeftRight = 5,
-    // WaterShoreLeftTopDown = 74,
+    WaterShoreBottom = 14,
+    WaterShoreBottomDiagonalLeft = 22,
+    WaterShoreBottomDiagonalRight = 30,
+    WaterShoreBottomDiagonalLeftRight = 38,
+
+    WaterShoreLeft = 15,
+    WaterShoreLeftDiagonalTop = 23,
+    WaterShoreLeftDiagonalBottom = 31,
+    WaterShoreLeftDiagonalTopBottom = 39,
+
+    WaterShoreTopBottom = 41,
+    WaterShoreLeftRight = 35,
+
+    WaterShoreTopLeftRight = 44,
+    WaterShoreRightTopBottom = 45,
+    WaterShoreBottomLeftRight = 46,
+    WaterShoreLeftTopBottom = 47,
+    WaterShoreTopRightBottomLeft = 7,
+
+    WaterShoreTopLeft = 8,
+    WaterShoreTopLeftDiagonalBottomRight = 10,
+
+    WaterShoreTopRight = 9,
+    WaterShoreTopRightDiagonalBottomLeft = 11,
+
+    WaterShoreBottomLeft = 16,
+    WaterShoreBottomLeftDiagonalTopRight = 18,
+
+    WaterShoreBottomRight = 17,
+    WaterShoreBottomRightDiagonalTopLeft = 19,
+
+    WaterShoreDiagonalTopLeft = 33,
+    WaterShoreDiagonalTopRight = 32,
+    WaterShoreDiagonalBottomLeft = 25,
+    WaterShoreDiagonalBottomRight = 24,
+
+    WaterShoreDiagonalTopLeftDiagonalBottomRight = 26,
+    WaterShoreDiagonalTopRightDiagonalBottomLeft = 34,
+
+    WaterShoreDiagonalTopLeftRight = 43,
+    WaterShoreDiagonalRightTopBottom = 40,
+    WaterShoreDiagonalBottomLeftRight = 27,
+    WaterShoreDiagonalLeftTopBottom = 42,
 }
 
 pub enum TilemapTileGroundVariant {
-    Ground = 0,
-    GroundWithGrass = 1,
-    GroundWithFlowers = 2,
-
-    GroundShoreTop = 19,
-    GroundShoreRight = 38,
-    GroundShoreBottom = 55,
-    GroundShoreLeft = 36,
-
-    // GroundShoreTopDown = 73,
-    // GroundShoreLeftRight = 57,
-    GroundShoreTopLeft = 90,
-    GroundShoreTopRight = 91,
-    GroundShoreBottomLeft = 93,
-    GroundShoreBottomRight = 92,
-
-    GroundShoreTopLeftDiagonal = 18,
-    GroundShoreTopRightDiagonal = 20,
-    GroundShoreBottomLeftDiagonal = 54,
-    GroundShoreBottomRightDiagonal = 56,
-    // GroundShoreTopLeftBottomRightDiagonal = 94,
-    // GroundShoreTopRightBottomLeftDiagonal = 95,
+    Ground = 1,
+    GroundWithGrass = 2,
+    GroundWithFlowers = 3,
+    GroundWithTree = 4,
+    GroundWithDoubleTree = 5,
 }
 
 impl TilemapTileAssets {
+    pub fn get_tile_index(
+        &self,
+        variant: TilemapTileVariant,
+        tiles_around: [[TilemapTileVariant; 3]; 3],
+    ) -> usize {
+        match variant {
+            TilemapTileVariant::Road => self.get_road_tile_index(tiles_around) as usize,
+            TilemapTileVariant::Water => self.get_water_tile_index(tiles_around) as usize,
+            TilemapTileVariant::Ground => {
+                if rand::thread_rng().gen_bool(0.25) {
+                    TilemapTileGroundVariant::GroundWithGrass as usize
+                } else {
+                    TilemapTileGroundVariant::Ground as usize
+                }
+            }
+            TilemapTileVariant::Flower => TilemapTileGroundVariant::GroundWithFlowers as usize,
+            TilemapTileVariant::Tree => {
+                if rand::thread_rng().gen_bool(0.25) {
+                    TilemapTileGroundVariant::GroundWithDoubleTree as usize
+                } else {
+                    TilemapTileGroundVariant::GroundWithTree as usize
+                }
+            }
+            _ => 0,
+        }
+    }
+
     pub fn get_road_tile_index(
         &self,
         tiles_around: [[TilemapTileVariant; 3]; 3],
     ) -> TilemapTileRoadVariant {
         let road_top = tiles_around[0][1] == TilemapTileVariant::Road;
         let road_right = tiles_around[1][2] == TilemapTileVariant::Road;
-        let road_down = tiles_around[2][1] == TilemapTileVariant::Road;
+        let road_bottom = tiles_around[2][1] == TilemapTileVariant::Road;
         let road_left = tiles_around[1][0] == TilemapTileVariant::Road;
 
-        match (road_top, road_right, road_down, road_left) {
+        match (road_top, road_right, road_bottom, road_left) {
             (false, false, false, false) => TilemapTileRoadVariant::Road,
 
             (true, false, false, false) => TilemapTileRoadVariant::RoadTop,
             (false, true, false, false) => TilemapTileRoadVariant::RoadRight,
-            (false, false, true, false) => TilemapTileRoadVariant::RoadDown,
+            (false, false, true, false) => TilemapTileRoadVariant::RoadBottom,
             (false, false, false, true) => TilemapTileRoadVariant::RoadLeft,
 
-            (true, false, true, false) => TilemapTileRoadVariant::RoadTopDown,
+            (true, false, true, false) => TilemapTileRoadVariant::RoadTopBottom,
             (false, true, false, true) => TilemapTileRoadVariant::RoadLeftRight,
 
             (true, false, false, true) => TilemapTileRoadVariant::RoadTopLeft,
             (true, true, false, false) => TilemapTileRoadVariant::RoadTopRight,
-            (false, false, true, true) => TilemapTileRoadVariant::RoadDownLeft,
-            (false, true, true, false) => TilemapTileRoadVariant::RoadDownRight,
+            (false, false, true, true) => TilemapTileRoadVariant::RoadBottomLeft,
+            (false, true, true, false) => TilemapTileRoadVariant::RoadBottomRight,
 
             (true, true, false, true) => TilemapTileRoadVariant::RoadTopLeftRight,
-            (true, true, true, false) => TilemapTileRoadVariant::RoadRightTopDown,
-            (false, true, true, true) => TilemapTileRoadVariant::RoadDownLeftRight,
-            (true, false, true, true) => TilemapTileRoadVariant::RoadLeftTopDown,
+            (true, true, true, false) => TilemapTileRoadVariant::RoadRightTopBottom,
+            (false, true, true, true) => TilemapTileRoadVariant::RoadBottomLeftRight,
+            (true, false, true, true) => TilemapTileRoadVariant::RoadLeftTopBottom,
 
-            (true, true, true, true) => TilemapTileRoadVariant::RoadTopRightDownLeft,
+            (true, true, true, true) => TilemapTileRoadVariant::RoadTopRightBottomLeft,
         }
     }
-    #[allow(unused)]
+
     pub fn get_water_tile_index(
         &self,
         tiles_around: [[TilemapTileVariant; 3]; 3],
     ) -> TilemapTileWaterVariant {
-        return TilemapTileWaterVariant::Water;
+        let [[ground_top_left, ground_top, ground_top_right], [ground_left, _, ground_right], [ground_bottom_left, ground_bottom, ground_bottom_right]] =
+            tiles_around.map(|row| {
+                row.map(|tile| {
+                    matches!(
+                        tile,
+                        TilemapTileVariant::Ground
+                            | TilemapTileVariant::Flower
+                            | TilemapTileVariant::Tree
+                            | TilemapTileVariant::Road
+                    )
+                })
+            });
 
-        // let [[ground_top_left, ground_top, ground_top_right], [ground_left, _, ground_right], [ground_bottom_left, ground_bottom, ground_bottom_right]] =
-        //     tiles_around.map(|row| {
-        //         row.map(|tile| match tile {
-        //             TilemapTileVariant::Ground => true,
-        //             TilemapTileVariant::Road => true,
-        //             _ => false,
-        //         })
-        //     });
+        match (ground_top, ground_right, ground_bottom, ground_left) {
+            (true, false, false, false) => match (ground_bottom_left, ground_bottom_right) {
+                (false, false) => TilemapTileWaterVariant::WaterShoreTop,
+                (true, false) => TilemapTileWaterVariant::WaterShoreTopDiagonalLeft,
+                (false, true) => TilemapTileWaterVariant::WaterShoreTopDiagonalRight,
+                (true, true) => TilemapTileWaterVariant::WaterShoreTopDiagonalLeftRight,
+            },
+            (false, true, false, false) => match (ground_top_left, ground_bottom_left) {
+                (false, false) => TilemapTileWaterVariant::WaterShoreRight,
+                (true, false) => TilemapTileWaterVariant::WaterShoreRightDiagonalTop,
+                (false, true) => TilemapTileWaterVariant::WaterShoreRightDiagonalBottom,
+                (true, true) => TilemapTileWaterVariant::WaterShoreRightDiagonalTopBottom,
+            },
+            (false, false, true, false) => match (ground_top_left, ground_top_right) {
+                (false, false) => TilemapTileWaterVariant::WaterShoreBottom,
+                (true, false) => TilemapTileWaterVariant::WaterShoreBottomDiagonalLeft,
+                (false, true) => TilemapTileWaterVariant::WaterShoreBottomDiagonalRight,
+                (true, true) => TilemapTileWaterVariant::WaterShoreBottomDiagonalLeftRight,
+            },
+            (false, false, false, true) => match (ground_top_right, ground_bottom_right) {
+                (false, false) => TilemapTileWaterVariant::WaterShoreLeft,
+                (true, false) => TilemapTileWaterVariant::WaterShoreLeftDiagonalTop,
+                (false, true) => TilemapTileWaterVariant::WaterShoreLeftDiagonalBottom,
+                (true, true) => TilemapTileWaterVariant::WaterShoreLeftDiagonalTopBottom,
+            },
 
-        // match (ground_top, ground_right, ground_bottom, ground_left) {
-        //     (false, false, false, false) => TileWaterVariant::Water,
+            (true, false, true, false) => TilemapTileWaterVariant::WaterShoreTopBottom,
+            (false, true, false, true) => TilemapTileWaterVariant::WaterShoreLeftRight,
 
-        //     (true, false, false, false) => TileWaterVariant::WaterShoreTop,
-        //     (false, true, false, false) => TileWaterVariant::WaterShoreRight,
-        //     (false, false, true, false) => TileWaterVariant::WaterShoreDown,
-        //     (false, false, false, true) => TileWaterVariant::WaterShoreLeft,
+            (true, false, false, true) => {
+                if ground_bottom_right {
+                    TilemapTileWaterVariant::WaterShoreTopLeftDiagonalBottomRight
+                } else {
+                    TilemapTileWaterVariant::WaterShoreTopLeft
+                }
+            }
+            (true, true, false, false) => {
+                if ground_bottom_left {
+                    TilemapTileWaterVariant::WaterShoreTopRightDiagonalBottomLeft
+                } else {
+                    TilemapTileWaterVariant::WaterShoreTopRight
+                }
+            }
+            (false, false, true, true) => {
+                if ground_top_right {
+                    TilemapTileWaterVariant::WaterShoreBottomLeftDiagonalTopRight
+                } else {
+                    TilemapTileWaterVariant::WaterShoreBottomLeft
+                }
+            }
+            (false, true, true, false) => {
+                if ground_top_left {
+                    TilemapTileWaterVariant::WaterShoreBottomRightDiagonalTopLeft
+                } else {
+                    TilemapTileWaterVariant::WaterShoreBottomRight
+                }
+            }
 
-        //     (true, false, true, false) => TileWaterVariant::WaterShoreTopDown,
-        //     (false, true, false, true) => TileWaterVariant::WaterShoreLeftRight,
+            (true, true, false, true) => TilemapTileWaterVariant::WaterShoreTopLeftRight,
+            (true, true, true, false) => TilemapTileWaterVariant::WaterShoreRightTopBottom,
+            (false, true, true, true) => TilemapTileWaterVariant::WaterShoreBottomLeftRight,
+            (true, false, true, true) => TilemapTileWaterVariant::WaterShoreLeftTopBottom,
+            (true, true, true, true) => TilemapTileWaterVariant::WaterShoreTopRightBottomLeft,
 
-        //     (true, false, false, true) => TileWaterVariant::WaterShoreTopLeft,
-        //     (true, true, false, false) => TileWaterVariant::WaterShoreTopRight,
-        //     (false, false, true, true) => TileWaterVariant::WaterShoreDownLeft,
-        //     (false, true, true, false) => TileWaterVariant::WaterShoreDownRight,
-
-        //     // (true, true, false, true) => TileWaterVariant::RoadTopLeftRight,
-        //     // (true, true, true, false) => TileWaterVariant::RoadRightTopDown,
-        //     // (false, true, true, true) => TileWaterVariant::RoadDownLeftRight,
-        //     // (true, false, true, true) => TileWaterVariant::RoadLeftTopDown,
-
-        //     // (true, true, true, true) => TileWaterVariant::RoadTopRightDownLeft,
-        //     _ => TileWaterVariant::Water,
-        // }
-    }
-    pub fn get_ground_tile_index(
-        &self,
-        tiles_around: [[TilemapTileVariant; 3]; 3],
-    ) -> TilemapTileGroundVariant {
-        let [[water_top_left, water_top, water_top_right], [water_left, _, water_right], [water_bottom_left, water_bottom, water_bottom_right]] =
-            tiles_around.map(|row| row.map(|tile| tile == TilemapTileVariant::Water));
-
-        // let water_top_left = tiles_around[0][0] == TilemapTileVariant::Water;
-        // let water_top = tiles_around[0][1] == TilemapTileVariant::Water;
-        // let water_top_right = tiles_around[0][2] == TilemapTileVariant::Water;
-        // let water_left = tiles_around[1][0] == TilemapTileVariant::Water;
-        // let water_right = tiles_around[1][2] == TilemapTileVariant::Water;
-        // let water_bottom_left = tiles_around[2][0] == TilemapTileVariant::Water;
-        // let water_bottom = tiles_around[2][1] == TilemapTileVariant::Water;
-        // let water_bottom_right = tiles_around[2][2] == TilemapTileVariant::Water;
-
-        match (water_top, water_right, water_bottom, water_left) {
-            (false, false, true, false) => TilemapTileGroundVariant::GroundShoreTop,
-            (false, false, false, true) => TilemapTileGroundVariant::GroundShoreRight,
-            (true, false, false, false) => TilemapTileGroundVariant::GroundShoreBottom,
-            (false, true, false, false) => TilemapTileGroundVariant::GroundShoreLeft,
-
-            (false, true, true, false) => TilemapTileGroundVariant::GroundShoreTopLeft,
-            (false, false, true, true) => TilemapTileGroundVariant::GroundShoreTopRight,
-            (true, true, false, false) => TilemapTileGroundVariant::GroundShoreBottomLeft,
-            (true, false, false, true) => TilemapTileGroundVariant::GroundShoreBottomRight,
-
-            // (true, true, true, true) => &self.ground_shore_left_top_right_bottom,
             _ => match (
-                water_top_left,
-                water_top_right,
-                water_bottom_left,
-                water_bottom_right,
+                ground_top_left,
+                ground_top_right,
+                ground_bottom_left,
+                ground_bottom_right,
             ) {
-                (false, false, false, true) => TilemapTileGroundVariant::GroundShoreTopLeftDiagonal,
+                (true, false, false, false) => TilemapTileWaterVariant::WaterShoreDiagonalTopLeft,
+                (false, true, false, false) => TilemapTileWaterVariant::WaterShoreDiagonalTopRight,
                 (false, false, true, false) => {
-                    TilemapTileGroundVariant::GroundShoreTopRightDiagonal
+                    TilemapTileWaterVariant::WaterShoreDiagonalBottomLeft
                 }
-                (false, true, false, false) => {
-                    TilemapTileGroundVariant::GroundShoreBottomLeftDiagonal
-                }
-                (true, false, false, false) => {
-                    TilemapTileGroundVariant::GroundShoreBottomRightDiagonal
+                (false, false, false, true) => {
+                    TilemapTileWaterVariant::WaterShoreDiagonalBottomRight
                 }
 
-                // (true, false, false, true) => &self.ground_shore_top_left_bottom_right_diagonal,
-                // (false, true, true, false) => &self.ground_shore_top_right_bottom_left_diagonal,
-                _ => {
-                    if rand::thread_rng().gen_bool(1.0 / 5.0) {
-                        if rand::thread_rng().gen_bool(1.0 / 5.0) {
-                            TilemapTileGroundVariant::GroundWithFlowers
-                        } else {
-                            TilemapTileGroundVariant::GroundWithGrass
-                        }
-                    } else {
-                        TilemapTileGroundVariant::Ground
-                    }
+                (true, true, false, false) => {
+                    TilemapTileWaterVariant::WaterShoreDiagonalTopLeftRight
                 }
+                (false, true, false, true) => {
+                    TilemapTileWaterVariant::WaterShoreDiagonalRightTopBottom
+                }
+                (false, false, true, true) => {
+                    TilemapTileWaterVariant::WaterShoreDiagonalBottomLeftRight
+                }
+                (true, false, true, false) => {
+                    TilemapTileWaterVariant::WaterShoreDiagonalLeftTopBottom
+                }
+
+                (true, false, false, true) => {
+                    TilemapTileWaterVariant::WaterShoreDiagonalTopLeftDiagonalBottomRight
+                }
+                (false, true, true, false) => {
+                    TilemapTileWaterVariant::WaterShoreDiagonalTopRightDiagonalBottomLeft
+                }
+
+                _ => TilemapTileWaterVariant::Water,
             },
         }
     }
-    // pub fn get_ground(&self, water_around: [[bool; 3]; 3]) -> &Handle<Image> {
-    //     let [[water_top_left, water_top, water_top_right], [water_left, _, water_right], [water_bottom_left, water_bottom, water_bottom_right]] =
-    //         water_around;
-
-    //     match (water_left, water_top, water_right, water_bottom) {
-    //         (true, false, false, false) => &self.ground_shore_left,
-    //         (false, true, false, false) => &self.ground_shore_top,
-    //         (false, false, true, false) => &self.ground_shore_right,
-    //         (false, false, false, true) => &self.ground_shore_bottom,
-
-    //         (true, true, false, false) => &self.ground_shore_top_left,
-    //         (false, true, true, false) => &self.ground_shore_top_right,
-    //         (false, false, true, true) => &self.ground_shore_bottom_right,
-    //         (true, false, false, true) => &self.ground_shore_bottom_left,
-
-    //         (true, true, true, true) => &self.ground_shore_left_top_right_bottom,
-
-    //         _ => match (
-    //             water_top_left,
-    //             water_top_right,
-    //             water_bottom_left,
-    //             water_bottom_right,
-    //         ) {
-    //             (true, false, false, false) => &self.ground_shore_top_left_diagonal,
-    //             (false, true, false, false) => &self.ground_shore_top_right_diagonal,
-    //             (false, false, true, false) => &self.ground_shore_bottom_left_diagonal,
-    //             (false, false, false, true) => &self.ground_shore_bottom_right_diagonal,
-
-    //             (true, false, false, true) => &self.ground_shore_top_left_bottom_right_diagonal,
-    //             (false, true, true, false) => &self.ground_shore_top_right_bottom_left_diagonal,
-
-    //             _ => &self.ground,
-    //         },
-    //     }
-    // }
 }

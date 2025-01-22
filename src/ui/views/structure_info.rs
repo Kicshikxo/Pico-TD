@@ -3,7 +3,7 @@ use bevy::prelude::*;
 use crate::{
     assets::{entities::tile::TilemapTileAssets, ui::UiAssets},
     entities::{
-        structure::{Structure, StructureVariant},
+        structure::Structure,
         tile::{position::TilePosition, sprite::TileSprite},
     },
     game::{GameState, SelectedStructure},
@@ -97,7 +97,8 @@ fn ui_init(
 
                     if let Some(selected_structure) = selected_structure {
                         for (structure, tile_position) in structures.iter() {
-                            if tile_position.as_vec2() == selected_structure.position.as_vec2() {
+                            if tile_position.as_vec2() == selected_structure.tile_position.as_vec2()
+                            {
                                 parent
                                     .spawn(Node {
                                         width: Val::Percent(100.0),
@@ -120,15 +121,14 @@ fn ui_init(
                                                     ..default()
                                                 },
                                                 ImageNode {
-                                                    image: tile_assets.forest_tilemap.clone(),
+                                                    image: tile_assets.entities.clone(),
                                                     texture_atlas: Some(TextureAtlas {
                                                         index: TileSprite::new(
                                                             structure.get_variant().into(),
                                                         )
-                                                        .get_index(),
-                                                        layout: tile_assets
-                                                            .forest_tilemap_layout
-                                                            .clone(),
+                                                        .get_variant()
+                                                        .as_index(),
+                                                        layout: tile_assets.entities_layout.clone(),
                                                     }),
                                                     ..default()
                                                 },
@@ -249,11 +249,12 @@ fn ui_destroy(mut commands: Commands, query: Query<Entity, With<RootUiComponent>
 }
 
 fn ui_update(
+    mut commands: Commands,
     interaction_query: Query<
         (&Interaction, &StructureInfoButtonAction),
         (Changed<Interaction>, With<UiButton>),
     >,
-    mut structures: Query<(&mut Structure, &TilePosition)>,
+    mut structures: Query<(Entity, &TilePosition), With<Structure>>,
     selected_structure: Option<Res<SelectedStructure>>,
     mut next_ui_state: ResMut<NextState<UiState>>,
     mut next_game_state: ResMut<NextState<GameState>>,
@@ -271,9 +272,11 @@ fn ui_update(
                 }
                 StructureInfoButtonAction::SellStructure => {
                     if let Some(selected_structure) = selected_structure.as_ref() {
-                        for (mut structure, tile_position) in structures.iter_mut() {
-                            if tile_position.as_vec2() == selected_structure.position.as_vec2() {
-                                structure.set_variant(StructureVariant::Empty);
+                        for (structure_entity, structure_tile_position) in structures.iter_mut() {
+                            if structure_tile_position.as_vec2()
+                                == selected_structure.tile_position.as_vec2()
+                            {
+                                commands.entity(structure_entity).despawn_recursive();
                                 break;
                             }
                         }

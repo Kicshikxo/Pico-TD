@@ -18,7 +18,6 @@ pub struct UnitVariantConfig {
 }
 
 #[derive(Clone, Copy, PartialEq, Debug)]
-#[allow(unused)]
 pub enum UnitVariant {
     Truck,
     Plane,

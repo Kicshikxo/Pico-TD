@@ -49,7 +49,6 @@ impl Default for UiText {
     }
 }
 
-#[allow(unused)]
 impl UiText {
     pub fn new(i18n_key: &str) -> Self {
         Self {

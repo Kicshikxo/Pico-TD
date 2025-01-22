@@ -6,7 +6,7 @@ use crate::{
         structure::{Structure, StructureVariant},
         tile::{position::TilePosition, sprite::TileSprite},
     },
-    game::{GameState, SelectedStructure},
+    game::{GameState, GameTilemap, SelectedStructure},
     ui::{
         components::{
             button::UiButton,
@@ -127,13 +127,12 @@ fn ui_init(mut commands: Commands, ui_assets: Res<UiAssets>, tile_assets: Res<Ti
                                                     ..default()
                                                 },
                                                 ImageNode {
-                                                    image: tile_assets.forest_tilemap.clone(),
+                                                    image: tile_assets.entities.clone(),
                                                     texture_atlas: Some(TextureAtlas {
                                                         index: TileSprite::new(variant.into())
-                                                            .get_index(),
-                                                        layout: tile_assets
-                                                            .forest_tilemap_layout
-                                                            .clone(),
+                                                            .get_variant()
+                                                            .as_index(),
+                                                        layout: tile_assets.entities_layout.clone(),
                                                     }),
                                                     ..default()
                                                 },
@@ -157,12 +156,14 @@ fn ui_destroy(mut commands: Commands, query: Query<Entity, With<RootUiComponent>
 }
 
 fn ui_update(
+    mut commands: Commands,
     interaction_query: Query<
         (&Interaction, &StructureSelectButtonAction),
         (Changed<Interaction>, With<UiButton>),
     >,
+    game_tilemap: Query<Entity, With<GameTilemap>>,
     mut structures: Query<(&mut Structure, &TilePosition)>,
-    selected_structure: Option<Res<SelectedStructure>>,
+    selected_structure: Res<SelectedStructure>,
     mut next_ui_state: ResMut<NextState<UiState>>,
     mut next_game_state: ResMut<NextState<GameState>>,
 ) {
@@ -174,17 +175,20 @@ fn ui_update(
                     next_game_state.set(GameState::InGame);
                 }
                 StructureSelectButtonAction::Select(variant) => {
-                    if let Some(selected_structure) = selected_structure.as_ref() {
-                        for (mut structure, tile_position) in structures.iter_mut() {
-                            if tile_position.as_vec2() == selected_structure.position.as_vec2() {
-                                structure.set_variant(variant.clone());
-                                break;
-                            }
+                    next_ui_state.set(UiState::InGame);
+                    next_game_state.set(GameState::InGame);
+
+                    for (mut structure, tile_position) in structures.iter_mut() {
+                        if tile_position.as_vec2() == selected_structure.tile_position.as_vec2() {
+                            structure.set_variant(variant.clone());
+                            return;
                         }
                     }
 
-                    next_ui_state.set(UiState::InGame);
-                    next_game_state.set(GameState::InGame);
+                    commands.entity(game_tilemap.single()).with_child((
+                        Structure::new(variant.clone()),
+                        selected_structure.tile_position.clone(),
+                    ));
                 }
             }
         }

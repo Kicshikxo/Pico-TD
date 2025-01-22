@@ -2,7 +2,7 @@ use bevy::prelude::*;
 
 use crate::{
     assets::ui::UiAssets,
-    game::{GameBackgroundSound, GameState, GameTilemap},
+    game::GameState,
     ui::{
         components::{
             button::{UiButton, UiButtonVariant},
@@ -32,14 +32,7 @@ enum PauseButtonAction {
     BackToMenu,
 }
 
-fn ui_init(
-    mut commands: Commands,
-    ui_assets: Res<UiAssets>,
-    mut background_sound: Query<&mut AudioSink, With<GameBackgroundSound>>,
-) {
-    if let Ok(background_sound_sink) = background_sound.get_single_mut() {
-        background_sound_sink.pause();
-    }
+fn ui_init(mut commands: Commands, ui_assets: Res<UiAssets>) {
     commands
         .spawn((
             RootUiComponent,
@@ -100,26 +93,17 @@ fn ui_init(
         });
 }
 
-fn ui_destroy(
-    mut commands: Commands,
-    query: Query<Entity, With<RootUiComponent>>,
-    mut background_sound: Query<&mut AudioSink, With<GameBackgroundSound>>,
-) {
-    if let Ok(background_sound_sink) = background_sound.get_single_mut() {
-        background_sound_sink.play();
-    }
+fn ui_destroy(mut commands: Commands, query: Query<Entity, With<RootUiComponent>>) {
     for entity in query.iter() {
         commands.entity(entity).despawn_recursive();
     }
 }
 
 fn ui_update(
-    mut commands: Commands,
     interaction_query: Query<
         (&Interaction, &PauseButtonAction),
         (Changed<Interaction>, With<UiButton>),
     >,
-    game_tilemap: Query<Entity, With<GameTilemap>>,
     mut next_ui_state: ResMut<NextState<UiState>>,
     mut next_game_state: ResMut<NextState<GameState>>,
 ) {
@@ -131,8 +115,6 @@ fn ui_update(
                     next_game_state.set(GameState::InGame);
                 }
                 PauseButtonAction::BackToMenu => {
-                    commands.entity(game_tilemap.single()).despawn_recursive();
-
                     next_ui_state.set(UiState::Menu);
                     next_game_state.set(GameState::Pause);
                 }

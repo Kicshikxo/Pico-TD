@@ -1,9 +1,10 @@
 use bevy::prelude::*;
 
 #[derive(Clone, Copy, PartialEq, Debug)]
-#[allow(unused)]
 pub enum TilemapTileVariant {
     Ground,
+    Flower,
+    Tree,
     Road,
     Water,
     Unknown,
@@ -28,6 +29,8 @@ impl From<char> for TilemapTile {
         Self {
             variant: match tile {
                 '#' => TilemapTileVariant::Ground,
+                'F' => TilemapTileVariant::Flower,
+                'T' => TilemapTileVariant::Tree,
                 '.' => TilemapTileVariant::Road,
                 '~' => TilemapTileVariant::Water,
                 _ => TilemapTileVariant::Unknown,
@@ -37,11 +40,11 @@ impl From<char> for TilemapTile {
     }
 }
 
-#[allow(unused)]
 impl TilemapTile {
     pub fn get_variant(&self) -> TilemapTileVariant {
         self.variant
     }
+    #[allow(unused)]
     pub fn set_variant(&mut self, variant: TilemapTileVariant) {
         self.variant = variant;
     }

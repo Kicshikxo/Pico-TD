@@ -2,7 +2,6 @@ use bevy::prelude::*;
 use bevy_asset_loader::asset_collection::AssetCollection;
 
 #[derive(AssetCollection, Resource)]
-#[allow(unused)]
 pub struct UiAssets {
     #[asset(path = "embedded://fonts/Fifaks.ttf")]
     pub primary_font: Handle<Font>,

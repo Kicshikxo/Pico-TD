@@ -11,7 +11,6 @@ use crate::{
 };
 
 #[derive(Default, Clone, PartialEq)]
-#[allow(unused)]
 pub enum UiButtonVariant {
     #[default]
     None,
@@ -51,7 +50,6 @@ impl Default for UiButton {
     }
 }
 
-#[allow(unused)]
 impl UiButton {
     pub fn new() -> Self {
         Self { ..default() }
