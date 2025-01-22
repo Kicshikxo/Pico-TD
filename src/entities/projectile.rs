@@ -1,4 +1,4 @@
-use std::f32::consts::PI;
+use std::{f32::consts::PI, time::Duration};
 
 use bevy::prelude::*;
 
@@ -9,10 +9,25 @@ use super::{
     unit::{health::UnitHealth, Unit},
 };
 
+pub struct ProjectileVariantConfig {
+    duration: Duration,
+    scale: Vec3,
+}
+
+impl ProjectileVariantConfig {
+    pub fn get_duration(&self) -> Duration {
+        self.duration
+    }
+    pub fn get_scale(&self) -> Vec3 {
+        self.scale
+    }
+}
+
 #[derive(Clone, Copy, PartialEq, Debug)]
 #[allow(unused)]
 pub enum ProjectileVariant {
     Bullet,
+    Rocket,
 }
 
 #[derive(Component)]
@@ -21,6 +36,21 @@ pub struct Projectile {
     variant: ProjectileVariant,
     target: Entity,
     damage: u32,
+}
+
+impl ProjectileVariant {
+    pub fn get_config(&self) -> ProjectileVariantConfig {
+        match self {
+            ProjectileVariant::Bullet => ProjectileVariantConfig {
+                duration: Duration::from_secs_f32(0.1),
+                scale: Vec3::new(0.5, 0.5, 1.0),
+            },
+            ProjectileVariant::Rocket => ProjectileVariantConfig {
+                duration: Duration::from_secs_f32(0.2),
+                scale: Vec3::new(0.75, 0.75, 1.0),
+            },
+        }
+    }
 }
 
 impl Projectile {
@@ -97,6 +127,6 @@ fn update_projectile(
 
         projectile_transform.rotation =
             Quat::from_rotation_z(direction.x.atan2(direction.y) - PI / 2.0);
-        projectile_transform.scale = Vec3::new(0.5, 0.5, 1.0);
+        projectile_transform.scale = projectile.get_variant().get_config().get_scale();
     }
 }

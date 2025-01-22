@@ -1,7 +1,10 @@
 use bevy::prelude::*;
 
 use crate::{
-    assets::entities::tile::TilemapTileAssets,
+    assets::sprites::tile::{
+        EntityProjectileVariant, EntityStructureVariant, EntityUnitVariant, TileAssets,
+        TilemapTileSpriteVariant,
+    },
     entities::{
         projectile::ProjectileVariant, structure::StructureVariant,
         tilemap::tile::TilemapTileVariant, unit::UnitVariant,
@@ -40,25 +43,29 @@ impl TileSpriteVariant {
     pub fn as_index(&self) -> usize {
         match self {
             TileSpriteVariant::Projectile(variant) => match variant {
-                ProjectileVariant::Bullet => 120,
+                ProjectileVariant::Bullet => EntityProjectileVariant::Bullet as usize,
+                ProjectileVariant::Rocket => EntityProjectileVariant::Rocket as usize,
             },
             TileSpriteVariant::Structure(variant) => match variant {
-                StructureVariant::Soldier => 8,
-                StructureVariant::SoldierFast => 56,
-                StructureVariant::SoldierStrong => 44,
+                StructureVariant::Soldier => EntityStructureVariant::Soldier as usize,
+                StructureVariant::SoldierFast => EntityStructureVariant::SoldierFast as usize,
+                StructureVariant::SoldierStrong => EntityStructureVariant::SoldierStrong as usize,
+                StructureVariant::RocketLauncher => EntityStructureVariant::RocketLauncher as usize,
             },
             TileSpriteVariant::Tilemap(variant) => match variant {
-                TilemapTileVariant::Ground => 1,
-                TilemapTileVariant::Flower => 3,
-                TilemapTileVariant::Tree => 4,
-                TilemapTileVariant::Road => 48,
-                TilemapTileVariant::Water => 32,
-                TilemapTileVariant::Unknown => 0,
+                TilemapTileVariant::Ground => TilemapTileSpriteVariant::Ground as usize,
+                TilemapTileVariant::Flower => TilemapTileSpriteVariant::GroundWithFlower as usize,
+                TilemapTileVariant::Tree => TilemapTileSpriteVariant::GroundWithTree as usize,
+                TilemapTileVariant::Road => TilemapTileSpriteVariant::Road as usize,
+                TilemapTileVariant::Water => TilemapTileSpriteVariant::Water as usize,
+                TilemapTileVariant::Unknown => TilemapTileSpriteVariant::Unknown as usize,
             },
             TileSpriteVariant::Unit(variant) => match variant {
-                UnitVariant::Truck => 60,
-                UnitVariant::Plane => 65,
-                UnitVariant::Tank => 63,
+                UnitVariant::Truck => EntityUnitVariant::Truck as usize,
+                UnitVariant::Plane => EntityUnitVariant::Plane as usize,
+                UnitVariant::Tank => EntityUnitVariant::Tank as usize,
+                UnitVariant::Boat => EntityUnitVariant::Boat as usize,
+                UnitVariant::Submarine => EntityUnitVariant::Submarine as usize,
             },
         }
     }
@@ -108,18 +115,18 @@ impl Plugin for TileSpritePlugin {
 fn init_tile_sprite(
     mut commands: Commands,
     tile_sprites: Query<(Entity, &TileSprite), Added<TileSprite>>,
-    tile_assets: Option<Res<TilemapTileAssets>>,
+    tile_assets: Option<Res<TileAssets>>,
 ) {
     for (tile_sprite_entity, tile_sprite) in tile_sprites.iter() {
         let Some(tile_assets) = &tile_assets else {
             return;
         };
         let image = match tile_sprite.variant {
-            TileSpriteVariant::Tilemap(_) => tile_assets.tilemap.clone(),
+            TileSpriteVariant::Tilemap(_) => tile_assets.tilemap_tiles.clone(),
             _ => tile_assets.entities.clone(),
         };
         let layout = match tile_sprite.variant {
-            TileSpriteVariant::Tilemap(_) => tile_assets.tilemap_layout.clone(),
+            TileSpriteVariant::Tilemap(_) => tile_assets.tilemap_tiles_layout.clone(),
             _ => tile_assets.entities_layout.clone(),
         };
         let index = tile_sprite.get_variant().as_index();

@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 
 use crate::{
-    assets::ui::UiAssets,
+    assets::sprites::ui::UiAssets,
     game::GameState,
     ui::{
         components::{

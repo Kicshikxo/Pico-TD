@@ -82,8 +82,8 @@ impl TileMovement {
         self.elapsed_time = Duration::from_secs_f32(self.duration.as_secs_f32() * self.progress);
         self.update_current_position();
     }
-    pub fn update_progress(&mut self, delta_time: f32) {
-        self.elapsed_time += Duration::from_secs_f32(delta_time);
+    pub fn update_progress(&mut self, delta_time: Duration) {
+        self.elapsed_time += delta_time;
         self.progress = ((self.elapsed_time.as_secs_f32() - self.delay.as_secs_f32())
             / self.duration.as_secs_f32())
         .clamp(0.0, 1.0);
@@ -101,11 +101,6 @@ impl TileMovement {
         let target_distance =
             self.path_cumulative_lengths.last().unwrap_or(&0.0) * progress.clamp(0.0, 1.0);
 
-        // let segment_index = self
-        //     .path_cumulative_lengths
-        //     .iter()
-        //     .position(|&length| length >= target_distance)
-        //     .unwrap_or(0);
         let segment_index = self
             .path_cumulative_lengths
             .binary_search_by(|&length| length.partial_cmp(&target_distance).unwrap())
@@ -138,6 +133,6 @@ impl Plugin for TileMovementPlugin {
 
 fn update_tile_movement(mut tile_movements: Query<&mut TileMovement>, time: Res<Time>) {
     for mut movement in tile_movements.iter_mut() {
-        movement.update_progress(time.delta_secs());
+        movement.update_progress(Duration::from_secs_f32(time.delta_secs()));
     }
 }

@@ -3,7 +3,9 @@ mod assets;
 mod audio;
 mod entities;
 mod game;
+mod input;
 mod ui;
+mod waves;
 
 use bevy::{
     prelude::*,

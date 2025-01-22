@@ -2,7 +2,7 @@ use bevy::{prelude::*, ui::widget::NodeImageMode};
 use bevy_persistent::Persistent;
 
 use crate::{
-    assets::ui::UiAssets,
+    assets::sprites::ui::UiAssets,
     audio::GameAudioVolume,
     ui::{
         components::{

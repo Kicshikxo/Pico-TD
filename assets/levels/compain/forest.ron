@@ -4,7 +4,7 @@ LevelAsset(
     theme: "forest",
     map: [
         "#TT.####F##TT#F#.###",
-        "##T.#####~##T###.###",
+        "##T.########T###.###",
         "###.#F##~~~~~###.###",
         "###.###~~~~~##F#.#F#",
         "#F#.####~~~~####.###",
@@ -38,6 +38,118 @@ LevelAsset(
             (11, 12),
             (16, 12),
             (16, -1),
+        ],
+        [
+            (20, 12),
+            (18, 12),
+            (18, 14),
+            (14, 14),
+            (14, 17),
+            (20, 17),
         ]
     ]),
+    waves: Some([
+        [
+            Wave (
+                unit_variant: Truck,
+                count: 5,
+                duration: 20.0,
+                spawn_interval: 0.5,
+                spawn_delay: 0.0,
+                path_index: 0
+            ),
+        ], [
+            Wave (
+                unit_variant: Truck,
+                count: 5,
+                duration: 20.0,
+                spawn_interval: 0.5,
+                spawn_delay: 0.0,
+                path_index: 0
+            ),
+            Wave (
+                unit_variant: Plane,
+                count: 2,
+                duration: 15.0,
+                spawn_interval: 0.5,
+                spawn_delay: 2.5,
+                path_index: 0
+            ),
+        ], [
+            Wave (
+                unit_variant: Truck,
+                count: 5,
+                duration: 20.0,
+                spawn_interval: 0.5,
+                spawn_delay: 0.0,
+                path_index: 0
+            ),
+            Wave (
+                unit_variant: Plane,
+                count: 5,
+                duration: 15.0,
+                spawn_interval: 0.5,
+                spawn_delay: 2.5,
+                path_index: 0
+            ),
+            Wave (
+                unit_variant: Boat,
+                count: 3,
+                duration: 10.0,
+                spawn_interval: 1.0,
+                spawn_delay: 0.0,
+                path_index: 1
+            ),
+        ], [
+            Wave (
+                unit_variant: Truck,
+                count: 10,
+                duration: 20.0,
+                spawn_interval: 0.5,
+                spawn_delay: 0.0,
+                path_index: 0
+            ),
+            Wave (
+                unit_variant: Plane,
+                count: 5,
+                duration: 15.0,
+                spawn_interval: 0.5,
+                spawn_delay: 5.0,
+                path_index: 0
+            ),
+            Wave (
+                unit_variant: Boat,
+                count: 5,
+                duration: 10.0,
+                spawn_interval: 1.0,
+                spawn_delay: 0.0,
+                path_index: 1
+            ),
+        ], [
+            Wave (
+                unit_variant: Truck,
+                count: 10,
+                duration: 20.0,
+                spawn_interval: 0.5,
+                spawn_delay: 0.0,
+                path_index: 0
+            ),
+            Wave (
+                unit_variant: Plane,
+                count: 10,
+                duration: 15.0,
+                spawn_interval: 0.5,
+                spawn_delay: 5.0,
+                path_index: 0
+            ),
+            Wave (
+                unit_variant: Boat,
+                count: 10,
+                duration: 10.0,
+                spawn_interval: 1.0,
+                spawn_delay: 0.0,
+                path_index: 1
+            ),
+        ]
+    ])
 )

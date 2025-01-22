@@ -6,7 +6,7 @@ use bevy::{
 use bevy_persistent::Persistent;
 
 use crate::{
-    assets::{audio::ui::UiAudioAssets, ui::UiAssets},
+    assets::{audio::ui::UiAudioAssets, sprites::ui::UiAssets},
     audio::{GameAudio, GameAudioVolume},
 };
 

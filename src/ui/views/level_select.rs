@@ -5,7 +5,7 @@ use native_dialog::{FileDialog, MessageDialog, MessageType};
 use crate::{
     assets::{
         levels::{Level, LevelsAssets},
-        ui::UiAssets,
+        sprites::ui::UiAssets,
     },
     game::GameState,
     ui::{
@@ -270,7 +270,6 @@ fn uploaded_level_update(
             bevy::asset::LoadState::Loaded => {
                 if let Some(level) = levels_assets_loader.get(uploaded_level_handle) {
                     if level.error.is_some() {
-                        uploaded_level.handle = None;
                         #[cfg(not(target_arch = "wasm32"))]
                         MessageDialog::new()
                             .set_type(MessageType::Error)
@@ -278,20 +277,19 @@ fn uploaded_level_update(
                             .set_text(&level.error.as_ref().unwrap())
                             .show_alert()
                             .unwrap();
-                        return;
-                    }
-                    *selected_level = level.clone();
+                    } else {
+                        *selected_level = level.clone();
 
-                    next_ui_state.set(UiState::InGame);
-                    next_game_state.set(GameState::Start);
-                } else {
-                    error!("Level data is missing even though it's marked as loaded.");
+                        next_ui_state.set(UiState::InGame);
+                        next_game_state.set(GameState::Start);
+                    }
                 }
+
                 uploaded_level.handle = None;
             }
             LoadState::Failed(error) => {
-                uploaded_level.handle = None;
                 error!("Failed to load level file: {}", error);
+
                 #[cfg(not(target_arch = "wasm32"))]
                 MessageDialog::new()
                     .set_type(MessageType::Error)
@@ -299,10 +297,10 @@ fn uploaded_level_update(
                     .set_text(&rust_i18n::t!("level_select.file_upload_error.description"))
                     .show_alert()
                     .unwrap();
+
+                uploaded_level.handle = None;
             }
-            _ => {
-                info!("Level is still loading...");
-            }
+            _ => {}
         }
     }
 }

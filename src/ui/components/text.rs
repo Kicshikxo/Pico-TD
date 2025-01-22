@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-use crate::{assets::ui::UiAssets, ui::i18n::I18nComponent};
+use crate::{assets::sprites::ui::UiAssets, ui::i18n::I18nComponent};
 
 #[derive(Default)]
 #[allow(unused)]

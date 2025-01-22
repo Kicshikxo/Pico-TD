@@ -1,12 +1,13 @@
 use bevy::prelude::*;
 
 use crate::{
-    assets::{entities::tile::TilemapTileAssets, ui::UiAssets},
+    assets::sprites::{tile::TileAssets, ui::UiAssets},
     entities::{
         structure::Structure,
         tile::{position::TilePosition, sprite::TileSprite},
     },
-    game::{GameState, SelectedStructure},
+    game::GameState,
+    input::SelectedStructure,
     ui::{
         components::{
             button::{UiButton, UiButtonVariant},
@@ -40,7 +41,7 @@ enum StructureInfoButtonAction {
 fn ui_init(
     mut commands: Commands,
     ui_assets: Res<UiAssets>,
-    tile_assets: Res<TilemapTileAssets>,
+    tile_assets: Res<TileAssets>,
     structures: Query<(&Structure, &TilePosition)>,
     selected_structure: Option<Res<SelectedStructure>>,
 ) {

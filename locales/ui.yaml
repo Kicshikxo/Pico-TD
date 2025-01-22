@@ -43,6 +43,9 @@ ui.level_select.upload_level:
 ui.in_game.pause:
     en: "Pause"
     ru: "Пауза"
+ui.in_game.next_wave:
+    en: "Next wave"
+    ru: "Следующая волна"
 
 ui.structure_select.title:
     en: "Select structure"
@@ -79,6 +82,9 @@ ui.structure.soldier_fast:
 ui.structure.soldier_strong:
     en: "Soldier strong"
     ru: "Солдат сильный"
+ui.structure.rocket_launcher:
+    en: "Rocket launcher"
+    ru: "Ракетница"
 
 ui.pause.title:
     en: "Pause"

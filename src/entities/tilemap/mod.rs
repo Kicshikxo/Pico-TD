@@ -6,7 +6,7 @@ use bevy::prelude::*;
 use tile::{TilemapTile, TilemapTileVariant};
 
 use crate::{
-    assets::{entities::tile::TilemapTileAssets, levels::Level},
+    assets::{levels::Level, sprites::tile::TileAssets},
     game::GameState,
 };
 
@@ -115,7 +115,7 @@ fn init_tilemap(
 fn update_tilemap(
     mut tilemaps: Query<&mut Tilemap>,
     mut tiles: Query<(&TilemapTile, &mut Sprite, &mut Transform)>,
-    tile_assets: Res<TilemapTileAssets>,
+    tile_assets: Res<TileAssets>,
 ) {
     for mut tilemap in tilemaps.iter_mut() {
         if tilemap.get_update_required() == false {

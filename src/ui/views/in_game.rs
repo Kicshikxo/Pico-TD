@@ -9,6 +9,7 @@ use crate::{
         },
         UiState,
     },
+    waves::{CurrentWave, WaveState},
 };
 
 pub struct InGameViewUiPlugin;
@@ -26,7 +27,8 @@ struct RootUiComponent;
 
 #[derive(Component)]
 enum InGameButtonAction {
-    OpenInGameSettings,
+    NextWave,
+    Pause,
 }
 
 fn ui_init(mut commands: Commands) {
@@ -45,12 +47,26 @@ fn ui_init(mut commands: Commands) {
                     position_type: PositionType::Absolute,
                     bottom: Val::Px(8.0),
                     right: Val::Px(8.0),
+                    align_items: AlignItems::End,
+                    flex_direction: FlexDirection::Column,
+                    row_gap: Val::Px(8.0),
                     ..default()
                 })
                 .with_children(|parent| {
                     parent
                         .spawn((
-                            InGameButtonAction::OpenInGameSettings,
+                            InGameButtonAction::NextWave,
+                            UiButton::new()
+                                .with_variant(UiButtonVariant::Primary)
+                                .with_padding(UiRect::axes(Val::Px(16.0), Val::Px(8.0))),
+                        ))
+                        .with_child(
+                            UiText::new("ui.in_game.next_wave").with_size(UiTextSize::Small),
+                        );
+
+                    parent
+                        .spawn((
+                            InGameButtonAction::Pause,
                             UiButton::new()
                                 .with_variant(UiButtonVariant::Primary)
                                 .with_padding(UiRect::axes(Val::Px(16.0), Val::Px(8.0))),
@@ -71,13 +87,20 @@ fn ui_update(
         (&Interaction, &InGameButtonAction),
         (Changed<Interaction>, With<UiButton>),
     >,
+    mut current_wave: ResMut<CurrentWave>,
     mut next_ui_state: ResMut<NextState<UiState>>,
     mut next_game_state: ResMut<NextState<GameState>>,
 ) {
     for (interaction, button_action) in &interaction_query {
         if *interaction == Interaction::Pressed {
             match button_action {
-                InGameButtonAction::OpenInGameSettings => {
+                InGameButtonAction::NextWave => {
+                    if current_wave.get_state() != WaveState::Completed {
+                        return;
+                    }
+                    current_wave.next_wave();
+                }
+                InGameButtonAction::Pause => {
                     next_ui_state.set(UiState::Pause);
                     next_game_state.set(GameState::Pause);
                 }

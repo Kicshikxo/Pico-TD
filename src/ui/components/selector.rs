@@ -123,7 +123,7 @@ impl UiSelector {
     }
     pub fn select_next(&mut self) {
         let last_index = self.options.len().saturating_sub(1);
-        if self.current_index == last_index && self.cycle == false {
+        if self.current_index >= last_index && self.cycle == false {
             return;
         }
         self.current_index = if self.cycle && self.current_index == last_index {

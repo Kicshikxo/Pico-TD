@@ -1,7 +1,7 @@
 use bevy::{prelude::*, ui::widget::NodeImageMode};
 
 use crate::{
-    assets::ui::UiAssets,
+    assets::sprites::ui::UiAssets,
     ui::{
         components::{
             button::{UiButton, UiButtonVariant},

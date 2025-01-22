@@ -1,6 +1,6 @@
 use bevy::{prelude::*, ui::widget::NodeImageMode};
 
-use crate::assets::ui::UiAssets;
+use crate::assets::sprites::ui::UiAssets;
 
 #[derive(Default, Clone, PartialEq)]
 #[allow(unused)]

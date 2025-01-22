@@ -27,6 +27,22 @@ pub struct StructureVariantConfig {
     damage: u32,
     fire_radius: f32,
     fire_rate: Duration,
+    projectile_variant: ProjectileVariant,
+}
+
+impl StructureVariantConfig {
+    pub fn get_damage(&self) -> u32 {
+        self.damage
+    }
+    pub fn get_fire_radius(&self) -> f32 {
+        self.fire_radius
+    }
+    pub fn get_fire_rate(&self) -> Duration {
+        self.fire_rate
+    }
+    pub fn get_projectile_variant(&self) -> ProjectileVariant {
+        self.projectile_variant
+    }
 }
 
 #[derive(Clone, Copy, PartialEq, Debug)]
@@ -34,6 +50,7 @@ pub enum StructureVariant {
     Soldier,
     SoldierFast,
     SoldierStrong,
+    RocketLauncher,
 }
 
 impl StructureVariant {
@@ -42,6 +59,7 @@ impl StructureVariant {
             StructureVariant::Soldier => "ui.structure.soldier".to_string(),
             StructureVariant::SoldierFast => "ui.structure.soldier_fast".to_string(),
             StructureVariant::SoldierStrong => "ui.structure.soldier_strong".to_string(),
+            StructureVariant::RocketLauncher => "ui.structure.rocket_launcher".to_string(),
         }
     }
     pub fn get_config(&self) -> StructureVariantConfig {
@@ -50,16 +68,25 @@ impl StructureVariant {
                 damage: 25,
                 fire_radius: 3.0,
                 fire_rate: Duration::from_secs_f32(0.5),
+                projectile_variant: ProjectileVariant::Bullet,
             },
             StructureVariant::SoldierFast => StructureVariantConfig {
                 damage: 10,
                 fire_radius: 3.0,
                 fire_rate: Duration::from_secs_f32(0.2),
+                projectile_variant: ProjectileVariant::Bullet,
             },
             StructureVariant::SoldierStrong => StructureVariantConfig {
                 damage: 50,
                 fire_radius: 3.0,
                 fire_rate: Duration::from_secs_f32(1.0),
+                projectile_variant: ProjectileVariant::Bullet,
+            },
+            StructureVariant::RocketLauncher => StructureVariantConfig {
+                damage: 100,
+                fire_radius: 5.0,
+                fire_rate: Duration::from_secs_f32(2.0),
+                projectile_variant: ProjectileVariant::Rocket,
             },
         }
     }
@@ -113,6 +140,12 @@ impl Structure {
     }
     pub fn get_fire_rate(&self) -> Duration {
         self.fire_rate
+    }
+    pub fn get_cooldown(&self) -> Duration {
+        self.cooldown
+    }
+    pub fn decrease_cooldown(&mut self, delta_time: Duration) {
+        self.cooldown = self.cooldown.checked_sub(delta_time).unwrap_or_default();
     }
     pub fn update_cooldown(&mut self) {
         self.cooldown = self.fire_rate;
@@ -181,17 +214,14 @@ fn update_structure(
             structure_tile_sprite
                 .set_variant(TileSpriteVariant::Structure(structure.get_variant().into()));
             let config = structure.get_variant().get_config();
-            structure.set_damage(config.damage);
-            structure.set_fire_radius(config.fire_radius);
-            structure.set_fire_rate(config.fire_rate);
+            structure.set_damage(config.get_damage());
+            structure.set_fire_radius(config.get_fire_radius());
+            structure.set_fire_rate(config.get_fire_rate());
             structure.set_update_required(false);
         }
 
-        if structure.cooldown > Duration::ZERO {
-            structure.cooldown = structure
-                .cooldown
-                .checked_sub(Duration::from_secs_f32(time.delta_secs()))
-                .unwrap_or_default();
+        if structure.get_cooldown() > Duration::ZERO {
+            structure.decrease_cooldown(Duration::from_secs_f32(time.delta_secs()));
             continue;
         }
 
@@ -201,7 +231,11 @@ fn update_structure(
                 .distance(unit_tile_position.as_vec2())
                 <= structure.get_fire_radius()
             {
-                let projectile_duration = Duration::from_secs_f32(0.1);
+                let projectile_variant = structure
+                    .get_variant()
+                    .get_config()
+                    .get_projectile_variant();
+                let projectile_duration = projectile_variant.get_config().get_duration();
 
                 let unit_progress_on_hit = unit_movement.get_progress()
                     + projectile_duration.as_secs_f32()
@@ -210,11 +244,7 @@ fn update_structure(
                 commands
                     .entity(game_tilemap.get_single().unwrap())
                     .with_child((
-                        Projectile::new(
-                            ProjectileVariant::Bullet,
-                            *unit_entity,
-                            structure.get_damage(),
-                        ),
+                        Projectile::new(projectile_variant, *unit_entity, structure.get_damage()),
                         TileMovement::new(
                             vec![
                                 structure_tile_position.as_vec2(),

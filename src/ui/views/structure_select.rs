@@ -1,12 +1,13 @@
 use bevy::prelude::*;
 
 use crate::{
-    assets::{entities::tile::TilemapTileAssets, ui::UiAssets},
+    assets::sprites::{tile::TileAssets, ui::UiAssets},
     entities::{
         structure::{Structure, StructureVariant},
         tile::{position::TilePosition, sprite::TileSprite},
     },
-    game::{GameState, GameTilemap, SelectedStructure},
+    game::{GameState, GameTilemap},
+    input::SelectedStructure,
     ui::{
         components::{
             button::UiButton,
@@ -36,7 +37,7 @@ enum StructureSelectButtonAction {
     Select(StructureVariant),
 }
 
-fn ui_init(mut commands: Commands, ui_assets: Res<UiAssets>, tile_assets: Res<TilemapTileAssets>) {
+fn ui_init(mut commands: Commands, ui_assets: Res<UiAssets>, tile_assets: Res<TileAssets>) {
     commands
         .spawn((
             RootUiComponent,
@@ -102,6 +103,7 @@ fn ui_init(mut commands: Commands, ui_assets: Res<UiAssets>, tile_assets: Res<Ti
                                 StructureVariant::Soldier,
                                 StructureVariant::SoldierFast,
                                 StructureVariant::SoldierStrong,
+                                StructureVariant::RocketLauncher,
                             ] {
                                 parent
                                     .spawn(Node {

@@ -3,8 +3,9 @@ use bevy::{
     prelude::*,
 };
 use bevy_asset_loader::asset_collection::AssetCollection;
+use serde::Deserialize;
 
-use crate::entities::tilemap::tile::TilemapTile;
+use crate::entities::{tilemap::tile::TilemapTile, unit::UnitVariant};
 
 #[derive(AssetCollection, Resource)]
 pub struct LevelsAssets {
@@ -36,7 +37,18 @@ pub struct Level {
     pub size: UVec2,
     pub map: Vec<Vec<TilemapTile>>,
     pub paths: Vec<Vec<Vec2>>,
+    pub waves: Vec<Vec<Wave>>,
     pub error: Option<String>,
+}
+
+#[derive(Clone, Debug, Deserialize)]
+pub struct Wave {
+    pub unit_variant: UnitVariant,
+    pub count: u32,
+    pub duration: f32,
+    pub spawn_interval: f32,
+    pub spawn_delay: f32,
+    pub path_index: usize,
 }
 
 impl Default for Level {
@@ -46,17 +58,19 @@ impl Default for Level {
             size: UVec2::new(0, 0),
             map: Vec::new(),
             paths: Vec::new(),
+            waves: Vec::new(),
             error: None,
         }
     }
 }
 
-#[derive(Asset, TypePath, Debug, serde::Deserialize)]
+#[derive(Asset, TypePath, Debug, Deserialize)]
 pub struct LevelAsset {
     pub name: String,
     pub size: UVec2,
     pub map: Vec<String>,
     pub paths: Option<Vec<Vec<Vec2>>>,
+    pub waves: Option<Vec<Vec<Wave>>>,
     pub error: Option<String>,
 }
 
@@ -67,6 +81,7 @@ impl Default for LevelAsset {
             size: UVec2::new(0, 0),
             map: Vec::new(),
             paths: None,
+            waves: None,
             error: None,
         }
     }
@@ -117,6 +132,7 @@ impl AssetLoader for LevelsLoader {
             size: level_asset.size,
             map,
             paths: level_asset.paths.unwrap_or_default(),
+            waves: level_asset.waves.unwrap_or_default(),
             error: level_asset.error,
         })
     }

@@ -4,6 +4,7 @@ use std::f32::consts::PI;
 
 use bevy::{prelude::*, sprite::Anchor};
 use health::{UnitHealth, UnitHealthBar};
+use serde::Deserialize;
 
 use crate::game::{GameState, GameTilemap};
 
@@ -17,11 +18,19 @@ pub struct UnitVariantConfig {
     health: u32,
 }
 
-#[derive(Clone, Copy, PartialEq, Debug)]
+impl UnitVariantConfig {
+    pub fn get_health(&self) -> u32 {
+        self.health
+    }
+}
+
+#[derive(Clone, Copy, PartialEq, Debug, Deserialize)]
 pub enum UnitVariant {
     Truck,
     Plane,
     Tank,
+    Boat,
+    Submarine,
 }
 
 impl UnitVariant {
@@ -30,6 +39,8 @@ impl UnitVariant {
             UnitVariant::Truck => UnitVariantConfig { health: 100 },
             UnitVariant::Plane => UnitVariantConfig { health: 150 },
             UnitVariant::Tank => UnitVariantConfig { health: 300 },
+            UnitVariant::Boat => UnitVariantConfig { health: 50 },
+            UnitVariant::Submarine => UnitVariantConfig { health: 200 },
         }
     }
 }
@@ -83,7 +94,7 @@ fn init_unit(
 ) {
     for (unit_entity, unit) in units.iter() {
         commands.entity(unit_entity).insert((
-            UnitHealth::new(unit.get_variant().get_config().health),
+            UnitHealth::new(unit.get_variant().get_config().get_health()),
             TileSprite::new(unit.get_variant().into()),
         ));
 
@@ -94,8 +105,10 @@ fn init_unit(
 }
 
 fn update_unit_movement(
+    mut commands: Commands,
     mut units: Query<
         (
+            Entity,
             &mut Unit,
             &mut UnitHealth,
             &TileMovement,
@@ -108,6 +121,7 @@ fn update_unit_movement(
     time: Res<Time>,
 ) {
     for (
+        unit_entity,
         mut unit,
         mut unit_health,
         unit_movement,
@@ -116,11 +130,15 @@ fn update_unit_movement(
         mut unit_transform,
     ) in units.iter_mut()
     {
+        if unit_movement.get_progress() >= 1.0 {
+            commands.entity(unit_entity).despawn_recursive();
+            continue;
+        }
         if unit.get_update_required() == true {
             unit_tile_sprite.set_variant(TileSpriteVariant::Unit(unit.get_variant().into()));
             let config = unit.get_variant().get_config();
-            unit_health.set_max(config.health);
-            unit_health.heal(config.health);
+            unit_health.set_max(config.get_health());
+            unit_health.heal(config.get_health());
             unit.set_update_required(false);
         }
         unit_tile_position.set_from_vec2(unit_movement.get_position());
@@ -147,7 +165,7 @@ fn update_unit_health(
     for (unit_entity, mut unit_health, mut unit_sprite, _unit_transform) in units.iter_mut() {
         if unit_health.get_current() == 0 {
             commands.entity(unit_entity).despawn_recursive();
-            return;
+            continue;
         }
 
         unit_sprite.color = LinearRgba::from_vec3(
