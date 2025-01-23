@@ -41,13 +41,7 @@ fn ui_init(mut commands: Commands, ui_assets: Res<UiAssets>, tile_assets: Res<Ti
     commands
         .spawn((
             RootUiComponent,
-            Node {
-                width: Val::Percent(100.0),
-                height: Val::Percent(100.0),
-                align_items: AlignItems::Center,
-                justify_content: JustifyContent::Center,
-                ..default()
-            },
+            UiContainer::new().with_height(Val::Percent(100.0)).center(),
             BackgroundColor(Color::srgba(0.0, 0.0, 0.0, 0.5)),
         ))
         .with_children(|parent| {
@@ -106,12 +100,12 @@ fn ui_init(mut commands: Commands, ui_assets: Res<UiAssets>, tile_assets: Res<Ti
                                 StructureVariant::RocketLauncher,
                             ] {
                                 parent
-                                    .spawn(Node {
-                                        align_items: AlignItems::Center,
-                                        flex_direction: FlexDirection::Column,
-                                        row_gap: Val::Px(4.0),
-                                        ..default()
-                                    })
+                                    .spawn(
+                                        UiContainer::new()
+                                            .with_row_gap(Val::Px(4.0))
+                                            .with_align_items(AlignItems::Start)
+                                            .column(),
+                                    )
                                     .with_children(|parent| {
                                         parent
                                             .spawn((
@@ -123,11 +117,9 @@ fn ui_init(mut commands: Commands, ui_assets: Res<UiAssets>, tile_assets: Res<Ti
                                                     .center(),
                                             ))
                                             .with_child((
-                                                Node {
-                                                    width: Val::Px(32.0),
-                                                    height: Val::Px(32.0),
-                                                    ..default()
-                                                },
+                                                UiContainer::new()
+                                                    .with_width(Val::Px(32.0))
+                                                    .with_height(Val::Px(32.0)),
                                                 ImageNode {
                                                     image: tile_assets.entities.clone(),
                                                     texture_atlas: Some(TextureAtlas {

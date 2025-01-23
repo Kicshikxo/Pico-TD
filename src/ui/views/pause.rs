@@ -36,13 +36,7 @@ fn ui_init(mut commands: Commands, ui_assets: Res<UiAssets>) {
     commands
         .spawn((
             RootUiComponent,
-            Node {
-                width: Val::Percent(100.0),
-                height: Val::Percent(100.0),
-                align_items: AlignItems::Center,
-                justify_content: JustifyContent::Center,
-                ..default()
-            },
+            UiContainer::new().with_height(Val::Percent(100.0)).center(),
             BackgroundColor(Color::srgba(0.0, 0.0, 0.0, 0.5)),
         ))
         .with_children(|parent| {

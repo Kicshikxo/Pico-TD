@@ -15,12 +15,16 @@ use super::tile::{
 };
 
 pub struct UnitVariantConfig {
+    damage: u32,
     health: u32,
 }
 
 impl UnitVariantConfig {
     pub fn get_health(&self) -> u32 {
         self.health
+    }
+    pub fn get_damage(&self) -> u32 {
+        self.damage
     }
 }
 
@@ -36,11 +40,26 @@ pub enum UnitVariant {
 impl UnitVariant {
     pub fn get_config(&self) -> UnitVariantConfig {
         match self {
-            UnitVariant::Truck => UnitVariantConfig { health: 100 },
-            UnitVariant::Plane => UnitVariantConfig { health: 150 },
-            UnitVariant::Tank => UnitVariantConfig { health: 300 },
-            UnitVariant::Boat => UnitVariantConfig { health: 50 },
-            UnitVariant::Submarine => UnitVariantConfig { health: 200 },
+            UnitVariant::Truck => UnitVariantConfig {
+                health: 100,
+                damage: 5,
+            },
+            UnitVariant::Plane => UnitVariantConfig {
+                health: 150,
+                damage: 5,
+            },
+            UnitVariant::Tank => UnitVariantConfig {
+                health: 300,
+                damage: 5,
+            },
+            UnitVariant::Boat => UnitVariantConfig {
+                health: 50,
+                damage: 5,
+            },
+            UnitVariant::Submarine => UnitVariantConfig {
+                health: 200,
+                damage: 5,
+            },
         }
     }
 }
@@ -49,14 +68,18 @@ impl UnitVariant {
 #[require(UnitHealth, TileMovement, TilePosition)]
 pub struct Unit {
     variant: UnitVariant,
+    damage: u32,
     update_required: bool,
 }
 
 #[allow(unused)]
 impl Unit {
     pub fn new(variant: UnitVariant) -> Self {
+        let config = variant.get_config();
+
         Self {
             variant,
+            damage: config.damage,
             update_required: true,
         }
     }
@@ -66,6 +89,12 @@ impl Unit {
     pub fn set_variant(&mut self, variant: UnitVariant) {
         self.variant = variant;
         self.update_required = true;
+    }
+    pub fn get_damage(&self) -> u32 {
+        self.damage
+    }
+    pub fn set_damage(&mut self, damage: u32) {
+        self.damage = damage;
     }
     pub fn get_update_required(&self) -> bool {
         self.update_required
@@ -139,6 +168,7 @@ fn update_unit_movement(
             let config = unit.get_variant().get_config();
             unit_health.set_max(config.get_health());
             unit_health.heal(config.get_health());
+            unit.set_damage(config.get_damage());
             unit.set_update_required(false);
         }
         unit_tile_position.set_from_vec2(unit_movement.get_position());

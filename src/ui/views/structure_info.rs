@@ -48,13 +48,7 @@ fn ui_init(
     commands
         .spawn((
             RootUiComponent,
-            Node {
-                width: Val::Percent(100.0),
-                height: Val::Percent(100.0),
-                align_items: AlignItems::Center,
-                justify_content: JustifyContent::Center,
-                ..default()
-            },
+            UiContainer::new().with_height(Val::Percent(100.0)).center(),
             BackgroundColor(Color::srgba(0.0, 0.0, 0.0, 0.5)),
         ))
         .with_children(|parent| {
@@ -101,11 +95,7 @@ fn ui_init(
                             if tile_position.as_vec2() == selected_structure.tile_position.as_vec2()
                             {
                                 parent
-                                    .spawn(Node {
-                                        width: Val::Percent(100.0),
-                                        column_gap: Val::Px(8.0),
-                                        ..default()
-                                    })
+                                    .spawn(UiContainer::new().with_column_gap(Val::Px(8.0)))
                                     .with_children(|parent| {
                                         parent
                                             .spawn(
@@ -116,11 +106,9 @@ fn ui_init(
                                                     .center(),
                                             )
                                             .with_child((
-                                                Node {
-                                                    width: Val::Px(32.0),
-                                                    height: Val::Px(32.0),
-                                                    ..default()
-                                                },
+                                                UiContainer::new()
+                                                    .with_width(Val::Px(32.0))
+                                                    .with_height(Val::Px(32.0)),
                                                 ImageNode {
                                                     image: tile_assets.entities.clone(),
                                                     texture_atlas: Some(TextureAtlas {
@@ -135,17 +123,13 @@ fn ui_init(
                                                 },
                                             ));
 
-                                        parent
-                                            .spawn(Node {
-                                                flex_direction: FlexDirection::Column,
-                                                ..default()
-                                            })
-                                            .with_children(|parent| {
+                                        parent.spawn(UiContainer::new().column()).with_children(
+                                            |parent| {
                                                 parent
-                                                    .spawn(Node {
-                                                        column_gap: Val::Px(8.0),
-                                                        ..default()
-                                                    })
+                                                    .spawn(
+                                                        UiContainer::new()
+                                                            .with_column_gap(Val::Px(8.0)),
+                                                    )
                                                     .with_children(|parent| {
                                                         parent.spawn(
                                                             UiText::new(
@@ -206,7 +190,8 @@ fn ui_init(
                                                     .with_size(UiTextSize::Small)
                                                     .with_justify(JustifyText::Left),
                                                 );
-                                            });
+                                            },
+                                        );
                                     });
                                 break;
                             }
@@ -214,12 +199,7 @@ fn ui_init(
                     }
 
                     parent
-                        .spawn(Node {
-                            width: Val::Percent(100.0),
-                            flex_direction: FlexDirection::Column,
-                            row_gap: Val::Px(8.0),
-                            ..default()
-                        })
+                        .spawn(UiContainer::new().with_row_gap(Val::Px(8.0)).column())
                         .with_children(|parent| {
                             parent
                                 .spawn((

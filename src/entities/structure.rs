@@ -241,19 +241,17 @@ fn update_structure(
                     + projectile_duration.as_secs_f32()
                         / unit_movement.get_duration().as_secs_f32();
 
-                commands
-                    .entity(game_tilemap.get_single().unwrap())
-                    .with_child((
-                        Projectile::new(projectile_variant, *unit_entity, structure.get_damage()),
-                        TileMovement::new(
-                            vec![
-                                structure_tile_position.as_vec2(),
-                                unit_movement.position_at_progress(unit_progress_on_hit),
-                            ],
-                            projectile_duration,
-                            None,
-                        ),
-                    ));
+                commands.entity(game_tilemap.single()).with_child((
+                    Projectile::new(projectile_variant, *unit_entity, structure.get_damage()),
+                    TileMovement::new(
+                        vec![
+                            structure_tile_position.as_vec2(),
+                            unit_movement.position_at_progress(unit_progress_on_hit),
+                        ],
+                        projectile_duration,
+                        None,
+                    ),
+                ));
                 commands.entity(*game_audio).with_child((
                     AudioPlayer::new(game_audio_assets.get_random_shoot().clone()),
                     PlaybackSettings {

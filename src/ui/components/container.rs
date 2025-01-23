@@ -28,6 +28,7 @@ impl UiContainerVariant {
 #[require(Node)]
 pub struct UiContainer {
     variant: UiContainerVariant,
+    display: Display,
     width: Val,
     height: Val,
     padding: UiRect,
@@ -43,6 +44,7 @@ impl Default for UiContainer {
     fn default() -> Self {
         Self {
             variant: UiContainerVariant::default(),
+            display: Display::Flex,
             width: Val::Percent(100.0),
             height: Val::Auto,
             padding: UiRect::all(Val::ZERO),
@@ -63,6 +65,10 @@ impl UiContainer {
     }
     pub fn with_variant(mut self, variant: UiContainerVariant) -> Self {
         self.variant = variant;
+        self
+    }
+    pub fn with_display(mut self, display: Display) -> Self {
+        self.display = display;
         self
     }
     pub fn with_width(mut self, width: Val) -> Self {
@@ -136,6 +142,7 @@ fn init_ui_container(
         };
 
         commands.entity(ui_container_entity).insert(Node {
+            display: ui_container.display,
             width: ui_container.width,
             height: ui_container.height,
             padding: ui_container.padding,

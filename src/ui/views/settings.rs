@@ -52,13 +52,7 @@ fn ui_init(
     commands
         .spawn((
             RootUiComponent,
-            Node {
-                width: Val::Percent(100.0),
-                height: Val::Percent(100.0),
-                align_items: AlignItems::Center,
-                justify_content: JustifyContent::Center,
-                ..default()
-            },
+            UiContainer::new().with_height(Val::Percent(100.0)).center(),
             ImageNode {
                 image: ui_assets.small_tilemap.clone(),
                 texture_atlas: Some(TextureAtlas {
@@ -113,12 +107,7 @@ fn ui_init(
                         .with_child(UiText::new("ui.settings.title"));
 
                     parent
-                        .spawn(Node {
-                            width: Val::Percent(100.0),
-                            flex_direction: FlexDirection::Column,
-                            row_gap: Val::Px(4.0),
-                            ..default()
-                        })
+                        .spawn(UiContainer::new().with_row_gap(Val::Px(4.0)).column())
                         .with_children(|parent| {
                             parent.spawn(UiText::new("ui.settings.change_locale"));
                             parent.spawn((

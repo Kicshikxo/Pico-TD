@@ -55,6 +55,13 @@ impl CurrentWave {
         self.index = self.index.saturating_add(1).min(last_index);
         self.state = WaveState::Setup;
     }
+    pub fn is_last_wave(&self) -> bool {
+        let last_index = self.total.saturating_sub(1);
+        self.index == last_index
+    }
+    pub fn is_fully_completed(&self) -> bool {
+        self.state == WaveState::Completed && self.is_last_wave() == true
+    }
 }
 
 pub struct WavesPlugin;
@@ -64,7 +71,7 @@ impl Plugin for WavesPlugin {
         app.init_resource::<CurrentWave>();
 
         app.add_systems(
-            Update,
+            PreUpdate,
             update_current_wave
                 .run_if(in_state(GameState::InGame).and(resource_changed::<CurrentWave>)),
         );
@@ -90,6 +97,9 @@ fn update_current_wave(
     let Ok(tilemap_entity) = game_tilemap.get_single() else {
         return;
     };
+    if selected_level.waves.is_empty() {
+        return;
+    }
 
     for wave in selected_level.waves[current_wave.get_index()].iter() {
         for index in 0..wave.count {

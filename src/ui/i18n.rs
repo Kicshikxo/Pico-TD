@@ -45,13 +45,7 @@ impl I18n {
 impl Default for I18n {
     fn default() -> Self {
         let system_locale = sys_locale::get_locale().unwrap_or(Locale::En.to_string());
-        // info!("Current locale: {}", rust_i18n::locale().to_string());
-        // info!("Available locales: {:?}", rust_i18n::available_locales!());
-        // info!("System locale: {}", system_locale);
-        // info!(
-        //     "System locales: {:?}",
-        //     sys_locale::get_locales().collect::<String>()
-        // );
+
         Self {
             current: Locale::from_string(&system_locale),
         }

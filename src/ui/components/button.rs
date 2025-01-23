@@ -34,18 +34,22 @@ impl UiButtonVariant {
 #[require(Node)]
 pub struct UiButton {
     variant: UiButtonVariant,
+    disabled: bool,
     width: Val,
     height: Val,
     padding: UiRect,
+    update_required: bool,
 }
 
 impl Default for UiButton {
     fn default() -> Self {
         Self {
             variant: UiButtonVariant::default(),
+            disabled: false,
             width: Val::Percent(100.0),
             height: Val::Auto,
             padding: UiRect::axes(Val::Px(24.0), Val::Px(12.0)),
+            update_required: true,
         }
     }
 }
@@ -58,6 +62,17 @@ impl UiButton {
         self.variant = variant;
         self
     }
+    pub fn with_disabled(mut self, disabled: bool) -> Self {
+        self.disabled = disabled;
+        self
+    }
+    pub fn get_disabled(&self) -> bool {
+        self.disabled
+    }
+    pub fn set_disabled(&mut self, disabled: bool) {
+        self.disabled = disabled;
+        self.update_required = true;
+    }
     pub fn with_width(mut self, width: Val) -> Self {
         self.width = width;
         self
@@ -69,6 +84,12 @@ impl UiButton {
     pub fn with_padding(mut self, padding: UiRect) -> Self {
         self.padding = padding;
         self
+    }
+    pub fn get_update_required(&self) -> bool {
+        self.update_required
+    }
+    pub fn set_update_required(&mut self, value: bool) {
+        self.update_required = value;
     }
 }
 
@@ -123,19 +144,33 @@ fn init_ui_button(
 
 fn update_ui_button(
     mut commands: Commands,
-    mut interaction_query: Query<
-        (&Interaction, &mut ImageNode),
-        (Changed<Interaction>, With<UiButton>),
-    >,
+    mut ui_buttons: ParamSet<(
+        Query<(&mut UiButton, &mut ImageNode)>,
+        Query<(&Interaction, &UiButton, &mut ImageNode), (Changed<Interaction>, With<UiButton>)>,
+    )>,
     game_audio: Single<Entity, With<GameAudio>>,
     ui_audio_assets: Option<Res<UiAudioAssets>>,
     game_audio_volume: Res<Persistent<GameAudioVolume>>,
 ) {
-    for (interaction, mut image_node) in &mut interaction_query {
+    for (mut ui_button, mut image_node) in ui_buttons.p0().iter_mut() {
+        if ui_button.get_update_required() == true && ui_button.variant != UiButtonVariant::None {
+            image_node.color = if ui_button.get_disabled() == true {
+                Color::srgb(0.75, 0.75, 0.75)
+            } else {
+                Color::WHITE
+            };
+            ui_button.set_update_required(false);
+        }
+    }
+    for (interaction, ui_button, mut image_node) in ui_buttons.p1().iter_mut() {
+        if ui_button.get_disabled() == true {
+            continue;
+        }
+
         image_node.color = match *interaction {
-            Interaction::Pressed => Color::srgb(0.9, 0.9, 0.9).into(),
-            Interaction::Hovered => Color::srgb(0.95, 0.95, 0.95).into(),
-            Interaction::None => Color::WHITE.into(),
+            Interaction::Pressed => Color::srgb(0.9, 0.9, 0.9),
+            Interaction::Hovered => Color::srgb(0.95, 0.95, 0.95),
+            Interaction::None => Color::WHITE,
         };
         if *interaction == Interaction::Pressed {
             if let Some(ui_audio_assets) = ui_audio_assets.as_ref() {

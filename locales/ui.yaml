@@ -46,6 +46,12 @@ ui.in_game.pause:
 ui.in_game.next_wave:
     en: "Next wave"
     ru: "Следующая волна"
+ui.in_game.game_over:
+    en: "Game over"
+    ru: "Игра окончена"
+ui.in_game.back_to_menu:
+    en: "Back to menu"
+    ru: "Вернуться в меню"
 
 ui.structure_select.title:
     en: "Select structure"

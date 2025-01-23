@@ -66,13 +66,7 @@ fn ui_init(
     commands
         .spawn((
             RootUiComponent,
-            Node {
-                width: Val::Percent(100.0),
-                height: Val::Percent(100.0),
-                align_items: AlignItems::Center,
-                justify_content: JustifyContent::Center,
-                ..default()
-            },
+            UiContainer::new().with_height(Val::Percent(100.0)).center(),
             ImageNode {
                 image: ui_assets.small_tilemap.clone(),
                 texture_atlas: Some(TextureAtlas {
@@ -141,10 +135,7 @@ fn ui_init(
                                 let level = levels_assets_loader.get(level_handle).unwrap();
 
                                 parent
-                                    .spawn(Node {
-                                        flex_direction: FlexDirection::Column,
-                                        ..default()
-                                    })
+                                    .spawn(UiContainer::new().column())
                                     .with_children(|parent| {
                                         parent
                                             .spawn((
@@ -152,13 +143,7 @@ fn ui_init(
                                                     level_index,
                                                 },
                                                 UiButton::new(),
-                                                Node {
-                                                    width: Val::Percent(100.0),
-                                                    aspect_ratio: Some(1.0),
-                                                    align_items: AlignItems::Center,
-                                                    justify_content: JustifyContent::Center,
-                                                    ..default()
-                                                },
+                                                UiContainer::new().with_aspect_ratio(1.0).center(),
                                                 ImageNode {
                                                     image: ui_assets.large_tilemap.clone(),
                                                     texture_atlas: Some(TextureAtlas {
