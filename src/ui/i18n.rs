@@ -75,6 +75,15 @@ impl I18nComponent {
         self.args = args;
         self
     }
+    pub fn change_arg(&mut self, key: &str, new_value: String) {
+        if let Some((_arg_key, arg_value)) = self
+            .args
+            .iter_mut()
+            .find(|(arg_key, _arg_value)| *arg_key == key)
+        {
+            *arg_value = new_value;
+        }
+    }
     pub fn change_i18n_key(&mut self, key: String) {
         self.key = key;
     }

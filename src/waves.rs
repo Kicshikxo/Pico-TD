@@ -16,30 +16,30 @@ pub enum WaveState {
 }
 
 #[derive(Resource)]
-pub struct CurrentWave {
+pub struct Wave {
     total: usize,
-    index: usize,
+    current: usize,
     state: WaveState,
 }
 
-impl Default for CurrentWave {
+impl Default for Wave {
     fn default() -> Self {
         Self {
             total: 0,
-            index: 0,
+            current: 0,
             state: WaveState::Setup,
         }
     }
 }
 
-impl CurrentWave {
+impl Wave {
     pub fn restart(&mut self, total: usize) {
         self.total = total;
-        self.index = 0;
+        self.current = 0;
         self.state = WaveState::Setup;
     }
-    pub fn get_index(&self) -> usize {
-        self.index
+    pub fn get_current(&self) -> usize {
+        self.current
     }
     pub fn get_state(&self) -> WaveState {
         self.state
@@ -49,18 +49,18 @@ impl CurrentWave {
     }
     pub fn next_wave(&mut self) {
         let last_index = self.total.saturating_sub(1);
-        if self.index >= last_index {
+        if self.current >= last_index {
             return;
         }
-        self.index = self.index.saturating_add(1).min(last_index);
+        self.current = self.current.saturating_add(1).min(last_index);
         self.state = WaveState::Setup;
     }
-    pub fn is_last_wave(&self) -> bool {
+    pub fn is_last(&self) -> bool {
         let last_index = self.total.saturating_sub(1);
-        self.index == last_index
+        self.current == last_index
     }
     pub fn is_fully_completed(&self) -> bool {
-        self.state == WaveState::Completed && self.is_last_wave() == true
+        self.state == WaveState::Completed && self.is_last() == true
     }
 }
 
@@ -68,40 +68,39 @@ pub struct WavesPlugin;
 
 impl Plugin for WavesPlugin {
     fn build(&self, app: &mut App) {
-        app.init_resource::<CurrentWave>();
+        app.init_resource::<Wave>();
 
         app.add_systems(
             PreUpdate,
-            update_current_wave
-                .run_if(in_state(GameState::InGame).and(resource_changed::<CurrentWave>)),
+            update_wave.run_if(in_state(GameState::InGame).and(resource_changed::<Wave>)),
         );
         app.add_systems(
             Update,
-            update_current_wave_state.run_if(in_state(GameState::InGame)),
+            update_wave_state.run_if(in_state(GameState::InGame)),
         );
     }
 }
 
-fn update_current_wave(
+fn update_wave(
     mut commands: Commands,
     game_tilemap: Query<Entity, With<GameTilemap>>,
     selected_level: Res<Level>,
-    mut current_wave: ResMut<CurrentWave>,
+    mut wave: ResMut<Wave>,
 ) {
     if selected_level.error.is_some() {
         return;
     }
-    if current_wave.get_state() != WaveState::Setup {
+    if selected_level.waves.is_empty() {
+        return;
+    }
+    if wave.get_state() != WaveState::Setup {
         return;
     }
     let Ok(tilemap_entity) = game_tilemap.get_single() else {
         return;
     };
-    if selected_level.waves.is_empty() {
-        return;
-    }
 
-    for wave in selected_level.waves[current_wave.get_index()].iter() {
+    for wave in selected_level.waves[wave.get_current()].iter() {
         for index in 0..wave.count {
             commands.entity(tilemap_entity).with_child((
                 Unit::new(wave.unit_variant),
@@ -116,11 +115,11 @@ fn update_current_wave(
             ));
         }
     }
-    current_wave.set_state(WaveState::InProgress);
+    wave.set_state(WaveState::InProgress);
 }
 
-fn update_current_wave_state(units: Query<&Unit>, mut current_wave: ResMut<CurrentWave>) {
-    if units.is_empty() && current_wave.get_state() == WaveState::InProgress {
-        current_wave.set_state(WaveState::Completed);
+fn update_wave_state(units: Query<&Unit>, mut wave: ResMut<Wave>) {
+    if units.is_empty() && wave.get_state() == WaveState::InProgress {
+        wave.set_state(WaveState::Completed);
     }
 }

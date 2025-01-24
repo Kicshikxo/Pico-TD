@@ -30,6 +30,7 @@ impl UiTextSize {
 pub struct UiText {
     size: UiTextSize,
     justify: JustifyText,
+    linebreak: LineBreak,
     i18n_key: String,
     i18n_args: Vec<(String, String)>,
     enable_i18n: bool,
@@ -41,6 +42,7 @@ impl Default for UiText {
         Self {
             size: UiTextSize::default(),
             justify: JustifyText::Center,
+            linebreak: LineBreak::default(),
             i18n_key: String::new(),
             i18n_args: Vec::new(),
             enable_i18n: true,
@@ -63,6 +65,13 @@ impl UiText {
     pub fn with_justify(mut self, justify: JustifyText) -> Self {
         self.justify = justify;
         self
+    }
+    pub fn with_linebreak(mut self, linebreak: LineBreak) -> Self {
+        self.linebreak = linebreak;
+        self
+    }
+    pub fn no_wrap(self) -> Self {
+        self.with_linebreak(LineBreak::NoWrap)
     }
     pub fn with_arg(mut self, key: &str, value: String) -> Self {
         self.i18n_args.push((key.to_string(), value));
@@ -108,6 +117,7 @@ fn init_ui_text(
             },
             TextLayout {
                 justify: ui_text.justify.clone(),
+                linebreak: ui_text.linebreak.clone(),
                 ..default()
             },
         ));

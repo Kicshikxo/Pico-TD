@@ -11,7 +11,7 @@ use crate::{
     },
     game::{GameState, GameTilemap},
     ui::UiState,
-    waves::CurrentWave,
+    waves::Wave,
 };
 
 pub struct GameInputPlugin;
@@ -82,7 +82,7 @@ fn update_selected_structure(
     structures: Query<&TilePosition, With<Structure>>,
     selected_tile: Res<SelectedTile>,
     mut selected_structure: ResMut<SelectedStructure>,
-    current_wave: Res<CurrentWave>,
+    wave: Res<Wave>,
     mouse_button_input: Res<ButtonInput<MouseButton>>,
     ui_interaction: Query<&Interaction, (Changed<Interaction>, With<Button>)>,
     mut next_ui_state: ResMut<NextState<UiState>>,
@@ -94,7 +94,7 @@ fn update_selected_structure(
     if ui_interaction.is_empty() == false {
         return;
     }
-    if current_wave.is_fully_completed() == true {
+    if wave.is_fully_completed() == true {
         return;
     }
     // ! Refactor

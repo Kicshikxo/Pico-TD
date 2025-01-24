@@ -159,6 +159,12 @@ impl UiSelector {
             return false;
         }
     }
+    pub fn is_previous_allowed(&self) -> bool {
+        self.cycle || self.current_index > 0
+    }
+    pub fn is_next_allowed(&self) -> bool {
+        self.cycle || self.current_index < self.options.len().saturating_sub(1)
+    }
 }
 
 pub struct UiSelectorPlugin;
@@ -231,19 +237,28 @@ fn update_ui_selector(
         ),
     >,
     mut ui_selector: Query<(&mut UiSelector, &Children)>,
-    mut ui_selector_text: Query<(&mut Text, &mut I18nComponent), With<UiSelectorText>>,
+    mut ui_selector_buttons: Query<(
+        &mut UiButton,
+        Option<&UiSelectorDecreaseButton>,
+        Option<&UiSelectorIncreaseButton>,
+    )>,
+    mut ui_selector_texts: Query<(&mut Text, &mut I18nComponent), With<UiSelectorText>>,
 ) {
     for (interaction, parent) in decrease_button_interaction.iter() {
         if *interaction == Interaction::Pressed {
             if let Ok((mut selector, _selector_children)) = ui_selector.get_mut(parent.get()) {
-                selector.select_previous();
+                if selector.is_previous_allowed() == true {
+                    selector.select_previous();
+                }
             }
         }
     }
     for (interaction, parent) in increase_button_interaction.iter() {
         if *interaction == Interaction::Pressed {
             if let Ok((mut selector, _selector_children)) = ui_selector.get_mut(parent.get()) {
-                selector.select_next();
+                if selector.is_next_allowed() == true {
+                    selector.select_next();
+                }
             }
         }
     }
@@ -253,15 +268,30 @@ fn update_ui_selector(
         }
 
         for child in selector_children.iter() {
-            if let Ok((mut text, mut text_i18n)) = ui_selector_text.get_mut(*child) {
-                text_i18n.change_i18n_key(
+            if let Ok((
+                mut ui_selector_button,
+                ui_selector_decrease_buttons,
+                ui_selector_increase_buttons,
+            )) = ui_selector_buttons.get_mut(*child)
+            {
+                if ui_selector_decrease_buttons.is_some() {
+                    ui_selector_button.set_disabled(!selector.is_previous_allowed());
+                }
+                if ui_selector_increase_buttons.is_some() {
+                    ui_selector_button.set_disabled(!selector.is_next_allowed());
+                }
+            }
+            if let Ok((mut ui_selector_text, mut ui_selector_text_i18n)) =
+                ui_selector_texts.get_mut(*child)
+            {
+                ui_selector_text_i18n.change_i18n_key(
                     selector
                         .get_current_item()
                         .unwrap_or(&UiSelectorItem::default())
                         .text
                         .clone(),
                 );
-                text.0 = text_i18n.translate();
+                ui_selector_text.0 = ui_selector_text_i18n.translate();
             }
         }
         selector.set_update_required(false);

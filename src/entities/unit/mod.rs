@@ -6,7 +6,7 @@ use bevy::{prelude::*, sprite::Anchor};
 use health::{UnitHealth, UnitHealthBar};
 use serde::Deserialize;
 
-use crate::game::{GameState, GameTilemap};
+use crate::game::{GameSpeed, GameState, GameTilemap};
 
 use super::tile::{
     movement::TileMovement,
@@ -17,6 +17,7 @@ use super::tile::{
 pub struct UnitVariantConfig {
     damage: u32,
     health: u32,
+    sprite_scale: Vec3,
 }
 
 impl UnitVariantConfig {
@@ -25,6 +26,9 @@ impl UnitVariantConfig {
     }
     pub fn get_damage(&self) -> u32 {
         self.damage
+    }
+    pub fn get_sprite_scale(&self) -> Vec3 {
+        self.sprite_scale
     }
 }
 
@@ -43,22 +47,27 @@ impl UnitVariant {
             UnitVariant::Truck => UnitVariantConfig {
                 health: 100,
                 damage: 5,
+                sprite_scale: Vec3::new(0.75, 0.75, 1.0),
             },
             UnitVariant::Plane => UnitVariantConfig {
                 health: 150,
                 damage: 5,
+                sprite_scale: Vec3::new(1.0, 1.0, 1.0),
             },
             UnitVariant::Tank => UnitVariantConfig {
                 health: 300,
                 damage: 5,
+                sprite_scale: Vec3::new(0.75, 0.75, 1.0),
             },
             UnitVariant::Boat => UnitVariantConfig {
                 health: 50,
                 damage: 5,
+                sprite_scale: Vec3::new(0.75, 0.75, 1.0),
             },
             UnitVariant::Submarine => UnitVariantConfig {
                 health: 200,
                 damage: 5,
+                sprite_scale: Vec3::new(0.75, 0.75, 1.0),
             },
         }
     }
@@ -147,6 +156,7 @@ fn update_unit_movement(
         ),
         With<Unit>,
     >,
+    game_speed: Res<GameSpeed>,
     time: Res<Time>,
 ) {
     for (
@@ -179,10 +189,10 @@ fn update_unit_movement(
 
         let rotation_z = current_z.lerp(
             direction.x.atan2(direction.y) - PI / 2.0,
-            time.delta_secs() * 10.0,
+            time.delta_secs() * game_speed.as_f32() * 10.0,
         );
         unit_transform.rotation = Quat::from_rotation_z(rotation_z);
-        unit_transform.scale = Vec3::new(0.75, 0.75, 1.0);
+        unit_transform.scale = unit.get_variant().get_config().get_sprite_scale();
     }
 }
 
@@ -190,6 +200,7 @@ fn update_unit_health(
     mut commands: Commands,
     mut units: Query<(Entity, &mut UnitHealth, &mut Sprite, &Transform), With<Unit>>,
     mut health_bars: Query<(Entity, &UnitHealthBar, &mut Sprite, &mut Transform), Without<Unit>>,
+    game_speed: Res<GameSpeed>,
     time: Res<Time>,
 ) {
     for (unit_entity, mut unit_health, mut unit_sprite, _unit_transform) in units.iter_mut() {
@@ -198,13 +209,10 @@ fn update_unit_health(
             continue;
         }
 
-        unit_sprite.color = LinearRgba::from_vec3(
-            unit_sprite
-                .color
-                .to_linear()
-                .to_vec3()
-                .lerp(LinearRgba::WHITE.to_vec3(), time.delta_secs() * 4.0),
-        )
+        unit_sprite.color = LinearRgba::from_vec3(unit_sprite.color.to_linear().to_vec3().lerp(
+            LinearRgba::WHITE.to_vec3(),
+            time.delta_secs() * game_speed.as_f32() * 4.0,
+        ))
         .into();
 
         if unit_health.get_damage_indicator() {

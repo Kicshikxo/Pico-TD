@@ -3,7 +3,7 @@ use std::time::Duration;
 use bevy::prelude::*;
 
 use super::position::TilePosition;
-use crate::game::GameState;
+use crate::game::{GameSpeed, GameState};
 
 #[derive(Component, Clone, Debug)]
 #[require(TilePosition)]
@@ -131,8 +131,14 @@ impl Plugin for TileMovementPlugin {
     }
 }
 
-fn update_tile_movement(mut tile_movements: Query<&mut TileMovement>, time: Res<Time>) {
+fn update_tile_movement(
+    mut tile_movements: Query<&mut TileMovement>,
+    game_speed: Res<GameSpeed>,
+    time: Res<Time>,
+) {
     for mut movement in tile_movements.iter_mut() {
-        movement.update_progress(Duration::from_secs_f32(time.delta_secs()));
+        movement.update_progress(Duration::from_secs_f32(
+            time.delta_secs() * game_speed.as_f32(),
+        ));
     }
 }

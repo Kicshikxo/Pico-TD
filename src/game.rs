@@ -10,7 +10,7 @@ use crate::{
     entities::{tilemap::Tilemap, EntitiesPlugin},
     input::GameInputPlugin,
     ui::{GameUiPlugin, UiState},
-    waves::{CurrentWave, WavesPlugin},
+    waves::{Wave, WavesPlugin},
 };
 
 pub struct GamePlugin;
@@ -26,6 +26,8 @@ impl Plugin for GamePlugin {
             GameInputPlugin,
         ));
 
+        app.init_resource::<GameSpeed>();
+
         app.init_state::<GameState>();
         app.add_systems(OnEnter(GameState::Setup), setup)
             .add_systems(OnEnter(GameState::Start), start_game)
@@ -39,6 +41,34 @@ pub struct GameTilemap;
 
 #[derive(Component)]
 pub struct GameBackgroundSound;
+
+#[derive(Resource, Default)]
+pub enum GameSpeed {
+    #[default]
+    Normal,
+    Double,
+    Triple,
+}
+
+impl GameSpeed {
+    pub fn as_f32(&self) -> f32 {
+        match self {
+            GameSpeed::Normal => 1.0,
+            GameSpeed::Double => 2.0,
+            GameSpeed::Triple => 3.0,
+        }
+    }
+    pub fn set_default(&mut self) {
+        *self = GameSpeed::default();
+    }
+    pub fn toggle(&mut self) {
+        match self {
+            GameSpeed::Normal => *self = GameSpeed::Double,
+            GameSpeed::Double => *self = GameSpeed::Triple,
+            GameSpeed::Triple => *self = GameSpeed::Normal,
+        }
+    }
+}
 
 #[derive(States, Default, Debug, Clone, PartialEq, Eq, Hash)]
 pub enum GameState {
@@ -74,7 +104,8 @@ fn start_game(
     mut commands: Commands,
     game_tilemap: Query<Entity, With<GameTilemap>>,
     selected_level: Res<Level>,
-    mut current_wave: ResMut<CurrentWave>,
+    mut wave: ResMut<Wave>,
+    mut game_speed: ResMut<GameSpeed>,
     game_audio_assets: Res<GameAudioAssets>,
     game_audio_volume: Res<Persistent<GameAudioVolume>>,
     mut next_ui_state: ResMut<NextState<UiState>>,
@@ -105,7 +136,8 @@ fn start_game(
             },
         ));
 
-    current_wave.restart(selected_level.waves.len());
+    wave.restart(selected_level.waves.len());
+    game_speed.set_default();
 
     next_game_state.set(GameState::InGame);
 }

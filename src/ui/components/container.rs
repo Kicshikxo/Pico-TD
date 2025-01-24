@@ -107,19 +107,15 @@ impl UiContainer {
         self.column_gap = column_gap;
         self
     }
-    pub fn center(mut self) -> Self {
-        self.align_items = AlignItems::Center;
-        self.justify_content = JustifyContent::Center;
-        self
+    pub fn center(self) -> Self {
+        self.with_align_items(AlignItems::Center)
+            .with_justify_content(JustifyContent::Center)
     }
     pub fn column(mut self) -> Self {
-        self.flex_direction = FlexDirection::Column;
-        self
+        self.with_flex_direction(FlexDirection::Column)
     }
     pub fn gap(mut self, gap: Val) -> Self {
-        self.row_gap = gap;
-        self.column_gap = gap;
-        self
+        self.with_row_gap(gap).with_column_gap(gap)
     }
 }
 

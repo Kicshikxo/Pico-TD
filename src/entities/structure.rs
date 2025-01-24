@@ -10,7 +10,7 @@ use crate::{
     assets::audio::game::GameAudioAssets,
     audio::{GameAudio, GameAudioVolume},
     entities::projectile::Projectile,
-    game::{GameState, GameTilemap},
+    game::{GameSpeed, GameState, GameTilemap},
 };
 
 use super::{
@@ -193,6 +193,7 @@ fn update_structure(
     game_audio: Single<Entity, With<GameAudio>>,
     game_audio_assets: Res<GameAudioAssets>,
     game_audio_volume: Res<Persistent<GameAudioVolume>>,
+    game_speed: Res<GameSpeed>,
     time: Res<Time>,
 ) {
     let mut sorted_units = units.iter().collect::<Vec<_>>();
@@ -221,7 +222,9 @@ fn update_structure(
         }
 
         if structure.get_cooldown() > Duration::ZERO {
-            structure.decrease_cooldown(Duration::from_secs_f32(time.delta_secs()));
+            structure.decrease_cooldown(Duration::from_secs_f32(
+                time.delta_secs() * game_speed.as_f32(),
+            ));
             continue;
         }
 
