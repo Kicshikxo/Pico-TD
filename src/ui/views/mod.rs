@@ -1,3 +1,4 @@
+pub mod game_over;
 pub mod in_game;
 pub mod level_select;
 pub mod menu;
@@ -8,6 +9,7 @@ pub mod structure_select;
 
 use bevy::prelude::*;
 
+use game_over::GameOverViewUiPlugin;
 use in_game::InGameViewUiPlugin;
 use level_select::LevelSelectViewUiPlugin;
 use menu::MenuViewUiPlugin;
@@ -28,6 +30,7 @@ impl Plugin for ViewsUiPlugin {
             StructureSelectViewUiPlugin,
             StructureInfoViewUiPlugin,
             PauseViewUiPlugin,
+            GameOverViewUiPlugin,
         ));
     }
 }

@@ -45,7 +45,7 @@ impl StructureVariantConfig {
     }
 }
 
-#[derive(Clone, Copy, PartialEq, Debug)]
+#[derive(Clone, Copy, PartialEq)]
 pub enum StructureVariant {
     Soldier,
     SoldierFast,
@@ -190,7 +190,7 @@ fn update_structure(
     )>,
     game_tilemap: Query<Entity, With<GameTilemap>>,
     units: Query<(Entity, &TileMovement, &TilePosition), With<Unit>>,
-    game_audio: Single<Entity, With<GameAudio>>,
+    game_audio: Query<Entity, With<GameAudio>>,
     game_audio_assets: Res<GameAudioAssets>,
     game_audio_volume: Res<Persistent<GameAudioVolume>>,
     game_speed: Res<GameSpeed>,
@@ -255,7 +255,7 @@ fn update_structure(
                         None,
                     ),
                 ));
-                commands.entity(*game_audio).with_child((
+                commands.entity(game_audio.single()).with_child((
                     AudioPlayer::new(game_audio_assets.get_random_shoot().clone()),
                     PlaybackSettings {
                         mode: PlaybackMode::Remove,

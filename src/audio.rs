@@ -1,10 +1,12 @@
 use std::path::Path;
 
-use bevy::{audio::Volume, prelude::*};
+use bevy::prelude::*;
 use bevy_persistent::prelude::*;
 
 use directories::ProjectDirs;
 use serde::{Deserialize, Serialize};
+
+use crate::game::GameBackgroundSound;
 
 #[derive(Resource, Serialize, Deserialize)]
 pub struct GameAudioVolume {
@@ -60,10 +62,8 @@ impl Plugin for GameAudioPlugin {
                 .unwrap(),
         );
 
-        app.add_systems(Startup, init_game_audio).add_systems(
-            Update,
-            update_game_audio.run_if(resource_changed::<Persistent<GameAudioVolume>>),
-        );
+        app.add_systems(Startup, init_game_audio)
+            .add_systems(Update, update_game_audio);
     }
 }
 
@@ -72,18 +72,28 @@ fn init_game_audio(mut commands: Commands) {
 }
 
 fn update_game_audio(
+    mut commands: Commands,
     game_audio: Query<&Children, With<GameAudio>>,
+    audio_sinks: Query<Option<&AudioSink>, Without<GameBackgroundSound>>,
+    mut background_sound: Query<&mut AudioSink, With<GameBackgroundSound>>,
     game_audio_volume: Res<Persistent<GameAudioVolume>>,
-    mut playback_settings: Query<&mut PlaybackSettings>,
 ) {
     if let Ok(game_audio_children) = game_audio.get_single() {
         for game_audio_child in game_audio_children.iter() {
-            if let Ok(mut game_audio_child_playback_settings) =
-                playback_settings.get_mut(*game_audio_child)
-            {
-                game_audio_child_playback_settings.volume =
-                    Volume::new(game_audio_volume.get_sfx_volume());
+            if let Ok(game_audio_child_audio_sink) = audio_sinks.get(*game_audio_child) {
+                if let Some(game_audio_child_audio_sink) = game_audio_child_audio_sink {
+                    if game_audio_volume.is_changed() {
+                        game_audio_child_audio_sink.set_volume(game_audio_volume.get_sfx_volume());
+                    }
+                } else {
+                    commands.entity(*game_audio_child).despawn_recursive();
+                }
             }
+        }
+    }
+    if let Ok(background_sound_sink) = background_sound.get_single_mut() {
+        if game_audio_volume.is_changed() {
+            background_sound_sink.set_volume(game_audio_volume.get_music_volume());
         }
     }
 }

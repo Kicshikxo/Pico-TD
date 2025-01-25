@@ -31,7 +31,7 @@ impl Plugin for LevelsPlugin {
     }
 }
 
-#[derive(Resource, Asset, TypePath, Clone, Debug)]
+#[derive(Resource, Asset, TypePath, Clone)]
 pub struct Level {
     pub name: String,
     pub size: UVec2,
@@ -41,7 +41,7 @@ pub struct Level {
     pub error: Option<String>,
 }
 
-#[derive(Clone, Debug, Deserialize)]
+#[derive(Clone, Deserialize)]
 pub struct Wave {
     pub unit_variant: UnitVariant,
     pub count: u32,
@@ -64,7 +64,7 @@ impl Default for Level {
     }
 }
 
-#[derive(Asset, TypePath, Debug, Deserialize)]
+#[derive(Asset, TypePath, Deserialize)]
 pub struct LevelAsset {
     pub name: String,
     pub size: UVec2,

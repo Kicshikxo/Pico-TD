@@ -29,4 +29,5 @@ pub enum UiState {
     StructureSelect,
     StructureInfo,
     Pause,
+    GameOver,
 }

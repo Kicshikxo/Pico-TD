@@ -12,7 +12,7 @@ use crate::{
 
 use super::tile::sprite::TileSprite;
 
-#[derive(Component, Clone, Debug)]
+#[derive(Component, Clone)]
 #[require(Transform, InheritedVisibility)]
 pub struct Tilemap {
     size: UVec2,

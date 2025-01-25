@@ -8,7 +8,7 @@ use crate::{
     game::{GameState, GameTilemap},
 };
 
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+#[derive(Clone, Copy, PartialEq, Eq)]
 pub enum WaveState {
     Setup,
     InProgress,
@@ -58,6 +58,9 @@ impl Wave {
     pub fn is_last(&self) -> bool {
         let last_index = self.total.saturating_sub(1);
         self.current == last_index
+    }
+    pub fn is_next_wave_allowed(&self) -> bool {
+        self.state == WaveState::Completed && self.is_last() == false
     }
     pub fn is_fully_completed(&self) -> bool {
         self.state == WaveState::Completed && self.is_last() == true

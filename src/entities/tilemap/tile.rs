@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-#[derive(Clone, Copy, PartialEq, Debug)]
+#[derive(Clone, Copy, PartialEq)]
 pub enum TilemapTileVariant {
     Ground,
     Flower,
@@ -10,7 +10,7 @@ pub enum TilemapTileVariant {
     Unknown,
 }
 
-#[derive(Component, Clone, Copy, Debug)]
+#[derive(Component, Clone, Copy)]
 #[require(Transform)]
 pub struct TilemapTile {
     variant: TilemapTileVariant,

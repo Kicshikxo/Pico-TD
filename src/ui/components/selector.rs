@@ -109,6 +109,9 @@ impl UiSelector {
         self.cycle = true;
         self
     }
+    pub fn is_previous_allowed(&self) -> bool {
+        self.cycle || self.current_index > 0
+    }
     pub fn select_previous(&mut self) {
         if self.current_index == 0 && self.cycle == false {
             return;
@@ -120,6 +123,9 @@ impl UiSelector {
         };
         self.update_required = true;
         self.value_changed = true;
+    }
+    pub fn is_next_allowed(&self) -> bool {
+        self.cycle || self.current_index < self.options.len().saturating_sub(1)
     }
     pub fn select_next(&mut self) {
         let last_index = self.options.len().saturating_sub(1);
@@ -151,19 +157,13 @@ impl UiSelector {
     pub fn set_update_required(&mut self, value: bool) {
         self.update_required = value;
     }
-    pub fn get_value_changed(&mut self) -> bool {
-        if self.value_changed {
+    pub fn get_changed_item(&mut self) -> Option<&UiSelectorItem> {
+        if self.value_changed == true {
             self.value_changed = false;
-            return true;
+            self.get_current_item()
         } else {
-            return false;
+            None
         }
-    }
-    pub fn is_previous_allowed(&self) -> bool {
-        self.cycle || self.current_index > 0
-    }
-    pub fn is_next_allowed(&self) -> bool {
-        self.cycle || self.current_index < self.options.len().saturating_sub(1)
     }
 }
 
@@ -220,54 +220,46 @@ fn init_ui_selector(
 }
 
 fn update_ui_selector(
-    decrease_button_interaction: Query<
-        (&Interaction, &Parent),
+    ui_selector_buttons_interactions: Query<
         (
-            Changed<Interaction>,
-            With<UiSelectorDecreaseButton>,
-            Without<UiSelectorIncreaseButton>,
+            &Interaction,
+            &Parent,
+            Option<&UiSelectorDecreaseButton>,
+            Option<&UiSelectorIncreaseButton>,
         ),
+        Changed<Interaction>,
     >,
-    increase_button_interaction: Query<
-        (&Interaction, &Parent),
-        (
-            Changed<Interaction>,
-            With<UiSelectorIncreaseButton>,
-            Without<UiSelectorDecreaseButton>,
-        ),
-    >,
-    mut ui_selector: Query<(&mut UiSelector, &Children)>,
+    mut ui_selectors: Query<(&mut UiSelector, &Children)>,
     mut ui_selector_buttons: Query<(
         &mut UiButton,
         Option<&UiSelectorDecreaseButton>,
         Option<&UiSelectorIncreaseButton>,
     )>,
-    mut ui_selector_texts: Query<(&mut Text, &mut I18nComponent), With<UiSelectorText>>,
+    mut ui_selector_texts: Query<&mut I18nComponent, With<UiSelectorText>>,
 ) {
-    for (interaction, parent) in decrease_button_interaction.iter() {
-        if *interaction == Interaction::Pressed {
-            if let Ok((mut selector, _selector_children)) = ui_selector.get_mut(parent.get()) {
-                if selector.is_previous_allowed() == true {
-                    selector.select_previous();
-                }
-            }
-        }
-    }
-    for (interaction, parent) in increase_button_interaction.iter() {
-        if *interaction == Interaction::Pressed {
-            if let Ok((mut selector, _selector_children)) = ui_selector.get_mut(parent.get()) {
-                if selector.is_next_allowed() == true {
-                    selector.select_next();
-                }
-            }
-        }
-    }
-    for (mut selector, selector_children) in ui_selector.iter_mut() {
-        if selector.get_update_required() == false {
+    for (interaction, parent, ui_selector_decrease_buttons, ui_selector_increase_buttons) in
+        ui_selector_buttons_interactions.iter()
+    {
+        if *interaction != Interaction::Pressed {
             continue;
         }
 
-        for child in selector_children.iter() {
+        if let Ok((mut ui_selector, _ui_selector_children)) = ui_selectors.get_mut(parent.get()) {
+            if ui_selector_decrease_buttons.is_some() && ui_selector.is_previous_allowed() {
+                ui_selector.select_previous();
+            }
+            if ui_selector_increase_buttons.is_some() && ui_selector.is_next_allowed() {
+                ui_selector.select_next();
+            }
+        }
+    }
+
+    for (mut ui_selector, ui_selector_children) in ui_selectors.iter_mut() {
+        if ui_selector.get_update_required() == false {
+            continue;
+        }
+
+        for child in ui_selector_children.iter() {
             if let Ok((
                 mut ui_selector_button,
                 ui_selector_decrease_buttons,
@@ -275,25 +267,22 @@ fn update_ui_selector(
             )) = ui_selector_buttons.get_mut(*child)
             {
                 if ui_selector_decrease_buttons.is_some() {
-                    ui_selector_button.set_disabled(!selector.is_previous_allowed());
+                    ui_selector_button.set_disabled(ui_selector.is_previous_allowed() == false);
                 }
                 if ui_selector_increase_buttons.is_some() {
-                    ui_selector_button.set_disabled(!selector.is_next_allowed());
+                    ui_selector_button.set_disabled(ui_selector.is_next_allowed() == false);
                 }
             }
-            if let Ok((mut ui_selector_text, mut ui_selector_text_i18n)) =
-                ui_selector_texts.get_mut(*child)
-            {
+            if let Ok(mut ui_selector_text_i18n) = ui_selector_texts.get_mut(*child) {
                 ui_selector_text_i18n.change_i18n_key(
-                    selector
+                    ui_selector
                         .get_current_item()
                         .unwrap_or(&UiSelectorItem::default())
                         .text
                         .clone(),
                 );
-                ui_selector_text.0 = ui_selector_text_i18n.translate();
             }
         }
-        selector.set_update_required(false);
+        ui_selector.set_update_required(false);
     }
 }

@@ -5,7 +5,7 @@ use bevy::prelude::*;
 use super::position::TilePosition;
 use crate::game::{GameSpeed, GameState};
 
-#[derive(Component, Clone, Debug)]
+#[derive(Component, Clone)]
 #[require(TilePosition)]
 pub struct TileMovement {
     path: Vec<Vec2>,

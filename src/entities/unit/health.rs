@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-#[derive(Component, Clone, Debug)]
+#[derive(Component, Clone)]
 #[require(Transform)]
 pub struct UnitHealth {
     max: u32,
@@ -50,7 +50,7 @@ impl UnitHealth {
     }
 }
 
-#[derive(Component, Clone, Debug)]
+#[derive(Component, Clone)]
 #[require(Sprite, Transform)]
 pub struct UnitHealthBar {
     unit_entity: Entity,

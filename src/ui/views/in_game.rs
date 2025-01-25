@@ -5,7 +5,7 @@ use crate::{
     ui::{
         components::{
             button::{UiButton, UiButtonVariant},
-            container::{UiContainer, UiContainerVariant},
+            container::UiContainer,
             text::{UiText, UiTextSize},
         },
         i18n::I18nComponent,
@@ -32,9 +32,6 @@ impl Plugin for InGameViewUiPlugin {
 struct RootUiComponent;
 
 #[derive(Component)]
-struct GameOverComponent;
-
-#[derive(Component)]
 struct CurrentSpeedTextComponent;
 
 #[derive(Component, PartialEq)]
@@ -42,7 +39,6 @@ enum InGameButtonAction {
     ChangeSpeed,
     Pause,
     NextWave,
-    BackToMenu,
 }
 
 fn ui_init(mut commands: Commands, wave: Res<Wave>, game_speed: Res<GameSpeed>) {
@@ -52,51 +48,6 @@ fn ui_init(mut commands: Commands, wave: Res<Wave>, game_speed: Res<GameSpeed>) 
             UiContainer::new().with_height(Val::Percent(100.0)),
         ))
         .with_children(|parent| {
-            parent
-                .spawn((
-                    GameOverComponent,
-                    UiContainer::new()
-                        .with_display(if wave.is_fully_completed() == true {
-                            Display::Flex
-                        } else {
-                            Display::None
-                        })
-                        .with_height(Val::Percent(100.0))
-                        .center(),
-                    ZIndex(1),
-                    BackgroundColor(Color::srgba(0.0, 0.0, 0.0, 0.5)),
-                ))
-                .with_children(|parent| {
-                    parent
-                        .spawn(
-                            UiContainer::new()
-                                .with_variant(UiContainerVariant::Primary)
-                                .with_width(Val::Px(320.0))
-                                .with_padding(UiRect::all(Val::Px(24.0)))
-                                .with_row_gap(Val::Px(12.0))
-                                .center()
-                                .column(),
-                        )
-                        .with_children(|parent| {
-                            parent
-                                .spawn(
-                                    UiContainer::new()
-                                        .with_variant(UiContainerVariant::Secondary)
-                                        .with_padding(UiRect::all(Val::Px(8.0))),
-                                )
-                                .with_child(
-                                    UiText::new("ui.in_game.game_over")
-                                        .with_size(UiTextSize::Large),
-                                );
-                            parent
-                                .spawn((
-                                    InGameButtonAction::BackToMenu,
-                                    UiButton::new().with_variant(UiButtonVariant::Primary),
-                                ))
-                                .with_child(UiText::new("ui.in_game.back_to_menu"));
-                        });
-                });
-
             parent
                 .spawn(Node {
                     display: Display::Grid,
@@ -144,10 +95,7 @@ fn ui_init(mut commands: Commands, wave: Res<Wave>, game_speed: Res<GameSpeed>) 
                             InGameButtonAction::NextWave,
                             UiButton::new()
                                 .with_variant(UiButtonVariant::Primary)
-                                .with_disabled(
-                                    wave.get_state() != WaveState::Completed
-                                        || wave.is_last() == true,
-                                )
+                                .with_disabled(wave.is_next_wave_allowed() == false)
                                 .with_padding(UiRect::axes(Val::Px(16.0), Val::Px(8.0))),
                         ))
                         .with_child(
@@ -168,7 +116,7 @@ fn ui_update(
         (&Interaction, &InGameButtonAction),
         (Changed<Interaction>, With<UiButton>),
     >,
-    mut current_speed_text: Query<(&mut Text, &mut I18nComponent), With<CurrentSpeedTextComponent>>,
+    mut current_speed_text: Query<&mut I18nComponent, With<CurrentSpeedTextComponent>>,
     mut wave: ResMut<Wave>,
     mut game_speed: ResMut<GameSpeed>,
     mut next_ui_state: ResMut<NextState<UiState>>,
@@ -179,12 +127,9 @@ fn ui_update(
             match button_action {
                 InGameButtonAction::ChangeSpeed => {
                     game_speed.toggle();
-                    if let Ok((mut current_speed_ui_text, mut current_speed_text_i18n)) =
-                        current_speed_text.get_single_mut()
-                    {
+                    if let Ok(mut current_speed_text_i18n) = current_speed_text.get_single_mut() {
                         current_speed_text_i18n
                             .change_arg("speed", game_speed.as_f32().to_string());
-                        current_speed_ui_text.0 = current_speed_text_i18n.translate();
                     }
                 }
                 InGameButtonAction::Pause => {
@@ -197,10 +142,6 @@ fn ui_update(
                     }
                     wave.next_wave();
                 }
-                InGameButtonAction::BackToMenu => {
-                    next_ui_state.set(UiState::Menu);
-                    next_game_state.set(GameState::Pause);
-                }
             }
         }
     }
@@ -209,19 +150,16 @@ fn ui_update(
 fn ui_update_after_wave_change(
     wave: Res<Wave>,
     mut next_wave_button: Query<(&mut UiButton, &InGameButtonAction)>,
-    mut game_over_component: Query<&mut Node, With<GameOverComponent>>,
+    mut next_ui_state: ResMut<NextState<UiState>>,
+    mut next_game_state: ResMut<NextState<GameState>>,
 ) {
     for (mut ui_button, button_action) in next_wave_button.iter_mut() {
         ui_button.set_disabled(
-            *button_action == InGameButtonAction::NextWave
-                && (wave.get_state() != WaveState::Completed || wave.is_last() == true),
+            *button_action == InGameButtonAction::NextWave && wave.is_next_wave_allowed() == false,
         );
     }
-    if let Ok(mut game_over_node) = game_over_component.get_single_mut() {
-        game_over_node.display = if wave.is_fully_completed() == true {
-            Display::Flex
-        } else {
-            Display::None
-        }
+    if wave.is_fully_completed() == true {
+        next_ui_state.set(UiState::GameOver);
+        next_game_state.set(GameState::Pause);
     }
 }

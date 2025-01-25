@@ -30,11 +30,6 @@ impl Plugin for SettingsViewUiPlugin {
 struct RootUiComponent;
 
 #[derive(Component)]
-enum SettingsButtonAction {
-    BackToMenu,
-}
-
-#[derive(Component)]
 struct LocaleSelector;
 
 #[derive(Component)]
@@ -42,6 +37,11 @@ struct SfxVolumeSelector;
 
 #[derive(Component)]
 struct MusicVolumeSelector;
+
+#[derive(Component)]
+enum SettingsButtonAction {
+    BackToMenu,
+}
 
 fn ui_init(
     mut commands: Commands,
@@ -182,58 +182,37 @@ fn ui_update(
         (&Interaction, &SettingsButtonAction),
         (Changed<Interaction>, With<UiButton>),
     >,
-    mut locale_selector: Query<
-        &mut UiSelector,
-        (
-            With<LocaleSelector>,
-            Without<SfxVolumeSelector>,
-            Without<MusicVolumeSelector>,
-        ),
-    >,
-    mut sfx_volume_selector: Query<
-        &mut UiSelector,
-        (
-            With<SfxVolumeSelector>,
-            Without<LocaleSelector>,
-            Without<MusicVolumeSelector>,
-        ),
-    >,
-    mut music_volume_selector: Query<
-        &mut UiSelector,
-        (
-            With<MusicVolumeSelector>,
-            Without<LocaleSelector>,
-            Without<SfxVolumeSelector>,
-        ),
-    >,
+    mut settings_selectors: ParamSet<(
+        Query<&mut UiSelector, With<LocaleSelector>>,
+        Query<&mut UiSelector, With<SfxVolumeSelector>>,
+        Query<&mut UiSelector, With<MusicVolumeSelector>>,
+    )>,
     mut next_ui_state: ResMut<NextState<UiState>>,
     mut i18n: ResMut<Persistent<I18n>>,
     mut game_audio_volume: ResMut<Persistent<GameAudioVolume>>,
 ) {
-    for mut selector in locale_selector.iter_mut() {
-        if selector.get_value_changed() {
+    for mut locale_selector in settings_selectors.p0().iter_mut() {
+        if let Some(changed_item) = locale_selector.get_changed_item() {
             i18n.update(|i18n| {
-                i18n.set_locale(Locale::from_string(
-                    &selector.get_current_item().unwrap().value.as_string(),
-                ))
+                i18n.set_locale(Locale::from_string(&changed_item.value.as_string()))
             })
-            .unwrap()
+            .unwrap();
         }
     }
-    for mut selector in sfx_volume_selector.iter_mut() {
-        if selector.get_value_changed() {
+    for mut sfx_volume_selector in settings_selectors.p1().iter_mut() {
+        if let Some(changed_item) = sfx_volume_selector.get_changed_item() {
             game_audio_volume
                 .update(|volume| {
-                    volume.set_sfx_volume(selector.get_current_item().unwrap().value.as_number());
+                    volume.set_sfx_volume(changed_item.value.as_number());
                 })
                 .unwrap();
         }
     }
-    for mut selector in music_volume_selector.iter_mut() {
-        if selector.get_value_changed() {
+    for mut music_volume_selector in settings_selectors.p2().iter_mut() {
+        if let Some(changed_item) = music_volume_selector.get_changed_item() {
             game_audio_volume
                 .update(|volume| {
-                    volume.set_music_volume(selector.get_current_item().unwrap().value.as_number());
+                    volume.set_music_volume(changed_item.value.as_number());
                 })
                 .unwrap();
         }

@@ -148,7 +148,7 @@ fn update_ui_button(
         Query<(&mut UiButton, &mut ImageNode)>,
         Query<(&Interaction, &UiButton, &mut ImageNode), (Changed<Interaction>, With<UiButton>)>,
     )>,
-    game_audio: Single<Entity, With<GameAudio>>,
+    game_audio: Query<Entity, With<GameAudio>>,
     ui_audio_assets: Option<Res<UiAudioAssets>>,
     game_audio_volume: Res<Persistent<GameAudioVolume>>,
 ) {
@@ -174,7 +174,7 @@ fn update_ui_button(
         };
         if *interaction == Interaction::Pressed {
             if let Some(ui_audio_assets) = ui_audio_assets.as_ref() {
-                commands.entity(*game_audio).with_child((
+                commands.entity(game_audio.single()).with_child((
                     AudioPlayer::new(ui_audio_assets.button_click.clone()),
                     PlaybackSettings {
                         mode: PlaybackMode::Remove,

@@ -32,7 +32,7 @@ impl UnitVariantConfig {
     }
 }
 
-#[derive(Clone, Copy, PartialEq, Debug, Deserialize)]
+#[derive(Clone, Copy, PartialEq, Deserialize)]
 pub enum UnitVariant {
     Truck,
     Plane,
@@ -57,7 +57,7 @@ impl UnitVariant {
             UnitVariant::Tank => UnitVariantConfig {
                 health: 300,
                 damage: 5,
-                sprite_scale: Vec3::new(0.75, 0.75, 1.0),
+                sprite_scale: Vec3::new(1.0, 1.0, 1.0),
             },
             UnitVariant::Boat => UnitVariantConfig {
                 health: 50,

@@ -6,7 +6,7 @@ use bevy_persistent::prelude::*;
 use directories::ProjectDirs;
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Copy, PartialEq, Debug, Serialize, Deserialize)]
+#[derive(Clone, Copy, PartialEq, Serialize, Deserialize)]
 pub enum Locale {
     En,
     Ru,
@@ -56,6 +56,7 @@ impl Default for I18n {
 pub struct I18nComponent {
     key: String,
     args: Vec<(String, String)>,
+    update_required: bool,
 }
 
 impl Default for I18nComponent {
@@ -63,6 +64,7 @@ impl Default for I18nComponent {
         Self {
             key: String::new(),
             args: Vec::new(),
+            update_required: false,
         }
     }
 }
@@ -82,10 +84,12 @@ impl I18nComponent {
             .find(|(arg_key, _arg_value)| *arg_key == key)
         {
             *arg_value = new_value;
+            self.update_required = true;
         }
     }
     pub fn change_i18n_key(&mut self, key: String) {
         self.key = key;
+        self.update_required = true;
     }
     pub fn translate(&self) -> String {
         let (patterns, values): (Vec<&str>, Vec<String>) = self
@@ -98,6 +102,12 @@ impl I18nComponent {
             patterns.as_slice(),
             values.as_slice(),
         )
+    }
+    pub fn get_update_required(&self) -> bool {
+        self.update_required
+    }
+    pub fn set_update_required(&mut self, value: bool) {
+        self.update_required = value;
     }
 }
 
@@ -123,10 +133,20 @@ impl Plugin for I18nPlugin {
                 .unwrap(),
         );
 
+        app.add_systems(Update, update_i18n);
         app.add_systems(
             Update,
             update_locale.run_if(resource_changed::<Persistent<I18n>>),
         );
+    }
+}
+
+fn update_i18n(mut i18n_components: Query<(&mut Text, &mut I18nComponent)>) {
+    for (mut i18n_text, mut i18n_component) in i18n_components.iter_mut() {
+        if i18n_component.get_update_required() == true {
+            i18n_text.0 = i18n_component.translate();
+            i18n_component.set_update_required(false);
+        }
     }
 }
 

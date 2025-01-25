@@ -12,7 +12,7 @@ use crate::{
     game::GameState,
 };
 
-#[derive(Clone, Copy, PartialEq, Debug)]
+#[derive(Clone, Copy, PartialEq)]
 pub enum TileSpriteVariant {
     Projectile(ProjectileVariant),
     Structure(StructureVariant),
