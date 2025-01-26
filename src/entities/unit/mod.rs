@@ -145,9 +145,14 @@ fn init_unit(
             TileSprite::new(unit.get_variant().into()),
         ));
 
-        commands
-            .entity(game_tilemap.single())
-            .with_child(UnitHealthBar::new(unit_entity));
+        commands.entity(game_tilemap.single()).with_child((
+            UnitHealthBar::new(unit_entity),
+            Sprite {
+                custom_size: Some(Vec2::new(16.0, 2.0)),
+                anchor: Anchor::TopLeft,
+                ..default()
+            },
+        ));
     }
 }
 
@@ -238,7 +243,7 @@ fn update_unit_health(
             units.get(health_bar.get_unit_entity())
         {
             let health_percentage = unit_health.get_current() as f32 / unit_health.get_max() as f32;
-
+            health_bar_transform.scale = Vec3::new(health_percentage, 1.0, 1.0);
             health_bar_sprite.color = match health_percentage {
                 health_percentage if health_percentage < 0.25 => Color::srgba(1.0, 0.0, 0.0, 0.75),
                 health_percentage if health_percentage < 0.75 => Color::srgba(1.0, 1.0, 0.0, 0.75),
@@ -246,11 +251,9 @@ fn update_unit_health(
                 _ => Color::srgba(0.0, 1.0, 0.0, 0.75),
             };
 
-            health_bar_sprite.anchor = Anchor::TopLeft;
-            health_bar_sprite.custom_size = Some(Vec2::new(16.0, 2.0));
-            health_bar_transform.scale = Vec3::new(health_percentage, 1.0, 1.0);
-            health_bar_transform.translation =
-                unit_transform.translation + Vec3::new(-8.0, 8.0, 1.0);
+            let health_bar_sprite_size = health_bar_sprite.custom_size.unwrap();
+            health_bar_transform.translation = unit_transform.translation
+                + Vec3::new(health_bar_sprite_size.x / 2.0 * -1.0, 8.0, 1.0);
         } else {
             commands.entity(health_bar_entity).despawn_recursive();
         }

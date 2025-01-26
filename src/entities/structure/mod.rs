@@ -194,9 +194,15 @@ fn init_structure(
             .entity(structure_entity)
             .insert(TileSprite::new(structure.get_variant().into()));
 
-        commands
-            .entity(game_tilemap.single())
-            .with_child(CooldownIndicator::new(structure_entity));
+        commands.entity(game_tilemap.single()).with_child((
+            CooldownIndicator::new(structure_entity),
+            Sprite {
+                custom_size: Some(Vec2::new(2.0, 16.0)),
+                color: Color::srgba(0.0, 0.0, 1.0, 0.75),
+                anchor: Anchor::BottomRight,
+                ..default()
+            },
+        ));
     }
 }
 
@@ -297,7 +303,7 @@ fn update_structure_cooldown(
     mut commands: Commands,
     mut structures: Query<(&mut Structure, &Transform)>,
     mut cooldown_indicators: Query<
-        (Entity, &CooldownIndicator, &mut Sprite, &mut Transform),
+        (Entity, &CooldownIndicator, &Sprite, &mut Transform),
         Without<Structure>,
     >,
     game_speed: Res<GameSpeed>,
@@ -314,7 +320,7 @@ fn update_structure_cooldown(
     for (
         cooldown_indicator_entity,
         cooldown_indicator,
-        mut cooldown_indicator_sprite,
+        cooldown_indicator_sprite,
         mut cooldown_indicator_transform,
     ) in cooldown_indicators.iter_mut()
     {
@@ -323,13 +329,11 @@ fn update_structure_cooldown(
         {
             let cooldown_percentage =
                 structure.get_cooldown().as_secs_f32() / structure.get_fire_rate().as_secs_f32();
-
-            cooldown_indicator_sprite.color = Color::srgba(0.0, 0.0, 1.0, 0.75);
-            cooldown_indicator_sprite.anchor = Anchor::BottomRight;
-            cooldown_indicator_sprite.custom_size = Some(Vec2::new(2.0, 16.0));
             cooldown_indicator_transform.scale = Vec3::new(1.0, cooldown_percentage, 1.0);
-            cooldown_indicator_transform.translation =
-                structure_transform.translation + Vec3::new(8.0, -8.0, 1.0);
+
+            let cooldown_indicator_sprite_size = cooldown_indicator_sprite.custom_size.unwrap();
+            cooldown_indicator_transform.translation = structure_transform.translation
+                + Vec3::new(8.0, cooldown_indicator_sprite_size.y / 2.0 * -1.0, 1.0);
         } else {
             commands.entity(cooldown_indicator_entity).despawn();
         }
