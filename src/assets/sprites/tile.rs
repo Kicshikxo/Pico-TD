@@ -107,6 +107,10 @@ pub enum EntityUnitVariant {
     Submarine = 70,
 }
 
+pub enum EntityUtilVariant {
+    TileIndicator = 127,
+}
+
 impl TileAssets {
     pub fn get_tile_index(
         &self,

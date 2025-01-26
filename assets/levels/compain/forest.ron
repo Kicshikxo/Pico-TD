@@ -1,7 +1,6 @@
 LevelAsset(
     name: "Лес",
     size: (20, 20),
-    theme: "forest",
     map: [
         "#TT.###~TTTTT~F#.###",
         "##T.###~T###T~##.###",

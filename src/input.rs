@@ -50,7 +50,7 @@ fn update_selected_tile(
     let Ok((camera, camera_transform)) = main_camera.get_single() else {
         return;
     };
-    let Ok((tilemap, tilemap_transform)) = game_tilemap.get_single() else {
+    let Ok((game_tilemap, game_tilemap_transform)) = game_tilemap.get_single() else {
         return;
     };
 
@@ -61,16 +61,16 @@ fn update_selected_tile(
             continue;
         };
 
-        let cursor_in_tilemap_position = tilemap_transform
+        let cursor_in_tilemap_position = game_tilemap_transform
             .compute_matrix()
             .inverse()
             .transform_point3(
-                (cursor_position - tilemap.get_tile_size().as_vec2() / 2.0).extend(0.0),
+                (cursor_position - game_tilemap.get_tile_size().as_vec2() / 2.0).extend(0.0),
             )
             .xy();
 
         let cursor_tile_position =
-            TilePosition::from_tilemap_position(tilemap, cursor_in_tilemap_position);
+            TilePosition::from_tilemap_position(game_tilemap, cursor_in_tilemap_position);
 
         selected_tile.tile_position = cursor_tile_position;
     }
@@ -97,12 +97,12 @@ fn update_selected_structure(
     if wave.is_fully_completed() == true {
         return;
     }
-    // ! Refactor
-    let game_tilemap = game_tilemap.single();
-    if let Some(selected_tile_entity) = game_tilemap.get_tile(IVec2::new(
-        selected_tile.tile_position.as_ivec2().x,
-        game_tilemap.get_size().y as i32 - selected_tile.tile_position.as_ivec2().y - 1,
-    )) {
+    let Ok(game_tilemap) = game_tilemap.get_single() else {
+        return;
+    };
+    if let Some(selected_tile_entity) =
+        game_tilemap.get_tile_from_tile_position(selected_tile.tile_position)
+    {
         if let Ok(selected_tile) = tiles.get(selected_tile_entity) {
             if selected_tile.get_variant() != TilemapTileVariant::Ground {
                 return;

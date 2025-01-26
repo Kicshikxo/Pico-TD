@@ -269,6 +269,7 @@ fn update_structure(
                 let unit_direction = structure_tile_position.as_vec2()
                     - unit_movement.position_at_progress(unit_progress_on_hit);
                 let scale_x = if unit_direction.x < 0.0 { 1.0 } else { -1.0 };
+                structure_transform.translation.z = 1.0;
                 structure_transform.scale.x = scale_x;
 
                 break;

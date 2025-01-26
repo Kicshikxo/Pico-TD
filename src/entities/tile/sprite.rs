@@ -2,8 +2,8 @@ use bevy::prelude::*;
 
 use crate::{
     assets::sprites::tile::{
-        EntityProjectileVariant, EntityStructureVariant, EntityUnitVariant, TileAssets,
-        TilemapTileSpriteVariant,
+        EntityProjectileVariant, EntityStructureVariant, EntityUnitVariant, EntityUtilVariant,
+        TileAssets, TilemapTileSpriteVariant,
     },
     entities::{
         projectile::ProjectileVariant, structure::StructureVariant,
@@ -13,11 +13,17 @@ use crate::{
 };
 
 #[derive(Clone, Copy, PartialEq)]
+pub enum UtilVariant {
+    TileIndicator,
+}
+
+#[derive(Clone, Copy, PartialEq)]
 pub enum TileSpriteVariant {
     Projectile(ProjectileVariant),
     Structure(StructureVariant),
     Tilemap(TilemapTileVariant),
     Unit(UnitVariant),
+    Util(UtilVariant),
 }
 impl From<ProjectileVariant> for TileSpriteVariant {
     fn from(variant: ProjectileVariant) -> Self {
@@ -66,6 +72,9 @@ impl TileSpriteVariant {
                 UnitVariant::Tank => EntityUnitVariant::Tank as usize,
                 UnitVariant::Boat => EntityUnitVariant::Boat as usize,
                 UnitVariant::Submarine => EntityUnitVariant::Submarine as usize,
+            },
+            TileSpriteVariant::Util(variant) => match variant {
+                UtilVariant::TileIndicator => EntityUtilVariant::TileIndicator as usize,
             },
         }
     }

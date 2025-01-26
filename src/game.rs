@@ -7,7 +7,7 @@ use bevy_persistent::Persistent;
 use crate::{
     assets::{audio::game::GameAudioAssets, levels::Level, AssetsPlugin},
     audio::{GameAudioPlugin, GameAudioVolume},
-    entities::{tilemap::Tilemap, EntitiesPlugin},
+    entities::{tile::indicator::TileIndicator, tilemap::Tilemap, EntitiesPlugin},
     input::GameInputPlugin,
     ui::{GameUiPlugin, UiState},
     waves::{Wave, WavesPlugin},
@@ -134,7 +134,8 @@ fn start_game(
                 volume: Volume::new(game_audio_volume.get_music_volume()),
                 ..default()
             },
-        ));
+        ))
+        .with_child(TileIndicator);
 
     wave.restart(selected_level.waves.len());
     game_speed.set_default();

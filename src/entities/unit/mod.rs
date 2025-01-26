@@ -18,6 +18,7 @@ pub struct UnitVariantConfig {
     damage: u32,
     health: u32,
     sprite_scale: Vec3,
+    z_position: f32,
 }
 
 impl UnitVariantConfig {
@@ -29,6 +30,9 @@ impl UnitVariantConfig {
     }
     pub fn get_sprite_scale(&self) -> Vec3 {
         self.sprite_scale
+    }
+    pub fn get_z_position(&self) -> f32 {
+        self.z_position
     }
 }
 
@@ -48,26 +52,31 @@ impl UnitVariant {
                 health: 100,
                 damage: 5,
                 sprite_scale: Vec3::new(0.75, 0.75, 1.0),
+                z_position: 0.01,
             },
             UnitVariant::Plane => UnitVariantConfig {
                 health: 150,
                 damage: 5,
-                sprite_scale: Vec3::new(1.0, 1.0, 1.0),
+                sprite_scale: Vec3::new(0.9, 0.9, 1.0),
+                z_position: 0.03,
             },
             UnitVariant::Tank => UnitVariantConfig {
                 health: 300,
                 damage: 5,
-                sprite_scale: Vec3::new(1.0, 1.0, 1.0),
+                sprite_scale: Vec3::new(0.9, 0.9, 1.0),
+                z_position: 0.02,
             },
             UnitVariant::Boat => UnitVariantConfig {
                 health: 50,
                 damage: 5,
                 sprite_scale: Vec3::new(0.75, 0.75, 1.0),
+                z_position: 0.02,
             },
             UnitVariant::Submarine => UnitVariantConfig {
                 health: 200,
                 damage: 5,
                 sprite_scale: Vec3::new(0.75, 0.75, 1.0),
+                z_position: 0.01,
             },
         }
     }
@@ -193,6 +202,7 @@ fn update_unit_movement(
         );
         unit_transform.rotation = Quat::from_rotation_z(rotation_z);
         unit_transform.scale = unit.get_variant().get_config().get_sprite_scale();
+        unit_transform.translation.z = unit.get_variant().get_config().get_z_position();
     }
 }
 
@@ -215,7 +225,7 @@ fn update_unit_health(
         ))
         .into();
 
-        if unit_health.get_damage_indicator() {
+        if unit_health.get_damage_indicator() == true {
             unit_sprite.color = Color::srgb(1.0, 0.0, 0.0);
             unit_health.clear_damage_indicator();
         }
@@ -230,8 +240,8 @@ fn update_unit_health(
             let health_percentage = unit_health.get_current() as f32 / unit_health.get_max() as f32;
 
             health_bar_sprite.color = match health_percentage {
-                health_percentage if health_percentage < 0.3 => Color::srgba(1.0, 0.0, 0.0, 0.75),
-                health_percentage if health_percentage < 0.7 => Color::srgba(1.0, 1.0, 0.0, 0.75),
+                health_percentage if health_percentage < 0.25 => Color::srgba(1.0, 0.0, 0.0, 0.75),
+                health_percentage if health_percentage < 0.75 => Color::srgba(1.0, 1.0, 0.0, 0.75),
                 health_percentage if health_percentage == 1.0 => Color::srgba(0.0, 0.0, 0.0, 0.0),
                 _ => Color::srgba(0.0, 1.0, 0.0, 0.75),
             };

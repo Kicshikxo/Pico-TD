@@ -10,7 +10,7 @@ use crate::{
     game::GameState,
 };
 
-use super::tile::sprite::TileSprite;
+use super::tile::{position::TilePosition, sprite::TileSprite};
 
 #[derive(Component, Clone)]
 #[require(Transform, InheritedVisibility)]
@@ -55,6 +55,12 @@ impl Tilemap {
     }
     pub fn get_tile(&self, position: IVec2) -> Option<Entity> {
         self.tiles.get(&position).copied()
+    }
+    pub fn get_tile_from_tile_position(&self, position: TilePosition) -> Option<Entity> {
+        self.get_tile(IVec2::new(
+            position.as_ivec2().x,
+            self.size.y as i32 - position.as_ivec2().y - 1,
+        ))
     }
     pub fn get_update_required(&self) -> bool {
         self.update_required

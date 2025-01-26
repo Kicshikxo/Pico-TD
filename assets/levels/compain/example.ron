@@ -1,7 +1,6 @@
 LevelAsset(
     name: "<level.name>",
     size: (<level.size.x>, <level.size.y>),
-    theme: "forest",
     map: [
         "###.############.###",
         "###.####~~~~####.###",
