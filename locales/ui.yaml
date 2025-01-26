@@ -40,6 +40,9 @@ ui.level_select.upload_level:
     en: "Upload level"
     ru: "Загрузить уровень"
 
+ui.in_game.wave_info:
+    en: "Wave %{current}/%{total}"
+    ru: "Волна %{current}/%{total}"
 ui.in_game.game_speed:
     en: "Speed: x%{speed}"
     ru: "Скорость: x%{speed}"

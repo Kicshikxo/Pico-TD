@@ -10,6 +10,7 @@ use crate::{
 
 #[derive(Clone, Copy, PartialEq, Eq)]
 pub enum WaveState {
+    NotStarted,
     Setup,
     InProgress,
     Completed,
@@ -27,7 +28,7 @@ impl Default for Wave {
         Self {
             total: 0,
             current: 0,
-            state: WaveState::Setup,
+            state: WaveState::NotStarted,
         }
     }
 }
@@ -36,7 +37,10 @@ impl Wave {
     pub fn restart(&mut self, total: usize) {
         self.total = total;
         self.current = 0;
-        self.state = WaveState::Setup;
+        self.state = WaveState::NotStarted;
+    }
+    pub fn get_total(&self) -> usize {
+        self.total
     }
     pub fn get_current(&self) -> usize {
         self.current
@@ -48,6 +52,10 @@ impl Wave {
         self.state = state;
     }
     pub fn next_wave(&mut self) {
+        if self.state == WaveState::NotStarted {
+            self.state = WaveState::Setup;
+            return;
+        }
         let last_index = self.total.saturating_sub(1);
         if self.current >= last_index {
             return;
@@ -60,7 +68,8 @@ impl Wave {
         self.current == last_index
     }
     pub fn is_next_wave_allowed(&self) -> bool {
-        self.state == WaveState::Completed && self.is_last() == false
+        self.state == WaveState::NotStarted
+            || self.state == WaveState::Completed && self.is_last() == false
     }
     pub fn is_fully_completed(&self) -> bool {
         self.state == WaveState::Completed && self.is_last() == true

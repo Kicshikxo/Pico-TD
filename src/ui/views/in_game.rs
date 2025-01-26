@@ -11,7 +11,7 @@ use crate::{
         i18n::I18nComponent,
         UiState,
     },
-    waves::{Wave, WaveState},
+    waves::Wave,
 };
 
 pub struct InGameViewUiPlugin;
@@ -32,6 +32,9 @@ impl Plugin for InGameViewUiPlugin {
 struct RootUiComponent;
 
 #[derive(Component)]
+struct WaveInfoTextComponent;
+
+#[derive(Component)]
 struct CurrentSpeedTextComponent;
 
 #[derive(Component, PartialEq)]
@@ -48,6 +51,20 @@ fn ui_init(mut commands: Commands, wave: Res<Wave>, game_speed: Res<GameSpeed>) 
             UiContainer::new().with_height(Val::Percent(100.0)),
         ))
         .with_children(|parent| {
+            parent
+                .spawn(Node {
+                    position_type: PositionType::Absolute,
+                    top: Val::Px(8.0),
+                    right: Val::Px(8.0),
+                    ..default()
+                })
+                .with_child((
+                    WaveInfoTextComponent,
+                    UiText::new("ui.in_game.wave_info")
+                        .with_arg("current", (wave.get_current() + 1).to_string())
+                        .with_arg("total", wave.get_total().to_string()),
+                ));
+
             parent
                 .spawn(Node {
                     display: Display::Grid,
@@ -137,10 +154,9 @@ fn ui_update(
                     next_game_state.set(GameState::Pause);
                 }
                 InGameButtonAction::NextWave => {
-                    if wave.get_state() != WaveState::Completed {
-                        return;
+                    if wave.is_next_wave_allowed() == true {
+                        wave.next_wave();
                     }
-                    wave.next_wave();
                 }
             }
         }
@@ -150,9 +166,13 @@ fn ui_update(
 fn ui_update_after_wave_change(
     wave: Res<Wave>,
     mut next_wave_button: Query<(&mut UiButton, &InGameButtonAction)>,
+    mut wave_info_text: Query<&mut I18nComponent, With<WaveInfoTextComponent>>,
     mut next_ui_state: ResMut<NextState<UiState>>,
     mut next_game_state: ResMut<NextState<GameState>>,
 ) {
+    for mut wave_info_text_i18n in wave_info_text.iter_mut() {
+        wave_info_text_i18n.change_arg("current", (wave.get_current() + 1).to_string());
+    }
     for (mut ui_button, button_action) in next_wave_button.iter_mut() {
         ui_button.set_disabled(
             *button_action == InGameButtonAction::NextWave && wave.is_next_wave_allowed() == false,
