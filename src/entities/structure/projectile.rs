@@ -2,11 +2,12 @@ use std::{f32::consts::PI, time::Duration};
 
 use bevy::prelude::*;
 
-use crate::game::GameState;
-
-use super::{
-    tile::{movement::TileMovement, position::TilePosition, sprite::TileSprite},
-    unit::{health::UnitHealth, Unit},
+use crate::{
+    entities::{
+        tile::{movement::TileMovement, position::TilePosition, sprite::TileSprite},
+        unit::{health::UnitHealth, Unit},
+    },
+    game::GameState,
 };
 
 pub struct ProjectileVariantConfig {

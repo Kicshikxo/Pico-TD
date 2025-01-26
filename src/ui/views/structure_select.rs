@@ -97,6 +97,7 @@ fn ui_init(mut commands: Commands, ui_assets: Res<UiAssets>, tile_assets: Res<Ti
                                 StructureVariant::Soldier,
                                 StructureVariant::SoldierFast,
                                 StructureVariant::SoldierStrong,
+                                StructureVariant::SoldierSniper,
                                 StructureVariant::RocketLauncher,
                             ] {
                                 parent

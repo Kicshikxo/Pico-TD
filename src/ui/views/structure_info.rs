@@ -88,7 +88,9 @@ fn ui_init(
                                 .with_variant(UiContainerVariant::Secondary)
                                 .with_padding(UiRect::all(Val::Px(8.0))),
                         )
-                        .with_child(UiText::new("ui.structure_info.title"));
+                        .with_child(
+                            UiText::new("ui.structure_info.title").with_size(UiTextSize::Large),
+                        );
 
                     if let Some(selected_structure) = selected_structure {
                         for (structure, tile_position) in structures.iter() {

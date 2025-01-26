@@ -9,7 +9,7 @@ use crate::{
             button::UiButton,
             container::{UiContainer, UiContainerVariant},
             selector::{UiSelector, UiSelectorItem, UiSelectorItemValue},
-            text::UiText,
+            text::{UiText, UiTextSize},
         },
         i18n::{I18n, Locale},
         UiState,
@@ -73,6 +73,7 @@ fn ui_init(
                     UiContainer::new()
                         .with_variant(UiContainerVariant::Primary)
                         .with_width(Val::Px(320.0))
+                        .with_height(Val::Px(380.0))
                         .with_padding(UiRect::all(Val::Px(24.0)))
                         .with_row_gap(Val::Px(12.0))
                         .center()
@@ -104,7 +105,7 @@ fn ui_init(
                                 .with_variant(UiContainerVariant::Secondary)
                                 .with_padding(UiRect::all(Val::Px(8.0))),
                         )
-                        .with_child(UiText::new("ui.settings.title"));
+                        .with_child(UiText::new("ui.settings.title").with_size(UiTextSize::Large));
 
                     parent
                         .spawn(UiContainer::new().with_row_gap(Val::Px(4.0)).column())

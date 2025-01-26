@@ -32,7 +32,7 @@ ui.settings.sfx_volume:
     en: "SFX volume"
     ru: "Громкость звуков"
 
-ui.level_select.select_level:
+ui.level_select.title:
     en: "Select level"
     ru: "Выберите уровень"
 
@@ -94,6 +94,9 @@ ui.structure.soldier_fast:
 ui.structure.soldier_strong:
     en: "Soldier strong"
     ru: "Солдат сильный"
+ui.structure.soldier_sniper:
+    en: "Soldier sniper"
+    ru: "Солдат снайпер"
 ui.structure.rocket_launcher:
     en: "Rocket launcher"
     ru: "Ракетница"

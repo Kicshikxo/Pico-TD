@@ -118,7 +118,9 @@ fn ui_init(
                                 .with_variant(UiContainerVariant::Secondary)
                                 .with_padding(UiRect::all(Val::Px(8.0))),
                         )
-                        .with_child(UiText::new("ui.level_select.select_level"));
+                        .with_child(
+                            UiText::new("ui.level_select.title").with_size(UiTextSize::Large),
+                        );
                     parent
                         .spawn(Node {
                             display: Display::Grid,
@@ -219,9 +221,8 @@ fn ui_update(
                     if level.error.is_some() {
                         return;
                     }
-                    *selected_level = level.clone();
 
-                    next_ui_state.set(UiState::InGame);
+                    *selected_level = level.clone();
                     next_game_state.set(GameState::Start);
                 }
                 LevelSelectButtonAction::UploadLevel => {
@@ -244,7 +245,6 @@ fn ui_update(
 
 fn uploaded_level_update(
     mut next_game_state: ResMut<NextState<GameState>>,
-    mut next_ui_state: ResMut<NextState<UiState>>,
     asset_server: Res<AssetServer>,
     levels_assets_loader: Res<Assets<Level>>,
     mut uploaded_level: ResMut<UploadedLevel>,
@@ -264,8 +264,6 @@ fn uploaded_level_update(
                             .unwrap();
                     } else {
                         *selected_level = level.clone();
-
-                        next_ui_state.set(UiState::InGame);
                         next_game_state.set(GameState::Start);
                     }
                 }

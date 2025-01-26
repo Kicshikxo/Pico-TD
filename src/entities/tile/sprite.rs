@@ -6,8 +6,9 @@ use crate::{
         TileAssets, TilemapTileSpriteVariant,
     },
     entities::{
-        projectile::ProjectileVariant, structure::StructureVariant,
-        tilemap::tile::TilemapTileVariant, unit::UnitVariant,
+        structure::{projectile::ProjectileVariant, StructureVariant},
+        tilemap::tile::TilemapTileVariant,
+        unit::UnitVariant,
     },
     game::GameState,
 };
@@ -56,6 +57,7 @@ impl TileSpriteVariant {
                 StructureVariant::Soldier => EntityStructureVariant::Soldier as usize,
                 StructureVariant::SoldierFast => EntityStructureVariant::SoldierFast as usize,
                 StructureVariant::SoldierStrong => EntityStructureVariant::SoldierStrong as usize,
+                StructureVariant::SoldierSniper => EntityStructureVariant::SoldierSniper as usize,
                 StructureVariant::RocketLauncher => EntityStructureVariant::RocketLauncher as usize,
             },
             TileSpriteVariant::Tilemap(variant) => match variant {

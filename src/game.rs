@@ -140,6 +140,7 @@ fn start_game(
     wave.restart(selected_level.waves.len());
     game_speed.set_default();
 
+    next_ui_state.set(UiState::InGame);
     next_game_state.set(GameState::InGame);
 }
 

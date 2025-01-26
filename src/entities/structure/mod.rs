@@ -1,20 +1,24 @@
+pub mod cooldown_indicator;
+pub mod projectile;
+
 use std::time::Duration;
 
 use bevy::{
     audio::{PlaybackMode, Volume},
     prelude::*,
+    sprite::Anchor,
 };
 use bevy_persistent::Persistent;
+use cooldown_indicator::CooldownIndicator;
+use projectile::{Projectile, ProjectilePlugin, ProjectileVariant};
 
 use crate::{
     assets::audio::game::GameAudioAssets,
     audio::{GameAudio, GameAudioVolume},
-    entities::projectile::Projectile,
     game::{GameSpeed, GameState, GameTilemap},
 };
 
 use super::{
-    projectile::ProjectileVariant,
     tile::{
         movement::TileMovement,
         position::TilePosition,
@@ -50,6 +54,7 @@ pub enum StructureVariant {
     Soldier,
     SoldierFast,
     SoldierStrong,
+    SoldierSniper,
     RocketLauncher,
 }
 
@@ -59,6 +64,7 @@ impl StructureVariant {
             StructureVariant::Soldier => "ui.structure.soldier".to_string(),
             StructureVariant::SoldierFast => "ui.structure.soldier_fast".to_string(),
             StructureVariant::SoldierStrong => "ui.structure.soldier_strong".to_string(),
+            StructureVariant::SoldierSniper => "ui.structure.soldier_sniper".to_string(),
             StructureVariant::RocketLauncher => "ui.structure.rocket_launcher".to_string(),
         }
     }
@@ -80,6 +86,12 @@ impl StructureVariant {
                 damage: 50,
                 fire_radius: 3.0,
                 fire_rate: Duration::from_secs_f32(1.0),
+                projectile_variant: ProjectileVariant::Bullet,
+            },
+            StructureVariant::SoldierSniper => StructureVariantConfig {
+                damage: 150,
+                fire_radius: 7.0,
+                fire_rate: Duration::from_secs_f32(5.0),
                 projectile_variant: ProjectileVariant::Bullet,
             },
             StructureVariant::RocketLauncher => StructureVariantConfig {
@@ -162,21 +174,29 @@ pub struct StructurePlugin;
 
 impl Plugin for StructurePlugin {
     fn build(&self, app: &mut App) {
+        app.add_plugins(ProjectilePlugin);
+
         app.add_systems(
             Update,
-            (init_structure, update_structure).run_if(in_state(GameState::InGame)),
+            (init_structure, update_structure, update_structure_cooldown)
+                .run_if(in_state(GameState::InGame)),
         );
     }
 }
 
 fn init_structure(
     mut commands: Commands,
+    game_tilemap: Query<Entity, With<GameTilemap>>,
     structures: Query<(Entity, &Structure), Added<Structure>>,
 ) {
     for (structure_entity, structure) in structures.iter() {
         commands
             .entity(structure_entity)
             .insert(TileSprite::new(structure.get_variant().into()));
+
+        commands
+            .entity(game_tilemap.single())
+            .with_child(CooldownIndicator::new(structure_entity));
     }
 }
 
@@ -193,8 +213,6 @@ fn update_structure(
     game_audio: Query<Entity, With<GameAudio>>,
     game_audio_assets: Res<GameAudioAssets>,
     game_audio_volume: Res<Persistent<GameAudioVolume>>,
-    game_speed: Res<GameSpeed>,
-    time: Res<Time>,
 ) {
     let mut sorted_units = units.iter().collect::<Vec<_>>();
     sorted_units.sort_by(|(_, unit_a_movement, _), (_, unit_b_movement, _)| {
@@ -222,9 +240,6 @@ fn update_structure(
         }
 
         if structure.get_cooldown() > Duration::ZERO {
-            structure.decrease_cooldown(Duration::from_secs_f32(
-                time.delta_secs() * game_speed.as_f32(),
-            ));
             continue;
         }
 
@@ -274,6 +289,49 @@ fn update_structure(
 
                 break;
             }
+        }
+    }
+}
+
+fn update_structure_cooldown(
+    mut commands: Commands,
+    mut structures: Query<(&mut Structure, &Transform)>,
+    mut cooldown_indicators: Query<
+        (Entity, &CooldownIndicator, &mut Sprite, &mut Transform),
+        Without<Structure>,
+    >,
+    game_speed: Res<GameSpeed>,
+    time: Res<Time>,
+) {
+    for (mut structure, _structure_transform) in structures.iter_mut() {
+        if structure.get_cooldown() > Duration::ZERO {
+            structure.decrease_cooldown(Duration::from_secs_f32(
+                time.delta_secs() * game_speed.as_f32(),
+            ));
+            continue;
+        }
+    }
+    for (
+        cooldown_indicator_entity,
+        cooldown_indicator,
+        mut cooldown_indicator_sprite,
+        mut cooldown_indicator_transform,
+    ) in cooldown_indicators.iter_mut()
+    {
+        if let Ok((structure, structure_transform)) =
+            structures.get(cooldown_indicator.get_structure_entity())
+        {
+            let cooldown_percentage =
+                structure.get_cooldown().as_secs_f32() / structure.get_fire_rate().as_secs_f32();
+
+            cooldown_indicator_sprite.color = Color::srgba(0.0, 0.0, 1.0, 0.75);
+            cooldown_indicator_sprite.anchor = Anchor::BottomRight;
+            cooldown_indicator_sprite.custom_size = Some(Vec2::new(2.0, 16.0));
+            cooldown_indicator_transform.scale = Vec3::new(1.0, cooldown_percentage, 1.0);
+            cooldown_indicator_transform.translation =
+                structure_transform.translation + Vec3::new(8.0, -8.0, 1.0);
+        } else {
+            commands.entity(cooldown_indicator_entity).despawn();
         }
     }
 }

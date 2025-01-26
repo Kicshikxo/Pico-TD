@@ -96,6 +96,7 @@ pub enum EntityStructureVariant {
     Soldier = 8,
     SoldierFast = 56,
     SoldierStrong = 44,
+    SoldierSniper = 20,
     RocketLauncher = 9,
 }
 
