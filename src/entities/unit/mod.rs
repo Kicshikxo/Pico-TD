@@ -1,9 +1,11 @@
 pub mod health;
+pub mod health_bar;
 
 use std::f32::consts::PI;
 
 use bevy::{prelude::*, sprite::Anchor};
-use health::{UnitHealth, UnitHealthBar};
+use health::UnitHealth;
+use health_bar::UnitHealthBar;
 use serde::Deserialize;
 
 use crate::game::{GameSpeed, GameState, GameTilemap};

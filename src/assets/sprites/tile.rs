@@ -122,7 +122,7 @@ impl TileAssets {
             TilemapTileVariant::Road => self.get_road_tile_index(tiles_around) as usize,
             TilemapTileVariant::Water => self.get_water_tile_index(tiles_around) as usize,
             TilemapTileVariant::Ground => {
-                if rand::thread_rng().gen_bool(0.25) {
+                if rand::rng().random_bool(0.25) {
                     TilemapTileSpriteVariant::GroundWithGrass as usize
                 } else {
                     TilemapTileSpriteVariant::Ground as usize
@@ -130,7 +130,7 @@ impl TileAssets {
             }
             TilemapTileVariant::Flower => TilemapTileSpriteVariant::GroundWithFlower as usize,
             TilemapTileVariant::Tree => {
-                if rand::thread_rng().gen_bool(0.25) {
+                if rand::rng().random_bool(0.25) {
                     TilemapTileSpriteVariant::GroundWithDoubleTree as usize
                 } else {
                     TilemapTileSpriteVariant::GroundWithTree as usize

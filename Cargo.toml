@@ -45,7 +45,7 @@ bevy = { version = "0.15.1" }
 #     # "x11",
 #     # "zstd",
 # ] }
-rand = { version = "0.8.5" }
+rand = { version = "0.9.0" }
 ron = { version = "0.8.1" }
 serde = { version = "1.0.217" }
 # serde_json = { version = "1.0.134" }

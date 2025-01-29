@@ -20,8 +20,7 @@ pub struct GameAudioAssets {
 
 impl GameAudioAssets {
     pub fn get_random_shoot(&self) -> Handle<AudioSource> {
-        let mut random = rand::thread_rng();
-        let index = random.gen_range(0..5);
+        let index = rand::rng().random_range(0..5);
         match index {
             0 => self.shoot_variant_0.clone(),
             1 => self.shoot_variant_1.clone(),
