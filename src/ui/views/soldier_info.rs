@@ -3,11 +3,11 @@ use bevy::prelude::*;
 use crate::{
     assets::sprites::{tile::TileAssets, ui::UiAssets},
     entities::{
-        structure::Structure,
+        soldier::Soldier,
         tile::{position::TilePosition, sprite::TileSprite},
     },
     game::GameState,
-    input::SelectedStructure,
+    input::SelectedSoldier,
     ui::{
         components::{
             button::{UiButton, UiButtonVariant},
@@ -18,13 +18,13 @@ use crate::{
     },
 };
 
-pub struct StructureInfoViewUiPlugin;
+pub struct SoldierInfoViewUiPlugin;
 
-impl Plugin for StructureInfoViewUiPlugin {
+impl Plugin for SoldierInfoViewUiPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(OnEnter(UiState::StructureInfo), ui_init)
-            .add_systems(OnExit(UiState::StructureInfo), ui_destroy)
-            .add_systems(Update, ui_update.run_if(in_state(UiState::StructureInfo)));
+        app.add_systems(OnEnter(UiState::SoldierInfo), ui_init)
+            .add_systems(OnExit(UiState::SoldierInfo), ui_destroy)
+            .add_systems(Update, ui_update.run_if(in_state(UiState::SoldierInfo)));
     }
 }
 
@@ -32,18 +32,18 @@ impl Plugin for StructureInfoViewUiPlugin {
 struct RootUiComponent;
 
 #[derive(Component)]
-enum StructureInfoButtonAction {
+enum SoldierInfoButtonAction {
     Close,
-    UpgradeStructure,
-    SellStructure,
+    UpgradeSoldier,
+    SellSoldier,
 }
 
 fn ui_init(
     mut commands: Commands,
     ui_assets: Res<UiAssets>,
     tile_assets: Res<TileAssets>,
-    structures: Query<(&Structure, &TilePosition)>,
-    selected_structure: Option<Res<SelectedStructure>>,
+    soldiers: Query<(&Soldier, &TilePosition)>,
+    selected_soldier: Option<Res<SelectedSoldier>>,
 ) {
     commands
         .spawn((
@@ -65,7 +65,7 @@ fn ui_init(
                 .with_children(|parent| {
                     parent.spawn((
                         UiButton::new(),
-                        StructureInfoButtonAction::Close,
+                        SoldierInfoButtonAction::Close,
                         Node {
                             position_type: PositionType::Absolute,
                             width: Val::Px(32.0),
@@ -77,7 +77,7 @@ fn ui_init(
                             image: ui_assets.small_tilemap.clone(),
                             texture_atlas: Some(TextureAtlas {
                                 index: 4,
-                                layout: ui_assets.small_tilemap_atlas.clone(),
+                                layout: ui_assets.small_tilemap_layout.clone(),
                             }),
                             ..default()
                         },
@@ -89,13 +89,12 @@ fn ui_init(
                                 .with_padding(UiRect::all(Val::Px(8.0))),
                         )
                         .with_child(
-                            UiText::new("ui.structure_info.title").with_size(UiTextSize::Large),
+                            UiText::new("ui.soldier_info.title").with_size(UiTextSize::Large),
                         );
 
-                    if let Some(selected_structure) = selected_structure {
-                        for (structure, tile_position) in structures.iter() {
-                            if tile_position.as_vec2() == selected_structure.tile_position.as_vec2()
-                            {
+                    if let Some(selected_soldier) = selected_soldier {
+                        for (soldier, tile_position) in soldiers.iter() {
+                            if tile_position.as_vec2() == selected_soldier.tile_position.as_vec2() {
                                 parent
                                     .spawn(UiContainer::new().with_column_gap(Val::Px(8.0)))
                                     .with_children(|parent| {
@@ -115,7 +114,7 @@ fn ui_init(
                                                     image: tile_assets.entities.clone(),
                                                     texture_atlas: Some(TextureAtlas {
                                                         index: TileSprite::new(
-                                                            structure.get_variant().into(),
+                                                            soldier.get_variant().into(),
                                                         )
                                                         .get_variant()
                                                         .as_index(),
@@ -135,7 +134,7 @@ fn ui_init(
                                                     .with_children(|parent| {
                                                         parent.spawn(
                                                             UiText::new(
-                                                                "ui.structure_info.structure_name",
+                                                                "ui.soldier_info.soldier_name",
                                                             )
                                                             .with_width(Val::Auto)
                                                             .with_size(UiTextSize::Small)
@@ -143,9 +142,7 @@ fn ui_init(
                                                         );
                                                         parent.spawn(
                                                             UiText::new(
-                                                                &structure
-                                                                    .get_variant()
-                                                                    .to_string(),
+                                                                &soldier.get_variant().to_string(),
                                                             )
                                                             .with_width(Val::Auto)
                                                             .with_size(UiTextSize::Small)
@@ -153,35 +150,33 @@ fn ui_init(
                                                         );
                                                     });
                                                 parent.spawn(
-                                                    UiText::new(
-                                                        "ui.structure_info.structure_damage",
-                                                    )
-                                                    .with_arg(
-                                                        "damage",
-                                                        structure.get_damage().to_string(),
-                                                    )
-                                                    .with_size(UiTextSize::Small)
-                                                    .with_justify(JustifyText::Left),
+                                                    UiText::new("ui.soldier_info.soldier_damage")
+                                                        .with_arg(
+                                                            "damage",
+                                                            soldier.get_damage().to_string(),
+                                                        )
+                                                        .with_size(UiTextSize::Small)
+                                                        .with_justify(JustifyText::Left),
                                                 );
                                                 parent.spawn(
                                                     UiText::new(
-                                                        "ui.structure_info.structure_fire_radius",
+                                                        "ui.soldier_info.soldier_fire_radius",
                                                     )
                                                     .with_arg(
                                                         "fire_radius",
-                                                        structure.get_fire_radius().to_string(),
+                                                        soldier.get_fire_radius().to_string(),
                                                     )
                                                     .with_size(UiTextSize::Small)
                                                     .with_justify(JustifyText::Left),
                                                 );
                                                 parent.spawn(
                                                     UiText::new(
-                                                        "ui.structure_info.structure_fire_rate",
+                                                        "ui.soldier_info.soldier_fire_rate",
                                                     )
                                                     .with_arg(
                                                         "fire_rate",
                                                         ((1.0
-                                                            / structure
+                                                            / soldier
                                                                 .get_fire_rate()
                                                                 .as_secs_f32()
                                                             * 100.0)
@@ -205,21 +200,21 @@ fn ui_init(
                         .with_children(|parent| {
                             parent
                                 .spawn((
-                                    StructureInfoButtonAction::UpgradeStructure,
+                                    SoldierInfoButtonAction::UpgradeSoldier,
                                     UiButton::new()
                                         .with_variant(UiButtonVariant::Success)
                                         .with_padding(UiRect::all(Val::Px(8.0))),
                                 ))
-                                .with_child(UiText::new("ui.structure_info.upgrade_structure"));
+                                .with_child(UiText::new("ui.soldier_info.upgrade_soldier"));
 
                             parent
                                 .spawn((
-                                    StructureInfoButtonAction::SellStructure,
+                                    SoldierInfoButtonAction::SellSoldier,
                                     UiButton::new()
                                         .with_variant(UiButtonVariant::Danger)
                                         .with_padding(UiRect::all(Val::Px(8.0))),
                                 ))
-                                .with_child(UiText::new("ui.structure_info.sell_structure"));
+                                .with_child(UiText::new("ui.soldier_info.sell_soldier"));
                         });
                 });
         });
@@ -234,32 +229,32 @@ fn ui_destroy(mut commands: Commands, query: Query<Entity, With<RootUiComponent>
 fn ui_update(
     mut commands: Commands,
     interaction_query: Query<
-        (&Interaction, &StructureInfoButtonAction),
+        (&Interaction, &SoldierInfoButtonAction),
         (Changed<Interaction>, With<UiButton>),
     >,
-    mut structures: Query<(Entity, &TilePosition), With<Structure>>,
-    selected_structure: Option<Res<SelectedStructure>>,
+    mut soldiers: Query<(Entity, &TilePosition), With<Soldier>>,
+    selected_soldier: Option<Res<SelectedSoldier>>,
     mut next_ui_state: ResMut<NextState<UiState>>,
     mut next_game_state: ResMut<NextState<GameState>>,
 ) {
     for (interaction, button_action) in &interaction_query {
         if *interaction == Interaction::Pressed {
             match button_action {
-                StructureInfoButtonAction::Close => {
+                SoldierInfoButtonAction::Close => {
                     next_ui_state.set(UiState::InGame);
                     next_game_state.set(GameState::InGame);
                 }
-                StructureInfoButtonAction::UpgradeStructure => {
-                    next_ui_state.set(UiState::StructureSelect);
+                SoldierInfoButtonAction::UpgradeSoldier => {
+                    next_ui_state.set(UiState::SoldierSelect);
                     next_game_state.set(GameState::Pause);
                 }
-                StructureInfoButtonAction::SellStructure => {
-                    if let Some(selected_structure) = selected_structure.as_ref() {
-                        for (structure_entity, structure_tile_position) in structures.iter_mut() {
-                            if structure_tile_position.as_vec2()
-                                == selected_structure.tile_position.as_vec2()
+                SoldierInfoButtonAction::SellSoldier => {
+                    if let Some(selected_soldier) = selected_soldier.as_ref() {
+                        for (soldier_entity, soldier_tile_position) in soldiers.iter_mut() {
+                            if soldier_tile_position.as_vec2()
+                                == selected_soldier.tile_position.as_vec2()
                             {
-                                commands.entity(structure_entity).despawn_recursive();
+                                commands.entity(soldier_entity).despawn_recursive();
                                 break;
                             }
                         }

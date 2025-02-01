@@ -4,8 +4,8 @@ use bevy::prelude::*;
 
 use crate::{
     entities::{
+        enemy::{health::EnemyHealth, Enemy},
         tile::{movement::TileMovement, position::TilePosition, sprite::TileSprite},
-        unit::{health::UnitHealth, Unit},
     },
     game::GameState,
 };
@@ -103,7 +103,7 @@ fn update_projectile(
         ),
         With<Projectile>,
     >,
-    mut units: Query<&mut UnitHealth, With<Unit>>,
+    mut enemies: Query<&mut EnemyHealth, With<Enemy>>,
 ) {
     for (
         projectile,
@@ -115,8 +115,8 @@ fn update_projectile(
     {
         if projectile_movement.get_progress() >= 1.0 {
             commands.entity(projectile_entity).despawn_recursive();
-            if let Ok(mut unit_health) = units.get_mut(projectile.target) {
-                unit_health.damage(projectile.damage);
+            if let Ok(mut enemy_health) = enemies.get_mut(projectile.target) {
+                enemy_health.damage(projectile.damage);
             }
             continue;
         }

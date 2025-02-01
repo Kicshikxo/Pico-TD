@@ -4,8 +4,9 @@ use bevy::prelude::*;
 
 use crate::{
     assets::levels::Level,
-    entities::{tile::movement::TileMovement, unit::Unit},
+    entities::{enemy::Enemy, tile::movement::TileMovement},
     game::{GameState, GameTilemap},
+    ui::UiState,
 };
 
 #[derive(Clone, Copy, PartialEq, Eq)]
@@ -17,13 +18,13 @@ pub enum WaveState {
 }
 
 #[derive(Resource)]
-pub struct Wave {
+pub struct GameWave {
     total: usize,
     current: usize,
     state: WaveState,
 }
 
-impl Default for Wave {
+impl Default for GameWave {
     fn default() -> Self {
         Self {
             total: 0,
@@ -33,7 +34,7 @@ impl Default for Wave {
     }
 }
 
-impl Wave {
+impl GameWave {
     pub fn restart(&mut self, total: usize) {
         self.total = total;
         self.current = 0;
@@ -80,11 +81,11 @@ pub struct WavesPlugin;
 
 impl Plugin for WavesPlugin {
     fn build(&self, app: &mut App) {
-        app.init_resource::<Wave>();
+        app.init_resource::<GameWave>();
 
         app.add_systems(
             PreUpdate,
-            update_wave.run_if(in_state(GameState::InGame).and(resource_changed::<Wave>)),
+            update_wave.run_if(in_state(GameState::InGame).and(resource_changed::<GameWave>)),
         );
         app.add_systems(
             Update,
@@ -97,7 +98,9 @@ fn update_wave(
     mut commands: Commands,
     game_tilemap: Query<Entity, With<GameTilemap>>,
     selected_level: Res<Level>,
-    mut wave: ResMut<Wave>,
+    mut game_wave: ResMut<GameWave>,
+    mut next_ui_state: ResMut<NextState<UiState>>,
+    mut next_game_state: ResMut<NextState<GameState>>,
 ) {
     if selected_level.error.is_some() {
         return;
@@ -105,17 +108,21 @@ fn update_wave(
     if selected_level.waves.is_empty() {
         return;
     }
-    if wave.get_state() != WaveState::Setup {
+    if game_wave.get_state() != WaveState::Setup {
+        if game_wave.is_fully_completed() == true {
+            next_ui_state.set(UiState::GameOver);
+            next_game_state.set(GameState::Pause);
+        }
         return;
     }
     let Ok(tilemap_entity) = game_tilemap.get_single() else {
         return;
     };
 
-    for wave in selected_level.waves[wave.get_current()].iter() {
+    for wave in selected_level.waves[game_wave.get_current()].iter() {
         for index in 0..wave.count {
             commands.entity(tilemap_entity).with_child((
-                Unit::new(wave.unit_variant),
+                Enemy::new(wave.enemy_variant),
                 TileMovement::new(
                     selected_level.paths[wave.path_index].clone(),
                     Duration::from_secs_f32(wave.duration),
@@ -127,11 +134,11 @@ fn update_wave(
             ));
         }
     }
-    wave.set_state(WaveState::InProgress);
+    game_wave.set_state(WaveState::InProgress);
 }
 
-fn update_wave_state(units: Query<&Unit>, mut wave: ResMut<Wave>) {
-    if units.is_empty() && wave.get_state() == WaveState::InProgress {
-        wave.set_state(WaveState::Completed);
+fn update_wave_state(enemies: Query<&Enemy>, mut game_wave: ResMut<GameWave>) {
+    if enemies.is_empty() && game_wave.get_state() == WaveState::InProgress {
+        game_wave.set_state(WaveState::Completed);
     }
 }

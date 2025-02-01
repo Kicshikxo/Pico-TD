@@ -26,8 +26,8 @@ pub enum UiState {
     LevelSelect,
     Settings,
     InGame,
-    StructureSelect,
-    StructureInfo,
+    SoldierSelect,
+    SoldierInfo,
     Pause,
     GameOver,
 }

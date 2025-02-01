@@ -5,13 +5,13 @@ use bevy::{
 use bevy_asset_loader::asset_collection::AssetCollection;
 use serde::Deserialize;
 
-use crate::entities::{tilemap::tile::TilemapTile, unit::UnitVariant};
+use crate::entities::{enemy::EnemyVariant, tilemap::tile::TilemapTile};
 
 #[derive(AssetCollection, Resource)]
 pub struct LevelsAssets {
     #[asset(
         paths(
-            "embedded://levels/compain/forest.ron",
+            "embedded://levels/compain/ring.ron",
             "embedded://levels/compain/example.ron",
             "embedded://levels/compain/zig-zag.ron"
         ),
@@ -34,6 +34,8 @@ impl Plugin for LevelsPlugin {
 #[derive(Resource, Asset, TypePath, Clone)]
 pub struct Level {
     pub name: String,
+    pub player_health: u32,
+    pub player_money: u32,
     pub size: UVec2,
     pub map: Vec<Vec<TilemapTile>>,
     pub paths: Vec<Vec<Vec2>>,
@@ -43,7 +45,7 @@ pub struct Level {
 
 #[derive(Clone, Deserialize)]
 pub struct Wave {
-    pub unit_variant: UnitVariant,
+    pub enemy_variant: EnemyVariant,
     pub count: u32,
     pub duration: f32,
     pub spawn_interval: f32,
@@ -55,6 +57,8 @@ impl Default for Level {
     fn default() -> Self {
         Self {
             name: String::new(),
+            player_health: 0,
+            player_money: 0,
             size: UVec2::new(0, 0),
             map: Vec::new(),
             paths: Vec::new(),
@@ -67,6 +71,8 @@ impl Default for Level {
 #[derive(Asset, TypePath, Deserialize)]
 pub struct LevelAsset {
     pub name: String,
+    pub player_health: u32,
+    pub player_money: u32,
     pub size: UVec2,
     pub map: Vec<String>,
     pub paths: Option<Vec<Vec<Vec2>>>,
@@ -78,6 +84,8 @@ impl Default for LevelAsset {
     fn default() -> Self {
         Self {
             name: String::new(),
+            player_health: 0,
+            player_money: 0,
             size: UVec2::new(0, 0),
             map: Vec::new(),
             paths: None,
@@ -129,6 +137,8 @@ impl AssetLoader for LevelsLoader {
 
         Ok(Level {
             name: level_asset.name,
+            player_health: level_asset.player_health,
+            player_money: level_asset.player_money,
             size: level_asset.size,
             map,
             paths: level_asset.paths.unwrap_or_default(),

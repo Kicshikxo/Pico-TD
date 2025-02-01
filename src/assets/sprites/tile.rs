@@ -92,7 +92,7 @@ pub enum EntityProjectileVariant {
     Rocket = 121,
 }
 
-pub enum EntityStructureVariant {
+pub enum EntitySoldierVariant {
     Soldier = 8,
     SoldierFast = 56,
     SoldierStrong = 44,
@@ -100,15 +100,19 @@ pub enum EntityStructureVariant {
     RocketLauncher = 9,
 }
 
-pub enum EntityUnitVariant {
+pub enum EntityEnemyVariant {
+    Dron = 67,
     Truck = 60,
-    Plane = 65,
     Tank = 63,
-    Boat = 68,
-    Submarine = 70,
+    Plane = 65,
+    Helicopter = 66,
+    Boat = 69,
+    Submarine = 71,
 }
 
 pub enum EntityUtilVariant {
+    Health = 122,
+    Money = 123,
     TileIndicator = 127,
 }
 

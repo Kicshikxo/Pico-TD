@@ -1,18 +1,18 @@
-pub mod structure;
+pub mod enemy;
+pub mod soldier;
 pub mod tile;
 pub mod tilemap;
-pub mod unit;
 
 use bevy::prelude::*;
-use structure::StructurePlugin;
+use enemy::EnemyPlugin;
+use soldier::SoldierPlugin;
 use tile::TilePligin;
 use tilemap::TilemapPlugin;
-use unit::UnitPlugin;
 
 pub struct EntitiesPlugin;
 
 impl Plugin for EntitiesPlugin {
     fn build(&self, app: &mut App) {
-        app.add_plugins((TilemapPlugin, TilePligin, StructurePlugin, UnitPlugin));
+        app.add_plugins((TilemapPlugin, TilePligin, SoldierPlugin, EnemyPlugin));
     }
 }

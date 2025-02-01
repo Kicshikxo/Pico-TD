@@ -149,7 +149,7 @@ fn init_ui_container(
                 image: ui_assets.large_tilemap.clone(),
                 texture_atlas: Some(TextureAtlas {
                     index: ui_container.variant.as_index(),
-                    layout: ui_assets.large_tilemap_atlas.clone(),
+                    layout: ui_assets.large_tilemap_layout.clone(),
                 }),
                 image_mode: NodeImageMode::Sliced(TextureSlicer {
                     border: BorderRect::square(10.0),

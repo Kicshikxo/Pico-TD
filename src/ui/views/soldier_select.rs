@@ -3,11 +3,11 @@ use bevy::prelude::*;
 use crate::{
     assets::sprites::{tile::TileAssets, ui::UiAssets},
     entities::{
-        structure::{Structure, StructureVariant},
+        soldier::{Soldier, SoldierVariant},
         tile::{position::TilePosition, sprite::TileSprite},
     },
     game::{GameState, GameTilemap},
-    input::SelectedStructure,
+    input::SelectedSoldier,
     ui::{
         components::{
             button::UiButton,
@@ -18,13 +18,13 @@ use crate::{
     },
 };
 
-pub struct StructureSelectViewUiPlugin;
+pub struct SoldierSelectViewUiPlugin;
 
-impl Plugin for StructureSelectViewUiPlugin {
+impl Plugin for SoldierSelectViewUiPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(OnEnter(UiState::StructureSelect), ui_init)
-            .add_systems(OnExit(UiState::StructureSelect), ui_destroy)
-            .add_systems(Update, ui_update.run_if(in_state(UiState::StructureSelect)));
+        app.add_systems(OnEnter(UiState::SoldierSelect), ui_init)
+            .add_systems(OnExit(UiState::SoldierSelect), ui_destroy)
+            .add_systems(Update, ui_update.run_if(in_state(UiState::SoldierSelect)));
     }
 }
 
@@ -32,9 +32,9 @@ impl Plugin for StructureSelectViewUiPlugin {
 struct RootUiComponent;
 
 #[derive(Component)]
-enum StructureSelectButtonAction {
+enum SoldierSelectButtonAction {
     Close,
-    Select(StructureVariant),
+    Select(SoldierVariant),
 }
 
 fn ui_init(mut commands: Commands, ui_assets: Res<UiAssets>, tile_assets: Res<TileAssets>) {
@@ -58,7 +58,7 @@ fn ui_init(mut commands: Commands, ui_assets: Res<UiAssets>, tile_assets: Res<Ti
                 .with_children(|parent| {
                     parent.spawn((
                         UiButton::new(),
-                        StructureSelectButtonAction::Close,
+                        SoldierSelectButtonAction::Close,
                         Node {
                             position_type: PositionType::Absolute,
                             width: Val::Px(32.0),
@@ -70,7 +70,7 @@ fn ui_init(mut commands: Commands, ui_assets: Res<UiAssets>, tile_assets: Res<Ti
                             image: ui_assets.small_tilemap.clone(),
                             texture_atlas: Some(TextureAtlas {
                                 index: 4,
-                                layout: ui_assets.small_tilemap_atlas.clone(),
+                                layout: ui_assets.small_tilemap_layout.clone(),
                             }),
                             ..default()
                         },
@@ -81,7 +81,7 @@ fn ui_init(mut commands: Commands, ui_assets: Res<UiAssets>, tile_assets: Res<Ti
                                 .with_variant(UiContainerVariant::Secondary)
                                 .with_padding(UiRect::all(Val::Px(8.0))),
                         )
-                        .with_child(UiText::new("ui.structure_select.title"));
+                        .with_child(UiText::new("ui.soldier_select.title"));
 
                     parent
                         .spawn(Node {
@@ -94,11 +94,11 @@ fn ui_init(mut commands: Commands, ui_assets: Res<UiAssets>, tile_assets: Res<Ti
                         })
                         .with_children(|parent| {
                             for variant in [
-                                StructureVariant::Soldier,
-                                StructureVariant::SoldierFast,
-                                StructureVariant::SoldierStrong,
-                                StructureVariant::SoldierSniper,
-                                StructureVariant::RocketLauncher,
+                                SoldierVariant::Soldier,
+                                SoldierVariant::SoldierFast,
+                                SoldierVariant::SoldierStrong,
+                                SoldierVariant::SoldierSniper,
+                                SoldierVariant::RocketLauncher,
                             ] {
                                 parent
                                     .spawn(
@@ -110,7 +110,7 @@ fn ui_init(mut commands: Commands, ui_assets: Res<UiAssets>, tile_assets: Res<Ti
                                     .with_children(|parent| {
                                         parent
                                             .spawn((
-                                                StructureSelectButtonAction::Select(variant),
+                                                SoldierSelectButtonAction::Select(variant),
                                                 UiButton::new(),
                                                 UiContainer::new()
                                                     .with_variant(UiContainerVariant::Secondary)
@@ -153,36 +153,36 @@ fn ui_destroy(mut commands: Commands, query: Query<Entity, With<RootUiComponent>
 fn ui_update(
     mut commands: Commands,
     interaction_query: Query<
-        (&Interaction, &StructureSelectButtonAction),
+        (&Interaction, &SoldierSelectButtonAction),
         (Changed<Interaction>, With<UiButton>),
     >,
     game_tilemap: Query<Entity, With<GameTilemap>>,
-    mut structures: Query<(&mut Structure, &TilePosition)>,
-    selected_structure: Res<SelectedStructure>,
+    mut soldiers: Query<(&mut Soldier, &TilePosition)>,
+    selected_soldier: Res<SelectedSoldier>,
     mut next_ui_state: ResMut<NextState<UiState>>,
     mut next_game_state: ResMut<NextState<GameState>>,
 ) {
     for (interaction, button_action) in &interaction_query {
         if *interaction == Interaction::Pressed {
             match button_action {
-                StructureSelectButtonAction::Close => {
+                SoldierSelectButtonAction::Close => {
                     next_ui_state.set(UiState::InGame);
                     next_game_state.set(GameState::InGame);
                 }
-                StructureSelectButtonAction::Select(variant) => {
+                SoldierSelectButtonAction::Select(variant) => {
                     next_ui_state.set(UiState::InGame);
                     next_game_state.set(GameState::InGame);
 
-                    for (mut structure, tile_position) in structures.iter_mut() {
-                        if tile_position.as_vec2() == selected_structure.tile_position.as_vec2() {
-                            structure.set_variant(variant.clone());
+                    for (mut soldier, tile_position) in soldiers.iter_mut() {
+                        if tile_position.as_vec2() == selected_soldier.tile_position.as_vec2() {
+                            soldier.set_variant(variant.clone());
                             return;
                         }
                     }
 
                     commands.entity(game_tilemap.single()).with_child((
-                        Structure::new(variant.clone()),
-                        selected_structure.tile_position.clone(),
+                        Soldier::new(variant.clone()),
+                        selected_soldier.tile_position.clone(),
                     ));
                 }
             }

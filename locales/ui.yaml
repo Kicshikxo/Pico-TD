@@ -40,7 +40,13 @@ ui.level_select.upload_level:
     en: "Upload level"
     ru: "Загрузить уровень"
 
-ui.in_game.wave_info:
+ui.in_game.health:
+    en: "%{health}"
+    ru: "%{health}"
+ui.in_game.money:
+    en: "%{money}"
+    ru: "%{money}"
+ui.in_game.wave:
     en: "Wave %{current}/%{total}"
     ru: "Волна %{current}/%{total}"
 ui.in_game.game_speed:
@@ -52,52 +58,46 @@ ui.in_game.pause:
 ui.in_game.next_wave:
     en: "Next wave"
     ru: "Следующая волна"
-ui.in_game.game_over:
-    en: "Game over"
-    ru: "Игра окончена"
-ui.in_game.back_to_menu:
-    en: "Back to menu"
-    ru: "Вернуться в меню"
 
-ui.structure_select.title:
-    en: "Select structure"
-    ru: "Выберите структуру"
+ui.soldier_select.title:
+    en: "Select soldier"
+    ru: "Выберите солдата"
 
-ui.structure_info.title:
-    en: "Structure info"
+ui.soldier_info.title:
+    en: "Soldier info"
     ru: "Информация"
-ui.structure_info.structure_name:
+ui.soldier_info.soldier_name:
     en: "Name:"
     ru: "Название:"
-ui.structure_info.structure_damage:
+ui.soldier_info.soldier_damage:
     en: "Damage: %{damage}"
     ru: "Урон: %{damage}"
-ui.structure_info.structure_fire_radius:
+ui.soldier_info.soldier_fire_radius:
     en: "Fire radius: %{fire_radius}"
     ru: "Радиус стрельбы: %{fire_radius}"
-ui.structure_info.structure_fire_rate:
+ui.soldier_info.soldier_fire_rate:
     en: "Fire rate: %{fire_rate}/s"
     ru: "Скорострельность: %{fire_rate}/с"
-ui.structure_info.upgrade_structure:
+ui.soldier_info.upgrade_soldier:
     en: "Upgrade"
     ru: "Улучшить"
-ui.structure_info.sell_structure:
+ui.soldier_info.sell_soldier:
     en: "Sell"
     ru: "Продать"
 
-ui.structure.soldier:
+ui.soldier.soldier:
     en: "Soldier"
     ru: "Солдат"
-ui.structure.soldier_fast:
+ui.soldier.soldier_fast:
     en: "Soldier fast"
     ru: "Солдат быстрый"
-ui.structure.soldier_strong:
+ui.soldier.soldier_strong:
     en: "Soldier strong"
     ru: "Солдат сильный"
-ui.structure.soldier_sniper:
+ui.soldier.soldier_sniper:
     en: "Soldier sniper"
     ru: "Солдат снайпер"
-ui.structure.rocket_launcher:
+ui.soldier.rocket_launcher:
     en: "Rocket launcher"
     ru: "Ракетница"
 
@@ -105,5 +105,18 @@ ui.pause.title:
     en: "Pause"
     ru: "Пауза"
 ui.pause.back_to_menu:
+    en: "Back to menu"
+    ru: "Вернуться в меню"
+
+ui.game_over.title:
+    en: "Game over"
+    ru: "Игра окончена"
+ui.game_over.player_win:
+    en: "You win!"
+    ru: "Вы победили!"
+ui.game_over.player_lose:
+    en: "You lose!"
+    ru: "Вы проиграли!"
+ui.game_over.back_to_menu:
     en: "Back to menu"
     ru: "Вернуться в меню"

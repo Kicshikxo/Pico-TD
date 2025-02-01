@@ -9,8 +9,9 @@ use crate::{
     audio::{GameAudioPlugin, GameAudioVolume},
     entities::{tile::indicator::TileIndicator, tilemap::Tilemap, EntitiesPlugin},
     input::GameInputPlugin,
+    player::{Player, PlayerPlugin},
     ui::{GameUiPlugin, UiState},
-    waves::{Wave, WavesPlugin},
+    waves::{GameWave, WavesPlugin},
 };
 
 pub struct GamePlugin;
@@ -24,6 +25,7 @@ impl Plugin for GamePlugin {
             GameUiPlugin,
             WavesPlugin,
             GameInputPlugin,
+            PlayerPlugin,
         ));
 
         app.init_resource::<GameSpeed>();
@@ -104,7 +106,8 @@ fn start_game(
     mut commands: Commands,
     game_tilemap: Query<Entity, With<GameTilemap>>,
     selected_level: Res<Level>,
-    mut wave: ResMut<Wave>,
+    mut player: ResMut<Player>,
+    mut game_wave: ResMut<GameWave>,
     mut game_speed: ResMut<GameSpeed>,
     game_audio_assets: Res<GameAudioAssets>,
     game_audio_volume: Res<Persistent<GameAudioVolume>>,
@@ -137,7 +140,8 @@ fn start_game(
         ))
         .with_child(TileIndicator);
 
-    wave.restart(selected_level.waves.len());
+    player.restart(selected_level.player_health, selected_level.player_money);
+    game_wave.restart(selected_level.waves.len());
     game_speed.set_default();
 
     next_ui_state.set(UiState::InGame);
@@ -150,7 +154,7 @@ fn pause_game(
 ) {
     if matches!(
         ui_state.get(),
-        UiState::StructureSelect | UiState::StructureInfo
+        UiState::SoldierSelect | UiState::SoldierInfo
     ) {
         return;
     }

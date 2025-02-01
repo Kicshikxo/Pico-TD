@@ -128,7 +128,7 @@ fn init_ui_button(
                     image: ui_assets.small_tilemap.clone(),
                     texture_atlas: Some(TextureAtlas {
                         index: ui_button.variant.as_index(),
-                        layout: ui_assets.small_tilemap_atlas.clone(),
+                        layout: ui_assets.small_tilemap_layout.clone(),
                     }),
                     image_mode: NodeImageMode::Sliced(TextureSlicer {
                         border: BorderRect::square(6.0),

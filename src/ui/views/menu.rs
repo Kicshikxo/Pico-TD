@@ -41,7 +41,7 @@ fn ui_init(mut commands: Commands, ui_assets: Res<UiAssets>) {
                 image: ui_assets.small_tilemap.clone(),
                 texture_atlas: Some(TextureAtlas {
                     index: 5,
-                    layout: ui_assets.small_tilemap_atlas.clone(),
+                    layout: ui_assets.small_tilemap_layout.clone(),
                 }),
                 image_mode: NodeImageMode::Tiled {
                     tile_x: true,

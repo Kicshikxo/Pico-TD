@@ -57,7 +57,7 @@ fn ui_init(
                 image: ui_assets.small_tilemap.clone(),
                 texture_atlas: Some(TextureAtlas {
                     index: 5,
-                    layout: ui_assets.small_tilemap_atlas.clone(),
+                    layout: ui_assets.small_tilemap_layout.clone(),
                 }),
                 image_mode: NodeImageMode::Tiled {
                     tile_x: true,
@@ -94,7 +94,7 @@ fn ui_init(
                             image: ui_assets.small_tilemap.clone(),
                             texture_atlas: Some(TextureAtlas {
                                 index: 4,
-                                layout: ui_assets.small_tilemap_atlas.clone(),
+                                layout: ui_assets.small_tilemap_layout.clone(),
                             }),
                             ..default()
                         },

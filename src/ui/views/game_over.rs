@@ -2,6 +2,7 @@ use bevy::prelude::*;
 
 use crate::{
     game::GameState,
+    player::Player,
     ui::{
         components::{
             button::{UiButton, UiButtonVariant},
@@ -30,7 +31,7 @@ enum GameOverButtonAction {
     BackToMenu,
 }
 
-fn ui_init(mut commands: Commands) {
+fn ui_init(mut commands: Commands, player: Res<Player>) {
     commands
         .spawn((
             RootUiComponent,
@@ -55,15 +56,31 @@ fn ui_init(mut commands: Commands) {
                                 .with_variant(UiContainerVariant::Secondary)
                                 .with_padding(UiRect::all(Val::Px(8.0))),
                         )
+                        .with_child(UiText::new("ui.game_over.title").with_size(UiTextSize::Large));
+                    parent
+                        .spawn(
+                            UiContainer::new()
+                                .with_variant(if player.get_health().is_alive() {
+                                    UiContainerVariant::Success
+                                } else {
+                                    UiContainerVariant::Danger
+                                })
+                                .with_padding(UiRect::all(Val::Px(8.0))),
+                        )
                         .with_child(
-                            UiText::new("ui.in_game.game_over").with_size(UiTextSize::Large),
+                            UiText::new(if player.get_health().is_alive() {
+                                "ui.game_over.player_win"
+                            } else {
+                                "ui.game_over.player_lose"
+                            })
+                            .with_size(UiTextSize::Large),
                         );
                     parent
                         .spawn((
                             GameOverButtonAction::BackToMenu,
                             UiButton::new().with_variant(UiButtonVariant::Primary),
                         ))
-                        .with_child(UiText::new("ui.in_game.back_to_menu"));
+                        .with_child(UiText::new("ui.game_over.back_to_menu"));
                 });
         });
 }

@@ -1,5 +1,7 @@
 LevelAsset(
     name: "Зиг-заг",
+    player_health: 50,
+    player_money: 50,
     size: (20, 20),
     map: [
         "~~~~~~~~~~~~~~##.###",
@@ -36,9 +38,16 @@ LevelAsset(
             (20, 17),
         ],
     ]),
-    structure_points: Some([
-        (6, 7),
-        (11, 11),
-        (9, 15)
-    ]),
+    waves: Some([
+        [
+            Wave (
+                enemy_variant: Truck,
+                count: 5,
+                duration: 20.0,
+                spawn_interval: 0.5,
+                spawn_delay: 0.0,
+                path_index: 0
+            ),
+        ],
+    ])
 )

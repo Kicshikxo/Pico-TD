@@ -2,13 +2,13 @@ use bevy::prelude::*;
 
 #[derive(Component, Clone)]
 #[require(Transform)]
-pub struct UnitHealth {
+pub struct EnemyHealth {
     max: u32,
     current: u32,
     damage_indicator: bool,
 }
 
-impl Default for UnitHealth {
+impl Default for EnemyHealth {
     fn default() -> Self {
         Self {
             max: 0,
@@ -18,7 +18,7 @@ impl Default for UnitHealth {
     }
 }
 
-impl UnitHealth {
+impl EnemyHealth {
     pub fn new(max: u32) -> Self {
         Self {
             max,

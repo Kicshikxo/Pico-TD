@@ -2,7 +2,7 @@ use bevy::prelude::*;
 
 use crate::{
     entities::{
-        structure::Structure,
+        soldier::Soldier,
         tile::position::TilePosition,
         tilemap::{
             tile::{TilemapTile, TilemapTileVariant},
@@ -11,7 +11,7 @@ use crate::{
     },
     game::{GameState, GameTilemap},
     ui::UiState,
-    waves::Wave,
+    waves::GameWave,
 };
 
 pub struct GameInputPlugin;
@@ -19,11 +19,11 @@ pub struct GameInputPlugin;
 impl Plugin for GameInputPlugin {
     fn build(&self, app: &mut App) {
         app.init_resource::<SelectedTile>();
-        app.init_resource::<SelectedStructure>();
+        app.init_resource::<SelectedSoldier>();
 
         app.add_systems(
             Update,
-            (update_selected_tile, update_selected_structure).run_if(in_state(GameState::InGame)),
+            (update_selected_tile, update_selected_soldier).run_if(in_state(GameState::InGame)),
         );
     }
 }
@@ -34,7 +34,7 @@ pub struct SelectedTile {
 }
 
 #[derive(Resource, Default)]
-pub struct SelectedStructure {
+pub struct SelectedSoldier {
     pub tile_position: TilePosition,
 }
 
@@ -76,13 +76,13 @@ fn update_selected_tile(
     }
 }
 
-fn update_selected_structure(
+fn update_selected_soldier(
     game_tilemap: Query<&Tilemap, With<GameTilemap>>,
     tiles: Query<&TilemapTile>,
-    structures: Query<&TilePosition, With<Structure>>,
+    soldiers: Query<&TilePosition, With<Soldier>>,
     selected_tile: Res<SelectedTile>,
-    mut selected_structure: ResMut<SelectedStructure>,
-    wave: Res<Wave>,
+    mut selected_soldier: ResMut<SelectedSoldier>,
+    game_wave: Res<GameWave>,
     mouse_button_input: Res<ButtonInput<MouseButton>>,
     ui_interaction: Query<&Interaction, (Changed<Interaction>, With<Button>)>,
     mut next_ui_state: ResMut<NextState<UiState>>,
@@ -94,7 +94,7 @@ fn update_selected_structure(
     if ui_interaction.is_empty() == false {
         return;
     }
-    if wave.is_fully_completed() == true {
+    if game_wave.is_fully_completed() == true {
         return;
     }
     let Ok(game_tilemap) = game_tilemap.get_single() else {
@@ -110,15 +110,15 @@ fn update_selected_structure(
         }
     }
 
-    let structure_found = structures.iter().any(|structure_tile_position| {
-        structure_tile_position.as_vec2() == selected_tile.tile_position.as_vec2()
+    let soldier_found = soldiers.iter().any(|soldier_tile_position| {
+        soldier_tile_position.as_vec2() == selected_tile.tile_position.as_vec2()
     });
 
-    selected_structure.tile_position = selected_tile.tile_position;
-    next_ui_state.set(if structure_found {
-        UiState::StructureInfo
+    selected_soldier.tile_position = selected_tile.tile_position;
+    next_ui_state.set(if soldier_found {
+        UiState::SoldierInfo
     } else {
-        UiState::StructureSelect
+        UiState::SoldierSelect
     });
     next_game_state.set(GameState::Pause);
 }

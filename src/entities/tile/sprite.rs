@@ -2,13 +2,13 @@ use bevy::prelude::*;
 
 use crate::{
     assets::sprites::tile::{
-        EntityProjectileVariant, EntityStructureVariant, EntityUnitVariant, EntityUtilVariant,
+        EntityEnemyVariant, EntityProjectileVariant, EntitySoldierVariant, EntityUtilVariant,
         TileAssets, TilemapTileSpriteVariant,
     },
     entities::{
-        structure::{projectile::ProjectileVariant, StructureVariant},
+        enemy::EnemyVariant,
+        soldier::{projectile::ProjectileVariant, SoldierVariant},
         tilemap::tile::TilemapTileVariant,
-        unit::UnitVariant,
     },
     game::GameState,
 };
@@ -21,9 +21,9 @@ pub enum UtilVariant {
 #[derive(Clone, Copy, PartialEq)]
 pub enum TileSpriteVariant {
     Projectile(ProjectileVariant),
-    Structure(StructureVariant),
+    Soldier(SoldierVariant),
     Tilemap(TilemapTileVariant),
-    Unit(UnitVariant),
+    Enemy(EnemyVariant),
     Util(UtilVariant),
 }
 impl From<ProjectileVariant> for TileSpriteVariant {
@@ -31,9 +31,9 @@ impl From<ProjectileVariant> for TileSpriteVariant {
         Self::Projectile(variant)
     }
 }
-impl From<StructureVariant> for TileSpriteVariant {
-    fn from(variant: StructureVariant) -> Self {
-        Self::Structure(variant)
+impl From<SoldierVariant> for TileSpriteVariant {
+    fn from(variant: SoldierVariant) -> Self {
+        Self::Soldier(variant)
     }
 }
 impl From<TilemapTileVariant> for TileSpriteVariant {
@@ -41,9 +41,9 @@ impl From<TilemapTileVariant> for TileSpriteVariant {
         Self::Tilemap(variant)
     }
 }
-impl From<UnitVariant> for TileSpriteVariant {
-    fn from(variant: UnitVariant) -> Self {
-        Self::Unit(variant)
+impl From<EnemyVariant> for TileSpriteVariant {
+    fn from(variant: EnemyVariant) -> Self {
+        Self::Enemy(variant)
     }
 }
 impl TileSpriteVariant {
@@ -53,12 +53,12 @@ impl TileSpriteVariant {
                 ProjectileVariant::Bullet => EntityProjectileVariant::Bullet as usize,
                 ProjectileVariant::Rocket => EntityProjectileVariant::Rocket as usize,
             },
-            TileSpriteVariant::Structure(variant) => match variant {
-                StructureVariant::Soldier => EntityStructureVariant::Soldier as usize,
-                StructureVariant::SoldierFast => EntityStructureVariant::SoldierFast as usize,
-                StructureVariant::SoldierStrong => EntityStructureVariant::SoldierStrong as usize,
-                StructureVariant::SoldierSniper => EntityStructureVariant::SoldierSniper as usize,
-                StructureVariant::RocketLauncher => EntityStructureVariant::RocketLauncher as usize,
+            TileSpriteVariant::Soldier(variant) => match variant {
+                SoldierVariant::Soldier => EntitySoldierVariant::Soldier as usize,
+                SoldierVariant::SoldierFast => EntitySoldierVariant::SoldierFast as usize,
+                SoldierVariant::SoldierStrong => EntitySoldierVariant::SoldierStrong as usize,
+                SoldierVariant::SoldierSniper => EntitySoldierVariant::SoldierSniper as usize,
+                SoldierVariant::RocketLauncher => EntitySoldierVariant::RocketLauncher as usize,
             },
             TileSpriteVariant::Tilemap(variant) => match variant {
                 TilemapTileVariant::Ground => TilemapTileSpriteVariant::Ground as usize,
@@ -68,12 +68,14 @@ impl TileSpriteVariant {
                 TilemapTileVariant::Water => TilemapTileSpriteVariant::Water as usize,
                 TilemapTileVariant::Unknown => TilemapTileSpriteVariant::Unknown as usize,
             },
-            TileSpriteVariant::Unit(variant) => match variant {
-                UnitVariant::Truck => EntityUnitVariant::Truck as usize,
-                UnitVariant::Plane => EntityUnitVariant::Plane as usize,
-                UnitVariant::Tank => EntityUnitVariant::Tank as usize,
-                UnitVariant::Boat => EntityUnitVariant::Boat as usize,
-                UnitVariant::Submarine => EntityUnitVariant::Submarine as usize,
+            TileSpriteVariant::Enemy(variant) => match variant {
+                EnemyVariant::Dron => EntityEnemyVariant::Dron as usize,
+                EnemyVariant::Truck => EntityEnemyVariant::Truck as usize,
+                EnemyVariant::Tank => EntityEnemyVariant::Tank as usize,
+                EnemyVariant::Plane => EntityEnemyVariant::Plane as usize,
+                EnemyVariant::Helicopter => EntityEnemyVariant::Helicopter as usize,
+                EnemyVariant::Boat => EntityEnemyVariant::Boat as usize,
+                EnemyVariant::Submarine => EntityEnemyVariant::Submarine as usize,
             },
             TileSpriteVariant::Util(variant) => match variant {
                 UtilVariant::TileIndicator => EntityUtilVariant::TileIndicator as usize,

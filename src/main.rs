@@ -4,6 +4,7 @@ mod audio;
 mod entities;
 mod game;
 mod input;
+mod player;
 mod ui;
 mod waves;
 
