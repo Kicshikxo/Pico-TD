@@ -8,6 +8,7 @@ use crate::{
     },
     game::{GameState, GameTilemap},
     input::SelectedSoldier,
+    player::Player,
     ui::{
         components::{
             button::UiButton,
@@ -137,6 +138,14 @@ fn ui_init(mut commands: Commands, ui_assets: Res<UiAssets>, tile_assets: Res<Ti
                                             UiText::new(&variant.to_string())
                                                 .with_size(UiTextSize::Small),
                                         );
+                                        parent.spawn(
+                                            UiText::new("ui.soldier_select.price")
+                                                .with_arg(
+                                                    "price",
+                                                    variant.get_config().get_price().to_string(),
+                                                )
+                                                .with_size(UiTextSize::Small),
+                                        );
                                     });
                             }
                         });
@@ -158,6 +167,7 @@ fn ui_update(
     >,
     game_tilemap: Query<Entity, With<GameTilemap>>,
     mut soldiers: Query<(&mut Soldier, &TilePosition)>,
+    mut player: ResMut<Player>,
     selected_soldier: Res<SelectedSoldier>,
     mut next_ui_state: ResMut<NextState<UiState>>,
     mut next_game_state: ResMut<NextState<GameState>>,
@@ -170,6 +180,13 @@ fn ui_update(
                     next_game_state.set(GameState::InGame);
                 }
                 SoldierSelectButtonAction::Select(variant) => {
+                    if player.get_money().get_current() < variant.get_config().get_price() {
+                        continue;
+                    }
+                    player
+                        .get_money_mut()
+                        .decrease(variant.get_config().get_price());
+
                     next_ui_state.set(UiState::InGame);
                     next_game_state.set(GameState::InGame);
 

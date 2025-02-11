@@ -62,6 +62,9 @@ ui.in_game.next_wave:
 ui.soldier_select.title:
     en: "Select soldier"
     ru: "Выберите солдата"
+ui.soldier_select.price:
+    en: "%{price}$"
+    ru: "%{price}$"
 
 ui.soldier_info.title:
     en: "Soldier info"

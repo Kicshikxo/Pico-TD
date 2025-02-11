@@ -130,7 +130,10 @@ fn ui_init(
                                         MoneyTextComponent,
                                         UiText::new("ui.in_game.money")
                                             .with_justify(JustifyText::Left)
-                                            .with_arg("money", "0".to_string()),
+                                            .with_arg(
+                                                "money",
+                                                player.get_money().get_current().to_string(),
+                                            ),
                                     ));
                                 });
                         });

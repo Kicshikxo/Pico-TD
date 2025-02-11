@@ -36,6 +36,9 @@ pub struct SoldierVariantConfig {
 }
 
 impl SoldierVariantConfig {
+    pub fn get_price(&self) -> u32 {
+        self.price
+    }
     pub fn get_damage(&self) -> u32 {
         self.damage
     }
@@ -204,7 +207,7 @@ fn init_soldier(
             CooldownBar::new(soldier_entity),
             Sprite {
                 custom_size: Some(Vec2::new(2.0, 16.0)),
-                color: Color::srgba(0.0, 0.0, 1.0, 0.75),
+                color: Color::srgba(1.0, 1.0, 0.0, 0.75),
                 anchor: Anchor::BottomRight,
                 ..default()
             },

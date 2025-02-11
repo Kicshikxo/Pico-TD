@@ -160,7 +160,7 @@ LevelAsset(
                 path_index: 2
             ),
             Wave (
-                enemy_variant: Helicopter,
+                enemy_variant: Plane,
                 count: 3,
                 duration: 10.0,
                 spawn_interval: 0.5,
@@ -209,7 +209,7 @@ LevelAsset(
                 path_index: 2
             ),
             Wave (
-                enemy_variant: Helicopter,
+                enemy_variant: Plane,
                 count: 5,
                 duration: 10.0,
                 spawn_interval: 0.5,
