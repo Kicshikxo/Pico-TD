@@ -5,7 +5,7 @@ edition = "2021"
 license = "WTFPL"
 
 [dependencies]
-bevy = { version = "0.15.1" }
+bevy = { version = "0.15.2" }
 # bevy = { version = "0.15.1", default-features = false, features = [
 #     # "android-game-activity",
 #     # "android_shared_stdcxx",
