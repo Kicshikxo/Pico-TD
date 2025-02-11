@@ -75,35 +75,35 @@ impl SoldierVariant {
     pub fn get_config(&self) -> SoldierVariantConfig {
         match self {
             SoldierVariant::Soldier => SoldierVariantConfig {
-                price: 10,
+                price: 50,
                 damage: 25,
                 fire_radius: 3.0,
                 fire_rate: Duration::from_secs_f32(0.5),
                 projectile_variant: ProjectileVariant::Bullet,
             },
             SoldierVariant::SoldierFast => SoldierVariantConfig {
-                price: 20,
+                price: 100,
                 damage: 10,
                 fire_radius: 3.0,
                 fire_rate: Duration::from_secs_f32(0.2),
                 projectile_variant: ProjectileVariant::Bullet,
             },
             SoldierVariant::SoldierStrong => SoldierVariantConfig {
-                price: 30,
+                price: 150,
                 damage: 50,
                 fire_radius: 3.0,
                 fire_rate: Duration::from_secs_f32(1.0),
                 projectile_variant: ProjectileVariant::Bullet,
             },
             SoldierVariant::SoldierSniper => SoldierVariantConfig {
-                price: 40,
+                price: 200,
                 damage: 150,
                 fire_radius: 7.0,
                 fire_rate: Duration::from_secs_f32(5.0),
                 projectile_variant: ProjectileVariant::Bullet,
             },
             SoldierVariant::RocketLauncher => SoldierVariantConfig {
-                price: 50,
+                price: 250,
                 damage: 100,
                 fire_radius: 5.0,
                 fire_rate: Duration::from_secs_f32(2.0),
