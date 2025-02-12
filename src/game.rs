@@ -2,6 +2,7 @@ use bevy::{
     audio::{PlaybackMode, Volume},
     prelude::*,
 };
+use bevy_light_2d::plugin::Light2dPlugin;
 use bevy_persistent::Persistent;
 
 use crate::{
@@ -26,6 +27,7 @@ impl Plugin for GamePlugin {
             WavesPlugin,
             GameInputPlugin,
             PlayerPlugin,
+            Light2dPlugin,
         ));
 
         app.init_resource::<GameSpeed>();

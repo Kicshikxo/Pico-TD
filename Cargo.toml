@@ -51,7 +51,8 @@ serde = { version = "1.0.217" }
 # serde_json = { version = "1.0.134" }
 bevy_asset_loader = { version = "0.22.0", features = ["2d"] }
 bevy_embedded_assets = { version = "0.12.0" }
-# bevy_light_2d = { version = "0.5.0" }
+
+bevy_light_2d = { version = "0.5.0" }
 
 rust-i18n = { version = "3.1.2" }
 sys-locale = { version = "0.3.2" }

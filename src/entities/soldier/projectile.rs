@@ -1,6 +1,7 @@
 use std::{f32::consts::PI, time::Duration};
 
 use bevy::prelude::*;
+use bevy_light_2d::light::PointLight2d;
 
 use crate::{
     entities::{
@@ -86,6 +87,15 @@ fn init_projectile(
     for (projectile_entity, projectile) in projectiles.iter() {
         commands.entity(projectile_entity).insert((
             TileSprite::new(projectile.get_variant().into()),
+            PointLight2d {
+                intensity: 0.5,
+                radius: match projectile.get_variant() {
+                    ProjectileVariant::Bullet => 16.0,
+                    ProjectileVariant::Rocket => 32.0,
+                },
+                falloff: 8.0,
+                ..default()
+            },
             Transform::from_scale(Vec3::ZERO),
         ));
     }
