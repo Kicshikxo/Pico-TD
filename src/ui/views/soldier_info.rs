@@ -128,8 +128,11 @@ fn ui_init(
                                                 },
                                             ));
 
-                                        parent.spawn(UiContainer::new().column()).with_children(
-                                            |parent| {
+                                        parent
+                                            .spawn(
+                                                UiContainer::new().with_width(Val::Auto).column(),
+                                            )
+                                            .with_children(|parent| {
                                                 parent
                                                     .spawn(
                                                         UiContainer::new()
@@ -191,8 +194,7 @@ fn ui_init(
                                                     .with_size(UiTextSize::Small)
                                                     .with_justify(JustifyText::Left),
                                                 );
-                                            },
-                                        );
+                                            });
                                     });
                                 break;
                             }
@@ -209,7 +211,7 @@ fn ui_init(
                                         .with_variant(UiButtonVariant::Success)
                                         .with_padding(UiRect::all(Val::Px(8.0))),
                                 ))
-                                .with_child(UiText::new("ui.soldier_info.upgrade_soldier"));
+                                .with_child(UiText::new("ui.soldier_info.change_soldier"));
 
                             parent
                                 .spawn((
