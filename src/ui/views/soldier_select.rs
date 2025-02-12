@@ -183,8 +183,34 @@ fn ui_update(
                     next_game_state.set(GameState::InGame);
                 }
                 SoldierSelectButtonAction::Select(variant) => {
-                    if player.get_money().get_current() < variant.get_config().get_price() {
+                    let mut current_soldier: Option<&mut Soldier> = None;
+                    for (soldier, tile_position) in soldiers.iter_mut() {
+                        if tile_position.as_vec2() == selected_soldier.tile_position.as_vec2() {
+                            current_soldier = Some(soldier.into_inner());
+                            break;
+                        }
+                    }
+                    if player.get_money().get_current()
+                        + if let Some(current_soldier) = &current_soldier {
+                            current_soldier.get_variant().get_config().get_price()
+                        } else {
+                            0
+                        }
+                        < variant.get_config().get_price()
+                    {
                         continue;
+                    }
+
+                    if let Some(current_soldier) = current_soldier {
+                        player
+                            .get_money_mut()
+                            .increase(current_soldier.get_variant().get_config().get_price());
+                        current_soldier.set_variant(variant.clone());
+                    } else {
+                        commands.entity(game_tilemap.single()).with_child((
+                            Soldier::new(variant.clone()),
+                            selected_soldier.tile_position.clone(),
+                        ));
                     }
                     player
                         .get_money_mut()
@@ -192,18 +218,6 @@ fn ui_update(
 
                     next_ui_state.set(UiState::InGame);
                     next_game_state.set(GameState::InGame);
-
-                    for (mut soldier, tile_position) in soldiers.iter_mut() {
-                        if tile_position.as_vec2() == selected_soldier.tile_position.as_vec2() {
-                            soldier.set_variant(variant.clone());
-                            return;
-                        }
-                    }
-
-                    commands.entity(game_tilemap.single()).with_child((
-                        Soldier::new(variant.clone()),
-                        selected_soldier.tile_position.clone(),
-                    ));
                 }
             }
         }

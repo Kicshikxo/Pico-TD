@@ -145,29 +145,14 @@ fn ui_init(
                                                     level_index,
                                                 },
                                                 UiButton::new(),
-                                                UiContainer::new().with_aspect_ratio(1.0).center(),
-                                                // ! Refactor
-                                                ImageNode {
-                                                    image: ui_assets.ui_containers.clone(),
-                                                    texture_atlas: Some(TextureAtlas {
-                                                        index: if level.error.is_none() {
-                                                            0
-                                                        } else {
-                                                            3
-                                                        },
-                                                        layout: ui_assets
-                                                            .ui_containers_layout
-                                                            .clone(),
-                                                    }),
-                                                    image_mode: NodeImageMode::Sliced(
-                                                        TextureSlicer {
-                                                            border: BorderRect::square(10.0),
-                                                            max_corner_scale: 1.75,
-                                                            ..default()
-                                                        },
-                                                    ),
-                                                    ..default()
-                                                },
+                                                UiContainer::new()
+                                                    .with_variant(if level.error.is_none() {
+                                                        UiContainerVariant::Secondary
+                                                    } else {
+                                                        UiContainerVariant::Danger
+                                                    })
+                                                    .with_aspect_ratio(1.0)
+                                                    .center(),
                                             ))
                                             .with_child(
                                                 UiText::new(&(level_index + 1).to_string())
