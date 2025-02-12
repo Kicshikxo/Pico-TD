@@ -5,7 +5,7 @@ use native_dialog::{FileDialog, MessageDialog, MessageType};
 use crate::{
     assets::{
         levels::{Level, LevelsAssets},
-        sprites::ui::UiAssets,
+        sprites::ui::{UiAssets, UiButtonSpriteVariant, UiMiscSpriteVariant},
     },
     game::GameState,
     ui::{
@@ -68,10 +68,10 @@ fn ui_init(
             RootUiComponent,
             UiContainer::new().with_height(Val::Percent(100.0)).center(),
             ImageNode {
-                image: ui_assets.small_tilemap.clone(),
+                image: ui_assets.ui_misc.clone(),
                 texture_atlas: Some(TextureAtlas {
-                    index: 5,
-                    layout: ui_assets.small_tilemap_layout.clone(),
+                    index: UiMiscSpriteVariant::Background as usize,
+                    layout: ui_assets.ui_misc_layout.clone(),
                 }),
                 image_mode: NodeImageMode::Tiled {
                     tile_x: true,
@@ -104,10 +104,10 @@ fn ui_init(
                             ..default()
                         },
                         ImageNode {
-                            image: ui_assets.small_tilemap.clone(),
+                            image: ui_assets.ui_buttons.clone(),
                             texture_atlas: Some(TextureAtlas {
-                                index: 4,
-                                layout: ui_assets.small_tilemap_layout.clone(),
+                                index: UiButtonSpriteVariant::Close as usize,
+                                layout: ui_assets.ui_buttons_layout.clone(),
                             }),
                             ..default()
                         },
@@ -146,16 +146,17 @@ fn ui_init(
                                                 },
                                                 UiButton::new(),
                                                 UiContainer::new().with_aspect_ratio(1.0).center(),
+                                                // ! Refactor
                                                 ImageNode {
-                                                    image: ui_assets.large_tilemap.clone(),
+                                                    image: ui_assets.ui_containers.clone(),
                                                     texture_atlas: Some(TextureAtlas {
                                                         index: if level.error.is_none() {
-                                                            16
+                                                            0
                                                         } else {
-                                                            20
+                                                            3
                                                         },
                                                         layout: ui_assets
-                                                            .large_tilemap_layout
+                                                            .ui_containers_layout
                                                             .clone(),
                                                     }),
                                                     image_mode: NodeImageMode::Sliced(

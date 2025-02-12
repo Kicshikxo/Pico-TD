@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 
 use crate::{
-    assets::sprites::tile::TileAssets,
+    assets::sprites::ui::{UiAssets, UiMiscSpriteVariant},
     game::{GameSpeed, GameState},
     player::Player,
     ui::{
@@ -57,7 +57,7 @@ enum InGameButtonAction {
 
 fn ui_init(
     mut commands: Commands,
-    tile_assets: Res<TileAssets>,
+    ui_assets: Res<UiAssets>,
     player: Res<Player>,
     game_wave: Res<GameWave>,
     game_speed: Res<GameSpeed>,
@@ -89,10 +89,10 @@ fn ui_init(
                                             ..default()
                                         },
                                         ImageNode {
-                                            image: tile_assets.entities.clone(),
+                                            image: ui_assets.ui_misc.clone(),
                                             texture_atlas: Some(TextureAtlas {
-                                                index: 122,
-                                                layout: tile_assets.entities_layout.clone(),
+                                                index: UiMiscSpriteVariant::Health as usize,
+                                                layout: ui_assets.ui_misc_layout.clone(),
                                             }),
                                             ..default()
                                         },
@@ -118,10 +118,10 @@ fn ui_init(
                                             ..default()
                                         },
                                         ImageNode {
-                                            image: tile_assets.entities.clone(),
+                                            image: ui_assets.ui_misc.clone(),
                                             texture_atlas: Some(TextureAtlas {
-                                                index: 123,
-                                                layout: tile_assets.entities_layout.clone(),
+                                                index: UiMiscSpriteVariant::Money as usize,
+                                                layout: ui_assets.ui_misc_layout.clone(),
                                             }),
                                             ..default()
                                         },

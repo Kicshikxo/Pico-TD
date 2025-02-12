@@ -1,13 +1,17 @@
 use bevy::prelude::*;
 
 use crate::{
-    assets::sprites::{tile::TileAssets, ui::UiAssets},
+    assets::sprites::{
+        tile::TileAssets,
+        ui::{UiAssets, UiButtonSpriteVariant},
+    },
     entities::{
         soldier::Soldier,
         tile::{position::TilePosition, sprite::TileSprite},
     },
     game::GameState,
     input::SelectedSoldier,
+    player::Player,
     ui::{
         components::{
             button::{UiButton, UiButtonVariant},
@@ -74,10 +78,10 @@ fn ui_init(
                             ..default()
                         },
                         ImageNode {
-                            image: ui_assets.small_tilemap.clone(),
+                            image: ui_assets.ui_buttons.clone(),
                             texture_atlas: Some(TextureAtlas {
-                                index: 4,
-                                layout: ui_assets.small_tilemap_layout.clone(),
+                                index: UiButtonSpriteVariant::Close as usize,
+                                layout: ui_assets.ui_buttons_layout.clone(),
                             }),
                             ..default()
                         },
@@ -232,7 +236,8 @@ fn ui_update(
         (&Interaction, &SoldierInfoButtonAction),
         (Changed<Interaction>, With<UiButton>),
     >,
-    mut soldiers: Query<(Entity, &TilePosition), With<Soldier>>,
+    mut soldiers: Query<(Entity, &Soldier, &TilePosition)>,
+    mut player: ResMut<Player>,
     selected_soldier: Option<Res<SelectedSoldier>>,
     mut next_ui_state: ResMut<NextState<UiState>>,
     mut next_game_state: ResMut<NextState<GameState>>,
@@ -249,12 +254,16 @@ fn ui_update(
                     next_game_state.set(GameState::Pause);
                 }
                 SoldierInfoButtonAction::SellSoldier => {
-                    if let Some(selected_soldier) = selected_soldier.as_ref() {
-                        for (soldier_entity, soldier_tile_position) in soldiers.iter_mut() {
+                    if let Some(selected_soldier) = &selected_soldier {
+                        for (soldier_entity, soldier, soldier_tile_position) in soldiers.iter_mut()
+                        {
                             if soldier_tile_position.as_vec2()
                                 == selected_soldier.tile_position.as_vec2()
                             {
                                 commands.entity(soldier_entity).despawn_recursive();
+                                player
+                                    .get_money_mut()
+                                    .increase(soldier.get_variant().get_config().get_price());
                                 break;
                             }
                         }

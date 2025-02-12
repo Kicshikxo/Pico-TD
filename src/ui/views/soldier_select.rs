@@ -1,7 +1,10 @@
 use bevy::prelude::*;
 
 use crate::{
-    assets::sprites::{tile::TileAssets, ui::UiAssets},
+    assets::sprites::{
+        tile::TileAssets,
+        ui::{UiAssets, UiButtonSpriteVariant},
+    },
     entities::{
         soldier::{Soldier, SoldierVariant},
         tile::{position::TilePosition, sprite::TileSprite},
@@ -68,10 +71,10 @@ fn ui_init(mut commands: Commands, ui_assets: Res<UiAssets>, tile_assets: Res<Ti
                             ..default()
                         },
                         ImageNode {
-                            image: ui_assets.small_tilemap.clone(),
+                            image: ui_assets.ui_buttons.clone(),
                             texture_atlas: Some(TextureAtlas {
-                                index: 4,
-                                layout: ui_assets.small_tilemap_layout.clone(),
+                                index: UiButtonSpriteVariant::Close as usize,
+                                layout: ui_assets.ui_buttons_layout.clone(),
                             }),
                             ..default()
                         },
@@ -135,15 +138,15 @@ fn ui_init(mut commands: Commands, ui_assets: Res<UiAssets>, tile_assets: Res<Ti
                                             ));
 
                                         parent.spawn(
-                                            UiText::new(&variant.to_string())
-                                                .with_size(UiTextSize::Small),
-                                        );
-                                        parent.spawn(
                                             UiText::new("ui.soldier_select.price")
                                                 .with_arg(
                                                     "price",
                                                     variant.get_config().get_price().to_string(),
                                                 )
+                                                .with_size(UiTextSize::Small),
+                                        );
+                                        parent.spawn(
+                                            UiText::new(&variant.to_string())
                                                 .with_size(UiTextSize::Small),
                                         );
                                     });

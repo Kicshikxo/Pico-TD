@@ -14,6 +14,7 @@ impl Default for PlayerHealth {
     }
 }
 
+#[allow(unused)]
 impl PlayerHealth {
     pub fn restart(&mut self, max: u32) {
         self.max = max;

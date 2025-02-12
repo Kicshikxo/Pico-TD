@@ -2,7 +2,7 @@ use bevy::prelude::*;
 use bevy_persistent::Persistent;
 
 use crate::{
-    assets::sprites::ui::UiAssets,
+    assets::sprites::ui::{UiAssets, UiButtonSpriteVariant},
     audio::GameAudioVolume,
     game::GameState,
     ui::{
@@ -75,10 +75,10 @@ fn ui_init(
                             ..default()
                         },
                         ImageNode {
-                            image: ui_assets.small_tilemap.clone(),
+                            image: ui_assets.ui_buttons.clone(),
                             texture_atlas: Some(TextureAtlas {
-                                index: 4,
-                                layout: ui_assets.small_tilemap_layout.clone(),
+                                index: UiButtonSpriteVariant::Close as usize,
+                                layout: ui_assets.ui_buttons_layout.clone(),
                             }),
                             ..default()
                         },

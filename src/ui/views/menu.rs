@@ -1,7 +1,7 @@
 use bevy::{prelude::*, ui::widget::NodeImageMode};
 
 use crate::{
-    assets::sprites::ui::UiAssets,
+    assets::sprites::ui::{UiAssets, UiMiscSpriteVariant},
     ui::{
         components::{
             button::{UiButton, UiButtonVariant},
@@ -38,10 +38,10 @@ fn ui_init(mut commands: Commands, ui_assets: Res<UiAssets>) {
             RootUiComponent,
             UiContainer::new().with_height(Val::Percent(100.0)).center(),
             ImageNode {
-                image: ui_assets.small_tilemap.clone(),
+                image: ui_assets.ui_misc.clone(),
                 texture_atlas: Some(TextureAtlas {
-                    index: 5,
-                    layout: ui_assets.small_tilemap_layout.clone(),
+                    index: UiMiscSpriteVariant::Background as usize,
+                    layout: ui_assets.ui_misc_layout.clone(),
                 }),
                 image_mode: NodeImageMode::Tiled {
                     tile_x: true,

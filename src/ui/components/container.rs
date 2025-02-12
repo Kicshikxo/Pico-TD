@@ -1,6 +1,6 @@
 use bevy::{prelude::*, ui::widget::NodeImageMode};
 
-use crate::assets::sprites::ui::UiAssets;
+use crate::assets::sprites::ui::{UiAssets, UiContainerSpriteVariant};
 
 #[derive(Default, Clone, PartialEq)]
 #[allow(unused)]
@@ -16,11 +16,11 @@ pub enum UiContainerVariant {
 impl UiContainerVariant {
     pub fn as_index(&self) -> usize {
         match self {
-            UiContainerVariant::None => 0,
-            UiContainerVariant::Primary => 22,
-            UiContainerVariant::Secondary => 3,
-            UiContainerVariant::Success => 21,
-            UiContainerVariant::Danger => 20,
+            UiContainerVariant::None => unreachable!(),
+            UiContainerVariant::Primary => UiContainerSpriteVariant::Primary as usize,
+            UiContainerVariant::Secondary => UiContainerSpriteVariant::Secondary as usize,
+            UiContainerVariant::Success => UiContainerSpriteVariant::Success as usize,
+            UiContainerVariant::Danger => UiContainerSpriteVariant::Danger as usize,
         }
     }
 }
@@ -146,10 +146,10 @@ fn init_ui_container(
 
         if ui_container.variant != UiContainerVariant::None {
             commands.entity(ui_container_entity).insert(ImageNode {
-                image: ui_assets.large_tilemap.clone(),
+                image: ui_assets.ui_containers.clone(),
                 texture_atlas: Some(TextureAtlas {
                     index: ui_container.variant.as_index(),
-                    layout: ui_assets.large_tilemap_layout.clone(),
+                    layout: ui_assets.ui_containers_layout.clone(),
                 }),
                 image_mode: NodeImageMode::Sliced(TextureSlicer {
                     border: BorderRect::square(10.0),

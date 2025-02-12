@@ -111,9 +111,7 @@ pub enum EntityEnemyVariant {
 }
 
 pub enum EntityUtilVariant {
-    Health = 122,
-    Money = 123,
-    TileIndicator = 127,
+    TileIndicator = 122,
 }
 
 impl TileAssets {

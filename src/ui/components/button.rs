@@ -6,7 +6,10 @@ use bevy::{
 use bevy_persistent::Persistent;
 
 use crate::{
-    assets::{audio::ui::UiAudioAssets, sprites::ui::UiAssets},
+    assets::{
+        audio::ui::UiAudioAssets,
+        sprites::ui::{UiAssets, UiButtonSpriteVariant},
+    },
     audio::{GameAudio, GameAudioVolume},
 };
 
@@ -22,10 +25,10 @@ pub enum UiButtonVariant {
 impl UiButtonVariant {
     pub fn as_index(&self) -> usize {
         match self {
-            UiButtonVariant::None => 0,
-            UiButtonVariant::Primary => 65,
-            UiButtonVariant::Success => 64,
-            UiButtonVariant::Danger => 63,
+            UiButtonVariant::None => unreachable!(),
+            UiButtonVariant::Primary => UiButtonSpriteVariant::Primary as usize,
+            UiButtonVariant::Success => UiButtonSpriteVariant::Success as usize,
+            UiButtonVariant::Danger => UiButtonSpriteVariant::Danger as usize,
         }
     }
 }
@@ -125,10 +128,10 @@ fn init_ui_button(
                     ..default()
                 },
                 ImageNode {
-                    image: ui_assets.small_tilemap.clone(),
+                    image: ui_assets.ui_buttons.clone(),
                     texture_atlas: Some(TextureAtlas {
                         index: ui_button.variant.as_index(),
-                        layout: ui_assets.small_tilemap_layout.clone(),
+                        layout: ui_assets.ui_buttons_layout.clone(),
                     }),
                     image_mode: NodeImageMode::Sliced(TextureSlicer {
                         border: BorderRect::square(6.0),
@@ -173,7 +176,7 @@ fn update_ui_button(
             Interaction::None => Color::WHITE,
         };
         if *interaction == Interaction::Pressed {
-            if let Some(ui_audio_assets) = ui_audio_assets.as_ref() {
+            if let Some(ui_audio_assets) = &ui_audio_assets {
                 commands.entity(game_audio.single()).with_child((
                     AudioPlayer::new(ui_audio_assets.button_click.clone()),
                     PlaybackSettings {
