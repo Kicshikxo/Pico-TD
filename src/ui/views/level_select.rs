@@ -151,15 +151,23 @@ fn ui_init(
                                                     } else {
                                                         UiContainerVariant::Danger
                                                     })
+                                                    .with_padding(UiRect::all(Val::Px(16.0)))
                                                     .with_aspect_ratio(1.0)
                                                     .center(),
                                             ))
-                                            .with_child(
-                                                UiText::new(&(level_index + 1).to_string())
-                                                    .with_size(UiTextSize::Large),
-                                            );
+                                            .with_child((
+                                                Node {
+                                                    width: Val::Percent(100.0),
+                                                    height: Val::Percent(100.0),
+                                                    ..default()
+                                                },
+                                                ImageNode {
+                                                    image: levels_assets.get_level_preview(level),
+                                                    ..default()
+                                                },
+                                            ));
 
-                                        parent.spawn(UiText::new(&level.name));
+                                        parent.spawn(UiText::new(&format!("level.{}", level.id)));
                                     });
                             }
                         });

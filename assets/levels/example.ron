@@ -1,5 +1,5 @@
 LevelAsset(
-    name: "<level.name>",
+    id: "<level.id>",
     size: (<level.size.x>, <level.size.y>),
     map: [
         "###.############.###",

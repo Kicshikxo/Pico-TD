@@ -14,12 +14,17 @@
     </head>
     <body>
         <button id="start">Pico TD</button>
+        <canvas id="pico-td"></canvas>
 
         <script type="module">
             import init from "./pico_td.js";
 
-            document.querySelector("#start").addEventListener("click", () => {
-                document.querySelector("#start").style.display = "none";
+            const button = document.querySelector("#start");
+            const canvas = document.querySelector("#pico-td");
+
+            button.addEventListener("click", () => {
+                button.style.display = "none";
+                canvas.style.display = "block";
                 init();
             });
         </script>

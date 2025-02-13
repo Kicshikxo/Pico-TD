@@ -1,5 +1,5 @@
 LevelAsset(
-    name: "Кольцо",
+    id: "ring",
     player_health: 100,
     player_money: 50,
     size: (20, 20),

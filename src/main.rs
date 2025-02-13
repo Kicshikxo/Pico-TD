@@ -25,16 +25,24 @@ fn main() {
                     primary_window: Some(Window {
                         title: "Pico TD".into(),
                         name: Some("Pico TD".into()),
-                        resolution: WindowResolution::new(640.0, 640.0),
-                        // .with_scale_factor_override(1.0),
                         present_mode: PresentMode::AutoVsync,
-                        prevent_default_event_handling: false,
-                        window_theme: Some(WindowTheme::Dark),
+                        position: WindowPosition::Centered(MonitorSelection::Current),
+                        resolution: WindowResolution::new(640.0, 640.0),
+                        // resize_constraints: WindowResizeConstraints {
+                        //     min_height: 640.0,
+                        //     min_width: 640.0,
+                        //     max_height: 640.0,
+                        //     max_width: 640.0,
+                        // },
+                        resizable: false,
                         enabled_buttons: EnabledButtons {
                             maximize: false,
                             ..default()
                         },
-                        resizable: false,
+                        fit_canvas_to_parent: true,
+                        prevent_default_event_handling: false,
+                        canvas: Some("#pico-td".into()),
+                        window_theme: Some(WindowTheme::Dark),
                         visible: false,
                         ..default()
                     }),

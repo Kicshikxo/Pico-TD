@@ -11,13 +11,30 @@ use crate::entities::{enemy::EnemyVariant, tilemap::tile::TilemapTile};
 pub struct LevelsAssets {
     #[asset(
         paths(
-            "embedded://levels/compain/ring.ron",
-            "embedded://levels/compain/example.ron",
-            "embedded://levels/compain/zig-zag.ron"
+            "embedded://levels/ring.ron",
+            "embedded://levels/zigzag.ron",
+            "embedded://levels/example.ron"
         ),
         collection(typed)
     )]
     pub compain: Vec<Handle<Level>>,
+
+    #[asset(path = "embedded://images/levels/ring.png")]
+    pub ring_preview: Handle<Image>,
+    #[asset(path = "embedded://images/levels/zigzag.png")]
+    pub zigzag_preview: Handle<Image>,
+    #[asset(path = "embedded://images/levels/error.png")]
+    pub error_preview: Handle<Image>,
+}
+
+impl LevelsAssets {
+    pub fn get_level_preview(&self, level: &Level) -> Handle<Image> {
+        match level.id.as_str() {
+            "ring" => self.ring_preview.clone(),
+            "zigzag" => self.zigzag_preview.clone(),
+            _ => self.error_preview.clone(),
+        }
+    }
 }
 
 pub struct LevelsPlugin;
@@ -33,7 +50,7 @@ impl Plugin for LevelsPlugin {
 
 #[derive(Resource, Asset, TypePath, Clone)]
 pub struct Level {
-    pub name: String,
+    pub id: String,
     pub player_health: u32,
     pub player_money: u32,
     pub size: UVec2,
@@ -56,7 +73,7 @@ pub struct Wave {
 impl Default for Level {
     fn default() -> Self {
         Self {
-            name: String::new(),
+            id: String::new(),
             player_health: 0,
             player_money: 0,
             size: UVec2::new(0, 0),
@@ -70,7 +87,7 @@ impl Default for Level {
 
 #[derive(Asset, TypePath, Deserialize)]
 pub struct LevelAsset {
-    pub name: String,
+    pub id: String,
     pub player_health: u32,
     pub player_money: u32,
     pub size: UVec2,
@@ -83,7 +100,7 @@ pub struct LevelAsset {
 impl Default for LevelAsset {
     fn default() -> Self {
         Self {
-            name: String::new(),
+            id: String::new(),
             player_health: 0,
             player_money: 0,
             size: UVec2::new(0, 0),
@@ -98,7 +115,7 @@ impl Default for LevelAsset {
 impl LevelAsset {
     fn error(error: String) -> Self {
         Self {
-            name: "Ошибка".into(),
+            id: "error".into(),
             error: Some(error),
             ..default()
         }
@@ -136,7 +153,7 @@ impl AssetLoader for LevelsLoader {
             .collect();
 
         Ok(Level {
-            name: level_asset.name,
+            id: level_asset.id,
             player_health: level_asset.player_health,
             player_money: level_asset.player_money,
             size: level_asset.size,
