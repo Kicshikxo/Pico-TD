@@ -29,7 +29,7 @@ pub struct LevelsAssets {
 
 impl LevelsAssets {
     pub fn get_level_preview(&self, level: &Level) -> Handle<Image> {
-        match level.id.as_str() {
+        match level.name.as_str() {
             "ring" => self.ring_preview.clone(),
             "zigzag" => self.zigzag_preview.clone(),
             _ => self.error_preview.clone(),
@@ -50,7 +50,7 @@ impl Plugin for LevelsPlugin {
 
 #[derive(Resource, Asset, TypePath, Clone)]
 pub struct Level {
-    pub id: String,
+    pub name: String,
     pub player_health: u32,
     pub player_money: u32,
     pub size: UVec2,
@@ -73,7 +73,7 @@ pub struct Wave {
 impl Default for Level {
     fn default() -> Self {
         Self {
-            id: String::new(),
+            name: String::new(),
             player_health: 0,
             player_money: 0,
             size: UVec2::new(0, 0),
@@ -87,7 +87,7 @@ impl Default for Level {
 
 #[derive(Asset, TypePath, Deserialize)]
 pub struct LevelAsset {
-    pub id: String,
+    pub name: String,
     pub player_health: u32,
     pub player_money: u32,
     pub size: UVec2,
@@ -100,7 +100,7 @@ pub struct LevelAsset {
 impl Default for LevelAsset {
     fn default() -> Self {
         Self {
-            id: String::new(),
+            name: String::new(),
             player_health: 0,
             player_money: 0,
             size: UVec2::new(0, 0),
@@ -115,7 +115,7 @@ impl Default for LevelAsset {
 impl LevelAsset {
     fn error(error: String) -> Self {
         Self {
-            id: "error".into(),
+            name: "error".into(),
             error: Some(error),
             ..default()
         }
@@ -153,7 +153,7 @@ impl AssetLoader for LevelsLoader {
             .collect();
 
         Ok(Level {
-            id: level_asset.id,
+            name: level_asset.name,
             player_health: level_asset.player_health,
             player_money: level_asset.player_money,
             size: level_asset.size,

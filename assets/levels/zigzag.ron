@@ -1,5 +1,5 @@
 LevelAsset(
-    id: "zigzag",
+    name: "zigzag",
     player_health: 50,
     player_money: 50,
     size: (20, 20),

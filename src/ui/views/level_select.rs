@@ -167,7 +167,7 @@ fn ui_init(
                                                 },
                                             ));
 
-                                        parent.spawn(UiText::new(&format!("level.{}", level.id)));
+                                        parent.spawn(UiText::new(&format!("level.{}", level.name)));
                                     });
                             }
                         });
