@@ -15,7 +15,7 @@ use bevy::{
 
 use game::GamePlugin;
 
-rust_i18n::i18n!("locales", fallback = "en");
+rust_i18n::i18n!("src/locales", fallback = "en");
 
 fn main() {
     App::new()
@@ -28,12 +28,11 @@ fn main() {
                         present_mode: PresentMode::AutoVsync,
                         position: WindowPosition::Centered(MonitorSelection::Current),
                         resolution: WindowResolution::new(640.0, 640.0),
-                        // resize_constraints: WindowResizeConstraints {
-                        //     min_height: 640.0,
-                        //     min_width: 640.0,
-                        //     max_height: 640.0,
-                        //     max_width: 640.0,
-                        // },
+                        resize_constraints: WindowResizeConstraints {
+                            min_height: 640.0,
+                            min_width: 640.0,
+                            ..default()
+                        },
                         resizable: false,
                         enabled_buttons: EnabledButtons {
                             maximize: false,
