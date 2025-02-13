@@ -1,6 +1,7 @@
 use std::{f32::consts::PI, time::Duration};
 
 use bevy::prelude::*;
+#[cfg(not(target_arch = "wasm32"))]
 use bevy_light_2d::light::PointLight2d;
 
 use crate::{
@@ -87,6 +88,7 @@ fn init_projectile(
     for (projectile_entity, projectile) in projectiles.iter() {
         commands.entity(projectile_entity).insert((
             TileSprite::new(projectile.get_variant().into()),
+            #[cfg(not(target_arch = "wasm32"))]
             PointLight2d {
                 intensity: 0.5,
                 radius: match projectile.get_variant() {

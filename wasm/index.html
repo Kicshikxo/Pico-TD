@@ -1,0 +1,27 @@
+<html lang="ru">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link
+            rel="preload"
+            href="/Fifaks.ttf"
+            as="font"
+            type="font/ttf"
+            crossorigin="anonymous"
+        />
+        <link rel="stylesheet" href="/style.css" />
+        <title>Pico wings</title>
+    </head>
+    <body>
+        <button id="start">Pico TD</button>
+
+        <script type="module">
+            import init from "./pico_td.js";
+
+            document.querySelector("#start").addEventListener("click", () => {
+                document.querySelector("#start").style.display = "none";
+                init();
+            });
+        </script>
+    </body>
+</html>

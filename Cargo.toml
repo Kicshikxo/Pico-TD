@@ -48,11 +48,10 @@ bevy = { version = "0.15.2" }
 rand = { version = "0.9.0" }
 ron = { version = "0.8.1" }
 serde = { version = "1.0.217" }
-# serde_json = { version = "1.0.134" }
+
 bevy_asset_loader = { version = "0.22.0", features = ["2d"] }
 bevy_embedded_assets = { version = "0.12.0" }
 
-bevy_light_2d = { version = "0.5.0" }
 
 rust-i18n = { version = "3.1.2" }
 sys-locale = { version = "0.3.2" }
@@ -61,6 +60,7 @@ bevy-persistent = { version = "0.7.0", features = ["ron"] }
 directories = { version = "6.0.0" }
 
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
+bevy_light_2d = { version = "0.5.0" }
 native-dialog = { version = "0.7.0" }
 # bevy-inspector-egui = { version = "0.28.0" }
 

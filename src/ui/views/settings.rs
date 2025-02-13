@@ -73,7 +73,6 @@ fn ui_init(
                     UiContainer::new()
                         .with_variant(UiContainerVariant::Primary)
                         .with_width(Val::Px(320.0))
-                        .with_height(Val::Px(380.0))
                         .with_padding(UiRect::all(Val::Px(24.0)))
                         .with_row_gap(Val::Px(12.0))
                         .center()
