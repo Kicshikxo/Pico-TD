@@ -825,16 +825,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "bevy_light_2d"
-version = "0.5.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ddbcf1964d708d5388756a819143ae4130f161b16f165cf2feb88bf9a24a52ce"
-dependencies = [
- "bevy",
- "smallvec",
-]
-
-[[package]]
 name = "bevy_log"
 version = "0.15.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2246,8 +2236,10 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "43a49c392881ce6d5c3b8cb70f98717b7c07aabbdff06687b9030dbfbe2725f8"
 dependencies = [
  "cfg-if",
+ "js-sys",
  "libc",
  "wasi 0.13.3+wasi-0.2.2",
+ "wasm-bindgen",
  "windows-targets 0.52.6",
 ]
 
@@ -3466,14 +3458,15 @@ dependencies = [
  "bevy-persistent",
  "bevy_asset_loader",
  "bevy_embedded_assets",
- "bevy_light_2d",
  "directories",
+ "getrandom 0.3.1",
  "native-dialog",
  "rand 0.9.0",
  "ron",
  "rust-i18n",
  "serde",
  "sys-locale",
+ "uuid",
 ]
 
 [[package]]
@@ -4562,6 +4555,7 @@ checksum = "b3758f5e68192bb96cc8f9b7e2c2cfdabb435499a28499a42f8f984092adad4b"
 dependencies = [
  "getrandom 0.2.15",
  "serde",
+ "wasm-bindgen",
 ]
 
 [[package]]

@@ -2,7 +2,7 @@ use bevy::prelude::*;
 
 use crate::{
     assets::sprites::{
-        tile::TileAssets,
+        entity::EntityAssets,
         ui::{UiAssets, UiButtonSpriteVariant},
     },
     entities::{
@@ -45,7 +45,7 @@ enum SoldierInfoButtonAction {
 fn ui_init(
     mut commands: Commands,
     ui_assets: Res<UiAssets>,
-    tile_assets: Res<TileAssets>,
+    entity_assets: Res<EntityAssets>,
     soldiers: Query<(&Soldier, &TilePosition)>,
     selected_soldier: Option<Res<SelectedSoldier>>,
 ) {
@@ -115,14 +115,16 @@ fn ui_init(
                                                     .with_width(Val::Px(32.0))
                                                     .with_height(Val::Px(32.0)),
                                                 ImageNode {
-                                                    image: tile_assets.entities.clone(),
+                                                    image: entity_assets.tilemap.clone(),
                                                     texture_atlas: Some(TextureAtlas {
                                                         index: TileSprite::new(
                                                             soldier.get_variant().into(),
                                                         )
                                                         .get_variant()
                                                         .as_index(),
-                                                        layout: tile_assets.entities_layout.clone(),
+                                                        layout: entity_assets
+                                                            .tilemap_layout
+                                                            .clone(),
                                                     }),
                                                     ..default()
                                                 },

@@ -1,9 +1,12 @@
 use bevy::prelude::*;
 
 use crate::{
-    assets::sprites::tile::{
-        EntityEnemyVariant, EntityProjectileVariant, EntitySoldierVariant, EntityUtilVariant,
-        TileAssets, TilemapTileSpriteVariant,
+    assets::sprites::{
+        entity::{
+            EnemySpriteVariant, EntityAssets, ProjectileSpriteVariant, SoldierSpriteVariant,
+            UtilSpriteVariant,
+        },
+        tile::{TileAssets, TilemapTileSpriteVariant},
     },
     entities::{
         enemy::EnemyVariant,
@@ -50,15 +53,15 @@ impl TileSpriteVariant {
     pub fn as_index(&self) -> usize {
         match self {
             TileSpriteVariant::Projectile(variant) => match variant {
-                ProjectileVariant::Bullet => EntityProjectileVariant::Bullet as usize,
-                ProjectileVariant::Rocket => EntityProjectileVariant::Rocket as usize,
+                ProjectileVariant::Bullet => ProjectileSpriteVariant::Bullet as usize,
+                ProjectileVariant::Rocket => ProjectileSpriteVariant::Rocket as usize,
             },
             TileSpriteVariant::Soldier(variant) => match variant {
-                SoldierVariant::Soldier => EntitySoldierVariant::Soldier as usize,
-                SoldierVariant::SoldierFast => EntitySoldierVariant::SoldierFast as usize,
-                SoldierVariant::SoldierStrong => EntitySoldierVariant::SoldierStrong as usize,
-                SoldierVariant::SoldierSniper => EntitySoldierVariant::SoldierSniper as usize,
-                SoldierVariant::RocketLauncher => EntitySoldierVariant::RocketLauncher as usize,
+                SoldierVariant::Soldier => SoldierSpriteVariant::Soldier as usize,
+                SoldierVariant::SoldierFast => SoldierSpriteVariant::SoldierFast as usize,
+                SoldierVariant::SoldierStrong => SoldierSpriteVariant::SoldierStrong as usize,
+                SoldierVariant::SoldierSniper => SoldierSpriteVariant::SoldierSniper as usize,
+                SoldierVariant::RocketLauncher => SoldierSpriteVariant::RocketLauncher as usize,
             },
             TileSpriteVariant::Tilemap(variant) => match variant {
                 TilemapTileVariant::Ground => TilemapTileSpriteVariant::Ground as usize,
@@ -69,16 +72,16 @@ impl TileSpriteVariant {
                 TilemapTileVariant::Unknown => TilemapTileSpriteVariant::Unknown as usize,
             },
             TileSpriteVariant::Enemy(variant) => match variant {
-                EnemyVariant::Dron => EntityEnemyVariant::Dron as usize,
-                EnemyVariant::Truck => EntityEnemyVariant::Truck as usize,
-                EnemyVariant::Tank => EntityEnemyVariant::Tank as usize,
-                EnemyVariant::Plane => EntityEnemyVariant::Plane as usize,
-                EnemyVariant::Helicopter => EntityEnemyVariant::Helicopter as usize,
-                EnemyVariant::Boat => EntityEnemyVariant::Boat as usize,
-                EnemyVariant::Submarine => EntityEnemyVariant::Submarine as usize,
+                EnemyVariant::Dron => EnemySpriteVariant::Dron as usize,
+                EnemyVariant::Truck => EnemySpriteVariant::Truck as usize,
+                EnemyVariant::Tank => EnemySpriteVariant::Tank as usize,
+                EnemyVariant::Plane => EnemySpriteVariant::Plane as usize,
+                EnemyVariant::Helicopter => EnemySpriteVariant::Helicopter as usize,
+                EnemyVariant::Boat => EnemySpriteVariant::Boat as usize,
+                EnemyVariant::Submarine => EnemySpriteVariant::Submarine as usize,
             },
             TileSpriteVariant::Util(variant) => match variant {
-                UtilVariant::TileIndicator => EntityUtilVariant::TileIndicator as usize,
+                UtilVariant::TileIndicator => UtilSpriteVariant::TileIndicator as usize,
             },
         }
     }
@@ -129,18 +132,22 @@ fn init_tile_sprite(
     mut commands: Commands,
     tile_sprites: Query<(Entity, &TileSprite), Added<TileSprite>>,
     tile_assets: Option<Res<TileAssets>>,
+    entity_assets: Option<Res<EntityAssets>>,
 ) {
     for (tile_sprite_entity, tile_sprite) in tile_sprites.iter() {
         let Some(tile_assets) = &tile_assets else {
             return;
         };
+        let Some(entity_assets) = &entity_assets else {
+            return;
+        };
         let image = match tile_sprite.variant {
-            TileSpriteVariant::Tilemap(_) => tile_assets.tilemap_tiles.clone(),
-            _ => tile_assets.entities.clone(),
+            TileSpriteVariant::Tilemap(_) => tile_assets.tilemap.clone(),
+            _ => entity_assets.tilemap.clone(),
         };
         let layout = match tile_sprite.variant {
-            TileSpriteVariant::Tilemap(_) => tile_assets.tilemap_tiles_layout.clone(),
-            _ => tile_assets.entities_layout.clone(),
+            TileSpriteVariant::Tilemap(_) => tile_assets.tilemap_layout.clone(),
+            _ => entity_assets.tilemap_layout.clone(),
         };
         let index = tile_sprite.get_variant().as_index();
 

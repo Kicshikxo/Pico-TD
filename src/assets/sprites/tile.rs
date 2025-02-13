@@ -7,14 +7,9 @@ use crate::entities::tilemap::tile::TilemapTileVariant;
 #[derive(AssetCollection, Resource)]
 pub struct TileAssets {
     #[asset(path = "embedded://images/tiles/tilemap_tiles.png")]
-    pub tilemap_tiles: Handle<Image>,
+    pub tilemap: Handle<Image>,
     #[asset(texture_atlas_layout(tile_size_x = 16, tile_size_y = 16, columns = 8, rows = 10))]
-    pub tilemap_tiles_layout: Handle<TextureAtlasLayout>,
-
-    #[asset(path = "embedded://images/tiles/entities.png")]
-    pub entities: Handle<Image>,
-    #[asset(texture_atlas_layout(tile_size_x = 16, tile_size_y = 16, columns = 12, rows = 11))]
-    pub entities_layout: Handle<TextureAtlasLayout>,
+    pub tilemap_layout: Handle<TextureAtlasLayout>,
 }
 
 pub enum TilemapTileSpriteVariant {
@@ -85,33 +80,6 @@ pub enum TilemapTileSpriteVariant {
     WaterShoreDiagonalRightTopBottom = 40,
     WaterShoreDiagonalBottomLeftRight = 27,
     WaterShoreDiagonalLeftTopBottom = 42,
-}
-
-pub enum EntityProjectileVariant {
-    Bullet = 120,
-    Rocket = 121,
-}
-
-pub enum EntitySoldierVariant {
-    Soldier = 8,
-    SoldierFast = 56,
-    SoldierStrong = 44,
-    SoldierSniper = 20,
-    RocketLauncher = 9,
-}
-
-pub enum EntityEnemyVariant {
-    Dron = 67,
-    Truck = 60,
-    Tank = 63,
-    Plane = 65,
-    Helicopter = 66,
-    Boat = 69,
-    Submarine = 71,
-}
-
-pub enum EntityUtilVariant {
-    TileIndicator = 122,
 }
 
 impl TileAssets {

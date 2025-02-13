@@ -1,10 +1,9 @@
 use std::{f32::consts::PI, time::Duration};
 
 use bevy::prelude::*;
-#[cfg(not(target_arch = "wasm32"))]
-use bevy_light_2d::light::PointLight2d;
 
 use crate::{
+    assets::sprites::entity::{EntityAssets, UtilSpriteVariant},
     entities::{
         enemy::{health::EnemyHealth, Enemy},
         tile::{movement::TileMovement, position::TilePosition, sprite::TileSprite},
@@ -84,22 +83,26 @@ impl Plugin for ProjectilePlugin {
 fn init_projectile(
     mut commands: Commands,
     projectiles: Query<(Entity, &Projectile), Added<Projectile>>,
+    entity_assets: Option<Res<EntityAssets>>,
 ) {
     for (projectile_entity, projectile) in projectiles.iter() {
         commands.entity(projectile_entity).insert((
             TileSprite::new(projectile.get_variant().into()),
-            #[cfg(not(target_arch = "wasm32"))]
-            PointLight2d {
-                intensity: 0.5,
-                radius: match projectile.get_variant() {
-                    ProjectileVariant::Bullet => 16.0,
-                    ProjectileVariant::Rocket => 32.0,
-                },
-                falloff: 8.0,
-                ..default()
-            },
             Transform::from_scale(Vec3::ZERO),
         ));
+
+        if let Some(entity_assets) = &entity_assets {
+            commands.entity(projectile_entity).with_child(Sprite {
+                image: entity_assets.tilemap.clone(),
+                texture_atlas: Some(TextureAtlas {
+                    layout: entity_assets.tilemap_layout.clone(),
+                    index: UtilSpriteVariant::Glow as usize,
+                }),
+                color: Color::srgba(1.0, 1.0, 0.5, 1.0),
+                custom_size: Some(Vec2::new(32.0, 32.0)),
+                ..default()
+            });
+        }
     }
 }
 

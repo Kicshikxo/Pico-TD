@@ -71,9 +71,9 @@ fn update_tile_indicator(
                 if soldier_found {
                     tile_indicator_sprite.color = Color::srgba(1.0, 1.0, 0.0, 0.75);
                 } else if selected_tile.get_variant() == TilemapTileVariant::Ground {
-                    tile_indicator_sprite.color = Color::srgba(0.0, 1.0, 0.0, 0.75);
+                    tile_indicator_sprite.color = Color::srgba(1.0, 1.0, 1.0, 0.75);
                 } else {
-                    tile_indicator_sprite.color = Color::srgba(0.0, 0.0, 0.0, 0.0);
+                    tile_indicator_sprite.color = Color::srgba(1.0, 0.0, 0.0, 0.75);
                 }
             }
         }

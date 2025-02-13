@@ -2,8 +2,6 @@ use bevy::{
     audio::{PlaybackMode, Volume},
     prelude::*,
 };
-#[cfg(not(target_arch = "wasm32"))]
-use bevy_light_2d::plugin::Light2dPlugin;
 use bevy_persistent::Persistent;
 
 use crate::{
@@ -28,8 +26,6 @@ impl Plugin for GamePlugin {
             WavesPlugin,
             GameInputPlugin,
             PlayerPlugin,
-            #[cfg(not(target_arch = "wasm32"))]
-            Light2dPlugin,
         ));
 
         app.init_resource::<GameSpeed>();
