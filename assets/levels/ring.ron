@@ -25,6 +25,13 @@ LevelAsset(
         "~~####FT############",
         "~~~###TT#F#######F##",
     ],
+    tile_symbols: Some(TileSymbols (
+        ground: '#',
+        flower: 'F',
+        tree: 'T',
+        road: '.',
+        water: '~',
+    )),
     paths: Some([
         [
             (3, -1),

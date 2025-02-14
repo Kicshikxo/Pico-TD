@@ -24,23 +24,10 @@ impl Default for TilemapTile {
     }
 }
 
-impl From<char> for TilemapTile {
-    fn from(tile: char) -> Self {
-        Self {
-            variant: match tile {
-                '#' => TilemapTileVariant::Ground,
-                'F' => TilemapTileVariant::Flower,
-                'T' => TilemapTileVariant::Tree,
-                '.' => TilemapTileVariant::Road,
-                '~' => TilemapTileVariant::Water,
-                _ => TilemapTileVariant::Unknown,
-            },
-            ..default()
-        }
-    }
-}
-
 impl TilemapTile {
+    pub fn new(variant: TilemapTileVariant) -> Self {
+        Self { variant }
+    }
     pub fn get_variant(&self) -> TilemapTileVariant {
         self.variant
     }

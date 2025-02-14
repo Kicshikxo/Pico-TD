@@ -1,13 +1,14 @@
 _version: 2
 
+level.example:
+    en: "Example"
+    ru: "Пример"
 level.ring:
     en: "Ring"
     ru: "Кольцо"
-
 level.zigzag:
     en: "Zigzag"
     ru: "Зигзаг"
-
 level.error:
     en: "Error"
     ru: "Ошибка"

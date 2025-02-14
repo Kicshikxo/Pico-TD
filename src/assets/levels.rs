@@ -5,16 +5,15 @@ use bevy::{
 use bevy_asset_loader::asset_collection::AssetCollection;
 use serde::Deserialize;
 
-use crate::entities::{enemy::EnemyVariant, tilemap::tile::TilemapTile};
+use crate::entities::{
+    enemy::EnemyVariant,
+    tilemap::tile::{TilemapTile, TilemapTileVariant},
+};
 
 #[derive(AssetCollection, Resource)]
 pub struct LevelsAssets {
     #[asset(
-        paths(
-            "embedded://levels/ring.ron",
-            "embedded://levels/zigzag.ron",
-            "embedded://levels/example.ron"
-        ),
+        paths("embedded://levels/ring.ron", "embedded://levels/zigzag.ron"),
         collection(typed)
     )]
     pub compain: Vec<Handle<Level>>,
@@ -85,6 +84,45 @@ impl Default for Level {
     }
 }
 
+#[derive(Asset, TypePath, Deserialize, Debug)]
+pub struct TileSymbols {
+    pub ground: char,
+    pub flower: char,
+    pub tree: char,
+    pub road: char,
+    pub water: char,
+}
+
+impl Default for TileSymbols {
+    fn default() -> Self {
+        Self {
+            ground: '#',
+            flower: 'F',
+            tree: 'T',
+            road: '.',
+            water: '~',
+        }
+    }
+}
+
+impl TileSymbols {
+    pub fn get_tile_variant(&self, char: char) -> TilemapTileVariant {
+        if char == self.ground {
+            TilemapTileVariant::Ground
+        } else if char == self.flower {
+            TilemapTileVariant::Flower
+        } else if char == self.tree {
+            TilemapTileVariant::Tree
+        } else if char == self.road {
+            TilemapTileVariant::Road
+        } else if char == self.water {
+            TilemapTileVariant::Water
+        } else {
+            TilemapTileVariant::Unknown
+        }
+    }
+}
+
 #[derive(Asset, TypePath, Deserialize)]
 pub struct LevelAsset {
     pub name: String,
@@ -92,6 +130,7 @@ pub struct LevelAsset {
     pub player_money: u32,
     pub size: UVec2,
     pub map: Vec<String>,
+    pub tile_symbols: Option<TileSymbols>,
     pub paths: Option<Vec<Vec<Vec2>>>,
     pub waves: Option<Vec<Vec<Wave>>>,
     pub error: Option<String>,
@@ -105,6 +144,7 @@ impl Default for LevelAsset {
             player_money: 0,
             size: UVec2::new(0, 0),
             map: Vec::new(),
+            tile_symbols: None,
             paths: None,
             waves: None,
             error: None,
@@ -145,11 +185,16 @@ impl AssetLoader for LevelsLoader {
             LevelAsset::error(error.to_string())
         });
 
+        let tile_symbols = level_asset.tile_symbols.unwrap_or_default();
         let map: Vec<Vec<TilemapTile>> = level_asset
             .map
             .iter()
             .rev()
-            .map(|row| row.chars().map(TilemapTile::from).collect())
+            .map(|row| {
+                row.chars()
+                    .map(|char| TilemapTile::new(tile_symbols.get_tile_variant(char)))
+                    .collect()
+            })
             .collect();
 
         Ok(Level {
