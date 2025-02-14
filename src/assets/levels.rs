@@ -13,7 +13,7 @@ use crate::entities::{
 #[derive(AssetCollection, Resource)]
 pub struct LevelsAssets {
     #[asset(
-        paths("embedded://levels/ring.ron", "embedded://levels/zigzag.ron"),
+        paths("embedded://levels/ring.ron", "embedded://levels/zigzag.ron",),
         collection(typed)
     )]
     pub compain: Vec<Handle<Level>>,

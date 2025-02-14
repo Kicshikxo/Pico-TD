@@ -151,7 +151,7 @@ fn ui_init(
                                                     } else {
                                                         UiContainerVariant::Danger
                                                     })
-                                                    .with_padding(UiRect::all(Val::Px(16.0)))
+                                                    .with_padding(UiRect::all(Val::Px(8.0)))
                                                     .with_aspect_ratio(1.0)
                                                     .center(),
                                             ))
