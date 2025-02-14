@@ -62,6 +62,7 @@ fn ui_init(
     ui_assets: Res<UiAssets>,
     levels_assets: Res<LevelsAssets>,
     levels_assets_loader: Res<Assets<Level>>,
+    mut images: ResMut<Assets<Image>>,
 ) {
     commands
         .spawn((
@@ -155,17 +156,21 @@ fn ui_init(
                                                     .with_aspect_ratio(1.0)
                                                     .center(),
                                             ))
-                                            .with_child((
-                                                Node {
-                                                    width: Val::Percent(100.0),
-                                                    height: Val::Percent(100.0),
-                                                    ..default()
-                                                },
-                                                ImageNode {
-                                                    image: levels_assets.get_level_preview(level),
-                                                    ..default()
-                                                },
-                                            ));
+                                            .with_children(|parent| {
+                                                if level.error.is_none() {
+                                                    parent.spawn((
+                                                        Node {
+                                                            width: Val::Percent(100.0),
+                                                            height: Val::Percent(100.0),
+                                                            ..default()
+                                                        },
+                                                        ImageNode {
+                                                            image: images.add(level.get_preview()),
+                                                            ..default()
+                                                        },
+                                                    ));
+                                                }
+                                            });
 
                                         parent.spawn(UiText::new(&format!("level.{}", level.name)));
                                     });

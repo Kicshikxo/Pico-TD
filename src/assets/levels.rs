@@ -1,6 +1,8 @@
 use bevy::{
-    asset::{io::Reader, AssetLoader, LoadContext},
+    asset::{io::Reader, AssetLoader, LoadContext, RenderAssetUsages},
+    math::VectorSpace,
     prelude::*,
+    render::render_resource::{Extent3d, TextureDimension, TextureFormat},
 };
 use bevy_asset_loader::asset_collection::AssetCollection;
 use serde::Deserialize;
@@ -13,27 +15,10 @@ use crate::entities::{
 #[derive(AssetCollection, Resource)]
 pub struct LevelsAssets {
     #[asset(
-        paths("embedded://levels/ring.ron", "embedded://levels/zigzag.ron",),
+        paths("embedded://levels/ring.ron", "embedded://levels/zigzag.ron"),
         collection(typed)
     )]
     pub compain: Vec<Handle<Level>>,
-
-    #[asset(path = "embedded://images/levels/ring.png")]
-    pub ring_preview: Handle<Image>,
-    #[asset(path = "embedded://images/levels/zigzag.png")]
-    pub zigzag_preview: Handle<Image>,
-    #[asset(path = "embedded://images/levels/error.png")]
-    pub error_preview: Handle<Image>,
-}
-
-impl LevelsAssets {
-    pub fn get_level_preview(&self, level: &Level) -> Handle<Image> {
-        match level.name.as_str() {
-            "ring" => self.ring_preview.clone(),
-            "zigzag" => self.zigzag_preview.clone(),
-            _ => self.error_preview.clone(),
-        }
-    }
 }
 
 pub struct LevelsPlugin;
@@ -57,6 +42,38 @@ pub struct Level {
     pub paths: Vec<Vec<Vec2>>,
     pub waves: Vec<Vec<Wave>>,
     pub error: Option<String>,
+}
+
+impl Level {
+    pub fn get_preview(&self) -> Image {
+        let mut image = Image::new_fill(
+            Extent3d {
+                width: self.size.x as u32,
+                height: self.size.y as u32,
+                depth_or_array_layers: 1,
+            },
+            TextureDimension::D2,
+            &Srgba::ZERO.to_u8_array(),
+            TextureFormat::Rgba8UnormSrgb,
+            RenderAssetUsages::all(),
+        );
+
+        for x in 0..self.size.x {
+            for y in 0..self.size.y {
+                image
+                    .set_color_at(
+                        x,
+                        y,
+                        self.map[y as usize][x as usize]
+                            .get_variant()
+                            .get_preview_color(),
+                    )
+                    .unwrap();
+            }
+        }
+
+        image
+    }
 }
 
 #[derive(Clone, Deserialize)]
