@@ -32,7 +32,7 @@ pub enum ProjectileVariant {
     Rocket,
 }
 
-#[derive(Component)]
+#[derive(Component, Clone, Copy)]
 #[require(TilePosition)]
 pub struct Projectile {
     variant: ProjectileVariant,
@@ -65,6 +65,12 @@ impl Projectile {
     }
     pub fn get_variant(&self) -> ProjectileVariant {
         self.variant
+    }
+    pub fn get_target(&self) -> Entity {
+        self.target
+    }
+    pub fn get_damage(&self) -> u32 {
+        self.damage
     }
 }
 

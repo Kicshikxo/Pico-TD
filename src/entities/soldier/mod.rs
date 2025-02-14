@@ -19,7 +19,7 @@ use crate::{
 };
 
 use super::{
-    enemy::Enemy,
+    enemy::{health::EnemyHealth, Enemy},
     tile::{
         movement::TileMovement,
         position::TilePosition,
@@ -220,18 +220,21 @@ fn update_soldier(
     mut commands: Commands,
     mut soldiers: Query<(&mut Soldier, &TilePosition, &mut TileSprite, &mut Transform)>,
     game_tilemap: Query<Entity, With<GameTilemap>>,
-    enemies: Query<(Entity, &TileMovement, &TilePosition), With<Enemy>>,
+    enemies: Query<(Entity, &EnemyHealth, &TileMovement, &TilePosition), With<Enemy>>,
+    projectiles: Query<&Projectile>,
     game_audio: Query<Entity, With<GameAudio>>,
     game_audio_assets: Res<GameAudioAssets>,
     game_audio_volume: Res<Persistent<GameAudioVolume>>,
 ) {
     let mut sorted_enemies = enemies.iter().collect::<Vec<_>>();
-    sorted_enemies.sort_by(|(_, enemy_a_movement, _), (_, enemy_b_movement, _)| {
+    sorted_enemies.sort_by(|(_, _, enemy_a_movement, _), (_, _, enemy_b_movement, _)| {
         enemy_b_movement
             .get_progress()
             .partial_cmp(&enemy_a_movement.get_progress())
             .unwrap_or(std::cmp::Ordering::Equal)
     });
+
+    let mut projectiles = projectiles.iter().cloned().collect::<Vec<Projectile>>();
 
     for (mut soldier, soldier_tile_position, mut soldier_tile_sprite, mut soldier_transform) in
         soldiers.iter_mut()
@@ -250,12 +253,23 @@ fn update_soldier(
             continue;
         }
 
-        for (enemy_entity, enemy_movement, enemy_tile_position) in &sorted_enemies {
+        for (enemy_entity, enemy_health, enemy_movement, enemy_tile_position) in &sorted_enemies {
             if soldier_tile_position
                 .as_vec2()
                 .distance(enemy_tile_position.as_vec2())
                 <= soldier.get_fire_radius()
             {
+                if enemy_health.get_current().saturating_sub(
+                    projectiles
+                        .iter()
+                        .filter(|projectile| projectile.get_target() == *enemy_entity)
+                        .map(|projectile| projectile.get_damage())
+                        .sum(),
+                ) == 0
+                {
+                    continue;
+                }
+
                 let projectile_variant =
                     soldier.get_variant().get_config().get_projectile_variant();
                 let projectile_duration = projectile_variant.get_config().get_duration();
@@ -264,8 +278,10 @@ fn update_soldier(
                     + projectile_duration.as_secs_f32()
                         / enemy_movement.get_duration().as_secs_f32();
 
+                let projectile =
+                    Projectile::new(projectile_variant, *enemy_entity, soldier.get_damage());
                 commands.entity(game_tilemap.single()).with_child((
-                    Projectile::new(projectile_variant, *enemy_entity, soldier.get_damage()),
+                    projectile,
                     TileMovement::new(
                         vec![
                             soldier_tile_position.as_vec2(),
@@ -275,6 +291,8 @@ fn update_soldier(
                         None,
                     ),
                 ));
+                projectiles.push(projectile);
+
                 commands.entity(game_audio.single()).with_child((
                     AudioPlayer::new(game_audio_assets.get_random_shoot().clone()),
                     PlaybackSettings {
