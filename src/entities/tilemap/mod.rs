@@ -56,12 +56,6 @@ impl Tilemap {
     pub fn get_tile(&self, position: IVec2) -> Option<Entity> {
         self.tiles.get(&position).copied()
     }
-    pub fn get_tile_from_tile_position(&self, position: TilePosition) -> Option<Entity> {
-        self.get_tile(IVec2::new(
-            position.as_ivec2().x,
-            self.size.y as i32 - position.as_ivec2().y - 1,
-        ))
-    }
     pub fn get_update_required(&self) -> bool {
         self.update_required
     }
@@ -95,6 +89,7 @@ fn init_tilemap(
                 let tilemap_tile_entity = commands
                     .spawn((
                         TileSprite::new(tilemap_tile.get_variant().into()),
+                        TilePosition::new(x as f32, y as f32).with_z(-2.0),
                         tilemap_tile,
                     ))
                     .id();
@@ -120,7 +115,7 @@ fn init_tilemap(
 
 fn update_tilemap(
     mut tilemaps: Query<&mut Tilemap>,
-    mut tiles: Query<(&TilemapTile, &mut Sprite, &mut Transform)>,
+    mut tiles: Query<(&TilemapTile, &mut Sprite)>,
     tile_assets: Res<TileAssets>,
 ) {
     for mut tilemap in tilemaps.iter_mut() {
@@ -133,25 +128,21 @@ fn update_tilemap(
                 tilemap
                     .get_tile(tile_position + IVec2::new(dx, dy))
                     .and_then(|entity| tiles.get(entity).ok())
-                    .map(|(tile, _, _)| tile.get_variant())
+                    .map(|(tile, _tile_sprite)| tile.get_variant())
                     .unwrap_or(TilemapTileVariant::Unknown)
             };
 
             let tiles_around: [[TilemapTileVariant; 3]; 3] = [
-                [nearby_tile(-1, 1), nearby_tile(0, 1), nearby_tile(1, 1)],
-                [nearby_tile(-1, 0), nearby_tile(0, 0), nearby_tile(1, 0)],
                 [nearby_tile(-1, -1), nearby_tile(0, -1), nearby_tile(1, -1)],
+                [nearby_tile(-1, 0), nearby_tile(0, 0), nearby_tile(1, 0)],
+                [nearby_tile(-1, 1), nearby_tile(0, 1), nearby_tile(1, 1)],
             ];
 
-            if let Ok((tile, mut tile_sprite, mut tile_transform)) = tiles.get_mut(*tile_entity) {
+            if let Ok((tile, mut tile_sprite)) = tiles.get_mut(*tile_entity) {
                 if let Some(texture_atlas) = tile_sprite.texture_atlas.as_mut() {
                     texture_atlas.index =
                         tile_assets.get_tile_index(tile.get_variant(), tiles_around)
                 }
-
-                tile_transform.translation = (tile_position * tilemap.tile_size.as_ivec2())
-                    .extend(-1)
-                    .as_vec3();
             }
         }
 

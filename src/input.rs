@@ -100,8 +100,9 @@ fn update_selected_soldier(
     let Ok(game_tilemap) = game_tilemap.get_single() else {
         return;
     };
+
     if let Some(selected_tile_entity) =
-        game_tilemap.get_tile_from_tile_position(selected_tile.tile_position)
+        game_tilemap.get_tile(selected_tile.tile_position.as_ivec2())
     {
         if let Ok(selected_tile) = tiles.get(selected_tile_entity) {
             if selected_tile.get_variant() != TilemapTileVariant::Ground {

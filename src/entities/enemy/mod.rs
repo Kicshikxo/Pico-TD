@@ -230,10 +230,12 @@ fn update_enemy_movement(
         if enemy.get_update_required() == true {
             enemy_tile_sprite.set_variant(TileSpriteVariant::Enemy(enemy.get_variant().into()));
             let config = enemy.get_variant().get_config();
-            enemy_health.set_max(config.get_health());
-            enemy_health.heal(config.get_health());
             enemy.set_damage(config.get_damage());
             enemy.set_kill_reward(config.get_kill_reward());
+            enemy_health.set_max(config.get_health());
+            enemy_health.heal(config.get_health());
+            enemy_tile_position.set_z(config.get_z_position());
+            enemy_transform.scale = config.get_sprite_scale();
             enemy.set_update_required(false);
         }
         enemy_tile_position.set_from_vec2(enemy_movement.get_position());
@@ -249,8 +251,6 @@ fn update_enemy_movement(
                 * game_speed.as_f32()
                 * 10.0;
         enemy_transform.rotation = Quat::from_rotation_z(rotation_z);
-        enemy_transform.scale = enemy.get_variant().get_config().get_sprite_scale();
-        enemy_transform.translation.z = enemy.get_variant().get_config().get_z_position();
     }
 }
 

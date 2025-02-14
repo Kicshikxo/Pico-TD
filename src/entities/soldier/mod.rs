@@ -196,12 +196,13 @@ impl Plugin for SoldierPlugin {
 fn init_soldier(
     mut commands: Commands,
     game_tilemap: Query<Entity, With<GameTilemap>>,
-    soldiers: Query<(Entity, &Soldier), Added<Soldier>>,
+    mut soldiers: Query<(Entity, &Soldier, &mut TilePosition), Added<Soldier>>,
 ) {
-    for (soldier_entity, soldier) in soldiers.iter() {
+    for (soldier_entity, soldier, mut soldier_tile_position) in soldiers.iter_mut() {
         commands
             .entity(soldier_entity)
             .insert(TileSprite::new(soldier.get_variant().into()));
+        soldier_tile_position.set_z(1.0);
 
         commands.entity(game_tilemap.single()).with_child((
             CooldownBar::new(soldier_entity),
@@ -288,7 +289,6 @@ fn update_soldier(
                 let enemy_direction = soldier_tile_position.as_vec2()
                     - enemy_movement.position_at_progress(enemy_progress_on_hit);
                 let scale_x = if enemy_direction.x < 0.0 { 1.0 } else { -1.0 };
-                soldier_transform.translation.z = 1.0;
                 soldier_transform.scale.x = scale_x;
 
                 break;

@@ -1,5 +1,7 @@
 use bevy::prelude::*;
 
+use crate::entities::tile::position::TilePosition;
+
 #[derive(Clone, Copy, PartialEq)]
 pub enum TilemapTileVariant {
     Ground,
@@ -11,7 +13,7 @@ pub enum TilemapTileVariant {
 }
 
 #[derive(Component, Clone, Copy)]
-#[require(Transform)]
+#[require(TilePosition)]
 pub struct TilemapTile {
     variant: TilemapTileVariant,
 }

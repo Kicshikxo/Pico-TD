@@ -10,6 +10,7 @@ use crate::{
 pub struct TilePosition {
     x: f32,
     y: f32,
+    z: f32,
     update_required: bool,
 }
 
@@ -18,6 +19,7 @@ impl Default for TilePosition {
         Self {
             x: 0.0,
             y: 0.0,
+            z: 0.0,
             update_required: true,
         }
     }
@@ -27,6 +29,10 @@ impl Default for TilePosition {
 impl TilePosition {
     pub fn new(x: f32, y: f32) -> Self {
         Self { x, y, ..default() }
+    }
+    pub fn with_z(mut self, z: f32) -> Self {
+        self.z = z;
+        self
     }
     pub fn from_vec2(vec: Vec2) -> Self {
         Self {
@@ -83,6 +89,13 @@ impl TilePosition {
     pub fn get_y(&self) -> f32 {
         self.y
     }
+    pub fn set_z(&mut self, z: f32) {
+        self.z = z;
+        self.update_required = true;
+    }
+    pub fn get_z(&self) -> f32 {
+        self.z
+    }
     pub fn get_tilemap_x(&self, tilemap: &Tilemap) -> f32 {
         self.x * tilemap.get_tile_size().x as f32
     }
@@ -128,6 +141,7 @@ fn update_tile_position(
 
         position_transform.translation.x = tile_position.get_tilemap_x(tilemap);
         position_transform.translation.y = tile_position.get_tilemap_y(tilemap);
+        position_transform.translation.z = tile_position.get_z();
 
         tile_position.set_update_required(false);
     }

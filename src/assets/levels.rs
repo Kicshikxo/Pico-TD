@@ -84,7 +84,7 @@ impl Default for Level {
     }
 }
 
-#[derive(Asset, TypePath, Deserialize, Debug)]
+#[derive(Asset, TypePath, Deserialize)]
 pub struct TileSymbols {
     pub ground: char,
     pub flower: char,
@@ -189,7 +189,6 @@ impl AssetLoader for LevelsLoader {
         let map: Vec<Vec<TilemapTile>> = level_asset
             .map
             .iter()
-            .rev()
             .map(|row| {
                 row.chars()
                     .map(|char| TilemapTile::new(tile_symbols.get_tile_variant(char)))

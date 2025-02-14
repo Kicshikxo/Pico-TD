@@ -41,7 +41,7 @@ fn init_tile_indicator(
     for tile_indicator_entity in tile_indicators.iter() {
         commands.entity(tile_indicator_entity).insert((
             TileSprite::new(TileSpriteVariant::Util(UtilVariant::TileIndicator)),
-            Transform::from_translation(Vec3::new(0.0, 0.0, -0.5)),
+            TilePosition::new(-1.0, -1.0).with_z(-1.0),
         ));
     }
 }
@@ -65,7 +65,7 @@ fn update_tile_indicator(
         });
 
         if let Some(selected_tile_entity) =
-            game_tilemap.get_tile_from_tile_position(selected_tile.tile_position)
+            game_tilemap.get_tile(selected_tile.tile_position.as_ivec2())
         {
             if let Ok(selected_tile) = tiles.get(selected_tile_entity) {
                 if soldier_found {
