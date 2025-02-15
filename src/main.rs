@@ -50,6 +50,5 @@ fn main() {
                 .set(ImagePlugin::default_nearest()),
             GamePlugin,
         ))
-        // .add_plugins(bevy_inspector_egui::quick::WorldInspectorPlugin::new())
         .run();
 }
