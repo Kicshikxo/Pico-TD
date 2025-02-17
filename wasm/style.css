@@ -1,6 +1,6 @@
 @font-face {
-    font-family: "Fifaks";
-    src: url("/Fifaks.ttf");
+    font-family: "Fairfax";
+    src: url("/Fairfax.ttf");
 }
 
 * {
@@ -9,7 +9,7 @@
     box-sizing: border-box;
     user-select: none;
     border: none;
-    font-family: "Fifaks" !important;
+    font-family: "Fairfax" !important;
     image-rendering: pixelated;
 }
 body {

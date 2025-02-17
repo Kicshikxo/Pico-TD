@@ -3,7 +3,7 @@ use bevy_asset_loader::asset_collection::AssetCollection;
 
 #[derive(AssetCollection, Resource)]
 pub struct UiAssets {
-    #[asset(path = "embedded://fonts/Fifaks.ttf")]
+    #[asset(path = "embedded://fonts/Fairfax.ttf")]
     pub primary_font: Handle<Font>,
 
     #[asset(path = "embedded://images/ui/containers.png")]
