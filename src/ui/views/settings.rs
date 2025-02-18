@@ -82,13 +82,11 @@ fn ui_init(
                     parent.spawn((
                         UiButton::new(),
                         ButtonAction::BackToMenu,
-                        Node {
-                            position_type: PositionType::Absolute,
-                            width: Val::Px(32.0),
-                            top: Val::Px(-6.0),
-                            right: Val::Px(38.0),
-                            ..default()
-                        },
+                        UiContainer::new()
+                            .with_width(Val::Px(32.0))
+                            .with_right(Val::Px(38.0))
+                            .with_top(Val::Px(-6.0))
+                            .absolute(),
                         ImageNode {
                             image: ui_assets.ui_buttons.clone(),
                             texture_atlas: Some(TextureAtlas {

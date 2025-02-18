@@ -36,7 +36,7 @@ fn ui_init(mut commands: Commands, player: Res<Player>) {
         .spawn((
             RootUiComponent,
             UiContainer::new().full().center(),
-            BackgroundColor(Color::srgba(0.0, 0.0, 0.0, 0.5)),
+            BackgroundColor(Color::BLACK.with_alpha(0.5)),
         ))
         .with_children(|parent| {
             parent

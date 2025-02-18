@@ -28,6 +28,9 @@ impl UiContainerVariant {
 #[require(Node)]
 pub struct UiContainer {
     variant: UiContainerVariant,
+    display: Display,
+    position_type: PositionType,
+    position: UiRect,
     width: Val,
     height: Val,
     padding: UiRect,
@@ -43,6 +46,9 @@ impl Default for UiContainer {
     fn default() -> Self {
         Self {
             variant: UiContainerVariant::default(),
+            display: Display::Flex,
+            position_type: PositionType::Relative,
+            position: UiRect::all(Val::Auto),
             width: Val::Percent(100.0),
             height: Val::Auto,
             padding: UiRect::all(Val::ZERO),
@@ -63,6 +69,34 @@ impl UiContainer {
     }
     pub fn with_variant(mut self, variant: UiContainerVariant) -> Self {
         self.variant = variant;
+        self
+    }
+    pub fn with_display(mut self, display: Display) -> Self {
+        self.display = display;
+        self
+    }
+    pub fn with_position_type(mut self, position_type: PositionType) -> Self {
+        self.position_type = position_type;
+        self
+    }
+    pub fn with_position(mut self, position: UiRect) -> Self {
+        self.position = position;
+        self
+    }
+    pub fn with_left(mut self, left: Val) -> Self {
+        self.position.left = left;
+        self
+    }
+    pub fn with_right(mut self, right: Val) -> Self {
+        self.position.right = right;
+        self
+    }
+    pub fn with_top(mut self, top: Val) -> Self {
+        self.position.top = top;
+        self
+    }
+    pub fn with_bottom(mut self, bottom: Val) -> Self {
+        self.position.bottom = bottom;
         self
     }
     pub fn with_width(mut self, width: Val) -> Self {
@@ -101,6 +135,15 @@ impl UiContainer {
         self.column_gap = column_gap;
         self
     }
+    pub fn with_gap(mut self, gap: Val) -> Self {
+        self.with_row_gap(gap).with_column_gap(gap)
+    }
+    pub fn grid(mut self) -> Self {
+        self.with_display(Display::Grid)
+    }
+    pub fn absolute(self) -> Self {
+        self.with_position_type(PositionType::Absolute)
+    }
     pub fn full(self) -> Self {
         self.with_width(Val::Percent(100.0))
             .with_height(Val::Percent(100.0))
@@ -111,9 +154,6 @@ impl UiContainer {
     }
     pub fn column(mut self) -> Self {
         self.with_flex_direction(FlexDirection::Column)
-    }
-    pub fn gap(mut self, gap: Val) -> Self {
-        self.with_row_gap(gap).with_column_gap(gap)
     }
 }
 
@@ -136,6 +176,12 @@ fn init_ui_container(
         };
 
         commands.entity(ui_container_entity).insert(Node {
+            display: ui_container.display,
+            position_type: ui_container.position_type,
+            left: ui_container.position.left,
+            right: ui_container.position.right,
+            top: ui_container.position.top,
+            bottom: ui_container.position.bottom,
             width: ui_container.width,
             height: ui_container.height,
             padding: ui_container.padding,

@@ -66,12 +66,12 @@ fn ui_init(
         .spawn((RootUiComponent, UiContainer::new().full()))
         .with_children(|parent| {
             parent
-                .spawn(Node {
-                    position_type: PositionType::Absolute,
-                    top: Val::Px(8.0),
-                    left: Val::Px(8.0),
-                    ..default()
-                })
+                .spawn(
+                    UiContainer::new()
+                        .with_left(Val::Px(8.0))
+                        .with_top(Val::Px(8.0))
+                        .absolute(),
+                )
                 .with_children(|parent| {
                     parent
                         .spawn(UiContainer::new().column())
@@ -80,11 +80,9 @@ fn ui_init(
                                 .spawn(UiContainer::new().with_column_gap(Val::Px(8.0)).center())
                                 .with_children(|parent| {
                                     parent.spawn((
-                                        Node {
-                                            width: Val::Px(32.0),
-                                            height: Val::Px(32.0),
-                                            ..default()
-                                        },
+                                        UiContainer::new()
+                                            .with_width(Val::Px(32.0))
+                                            .with_height(Val::Px(32.0)),
                                         ImageNode {
                                             image: ui_assets.ui_misc.clone(),
                                             texture_atlas: Some(TextureAtlas {
@@ -109,11 +107,9 @@ fn ui_init(
                                 .spawn(UiContainer::new().with_column_gap(Val::Px(8.0)).center())
                                 .with_children(|parent| {
                                     parent.spawn((
-                                        Node {
-                                            width: Val::Px(32.0),
-                                            height: Val::Px(32.0),
-                                            ..default()
-                                        },
+                                        UiContainer::new()
+                                            .with_width(Val::Px(32.0))
+                                            .with_height(Val::Px(32.0)),
                                         ImageNode {
                                             image: ui_assets.ui_misc.clone(),
                                             texture_atlas: Some(TextureAtlas {
@@ -137,12 +133,13 @@ fn ui_init(
                 });
 
             parent
-                .spawn(Node {
-                    position_type: PositionType::Absolute,
-                    top: Val::Px(8.0),
-                    right: Val::Px(8.0),
-                    ..default()
-                })
+                .spawn(
+                    UiContainer::new()
+                        .with_right(Val::Px(8.0))
+                        .with_top(Val::Px(8.0))
+                        .with_width(Val::Auto)
+                        .absolute(),
+                )
                 .with_child((
                     WaveTextComponent,
                     UiText::new("ui.in_game.wave")
@@ -151,14 +148,15 @@ fn ui_init(
                 ));
 
             parent
-                .spawn(Node {
-                    display: Display::Grid,
-                    position_type: PositionType::Absolute,
-                    bottom: Val::Px(8.0),
-                    right: Val::Px(8.0),
-                    row_gap: Val::Px(8.0),
-                    ..default()
-                })
+                .spawn(
+                    UiContainer::new()
+                        .with_right(Val::Px(8.0))
+                        .with_bottom(Val::Px(8.0))
+                        .with_width(Val::Auto)
+                        .with_row_gap(Val::Px(8.0))
+                        .grid()
+                        .absolute(),
+                )
                 .with_children(|parent| {
                     parent
                         .spawn(UiContainer::new().with_column_gap(Val::Px(8.0)))
