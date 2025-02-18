@@ -36,7 +36,7 @@ struct SfxVolumeSelector;
 struct MusicVolumeSelector;
 
 #[derive(Component)]
-enum PauseButtonAction {
+enum ButtonAction {
     Close,
     BackToMenu,
 }
@@ -49,7 +49,7 @@ fn ui_init(
     commands
         .spawn((
             RootUiComponent,
-            UiContainer::new().with_height(Val::Percent(100.0)).center(),
+            UiContainer::new().full().center(),
             BackgroundColor(Color::srgba(0.0, 0.0, 0.0, 0.5)),
         ))
         .with_children(|parent| {
@@ -66,7 +66,7 @@ fn ui_init(
                 .with_children(|parent| {
                     parent.spawn((
                         UiButton::new(),
-                        PauseButtonAction::Close,
+                        ButtonAction::Close,
                         Node {
                             position_type: PositionType::Absolute,
                             width: Val::Px(32.0),
@@ -127,7 +127,7 @@ fn ui_init(
                     ));
                     parent
                         .spawn((
-                            PauseButtonAction::BackToMenu,
+                            ButtonAction::BackToMenu,
                             UiButton::new().with_variant(UiButtonVariant::Primary),
                         ))
                         .with_child(UiText::new("ui.pause.back_to_menu"));
@@ -142,10 +142,7 @@ fn ui_destroy(mut commands: Commands, query: Query<Entity, With<RootUiComponent>
 }
 
 fn ui_update(
-    interaction_query: Query<
-        (&Interaction, &PauseButtonAction),
-        (Changed<Interaction>, With<UiButton>),
-    >,
+    interaction_query: Query<(&Interaction, &ButtonAction), (Changed<Interaction>, With<UiButton>)>,
     mut pause_selectors: ParamSet<(
         Query<&mut UiSelector, With<SfxVolumeSelector>>,
         Query<&mut UiSelector, With<MusicVolumeSelector>>,
@@ -175,11 +172,11 @@ fn ui_update(
     for (interaction, button_action) in &interaction_query {
         if *interaction == Interaction::Pressed {
             match button_action {
-                PauseButtonAction::Close => {
+                ButtonAction::Close => {
                     next_ui_state.set(UiState::InGame);
                     next_game_state.set(GameState::InGame);
                 }
-                PauseButtonAction::BackToMenu => {
+                ButtonAction::BackToMenu => {
                     next_ui_state.set(UiState::Menu);
                     next_game_state.set(GameState::Pause);
                 }

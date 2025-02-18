@@ -39,7 +39,7 @@ struct SfxVolumeSelector;
 struct MusicVolumeSelector;
 
 #[derive(Component)]
-enum SettingsButtonAction {
+enum ButtonAction {
     BackToMenu,
 }
 
@@ -52,7 +52,7 @@ fn ui_init(
     commands
         .spawn((
             RootUiComponent,
-            UiContainer::new().with_height(Val::Percent(100.0)).center(),
+            UiContainer::new().full().center(),
             ImageNode {
                 image: ui_assets.ui_misc.clone(),
                 texture_atlas: Some(TextureAtlas {
@@ -81,7 +81,7 @@ fn ui_init(
                 .with_children(|parent| {
                     parent.spawn((
                         UiButton::new(),
-                        SettingsButtonAction::BackToMenu,
+                        ButtonAction::BackToMenu,
                         Node {
                             position_type: PositionType::Absolute,
                             width: Val::Px(32.0),
@@ -178,10 +178,7 @@ fn ui_destroy(mut commands: Commands, query: Query<Entity, With<RootUiComponent>
 }
 
 fn ui_update(
-    interaction_query: Query<
-        (&Interaction, &SettingsButtonAction),
-        (Changed<Interaction>, With<UiButton>),
-    >,
+    interaction_query: Query<(&Interaction, &ButtonAction), (Changed<Interaction>, With<UiButton>)>,
     mut settings_selectors: ParamSet<(
         Query<&mut UiSelector, With<LocaleSelector>>,
         Query<&mut UiSelector, With<SfxVolumeSelector>>,
@@ -220,7 +217,7 @@ fn ui_update(
     for (interaction, button_action) in interaction_query.iter() {
         if *interaction == Interaction::Pressed {
             match button_action {
-                SettingsButtonAction::BackToMenu => {
+                ButtonAction::BackToMenu => {
                     next_ui_state.set(UiState::Menu);
                 }
             }

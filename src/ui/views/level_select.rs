@@ -40,7 +40,7 @@ impl Plugin for LevelSelectViewUiPlugin {
 struct RootUiComponent;
 
 #[derive(Component)]
-enum LevelSelectButtonAction {
+enum ButtonAction {
     BackToMenu,
     SelectLevel { level_index: usize },
     UploadLevel,
@@ -67,7 +67,7 @@ fn ui_init(
     commands
         .spawn((
             RootUiComponent,
-            UiContainer::new().with_height(Val::Percent(100.0)).center(),
+            UiContainer::new().full().center(),
             ImageNode {
                 image: ui_assets.ui_misc.clone(),
                 texture_atlas: Some(TextureAtlas {
@@ -96,7 +96,7 @@ fn ui_init(
                 .with_children(|parent| {
                     parent.spawn((
                         UiButton::new(),
-                        LevelSelectButtonAction::BackToMenu,
+                        ButtonAction::BackToMenu,
                         Node {
                             position_type: PositionType::Absolute,
                             width: Val::Px(32.0),
@@ -142,9 +142,7 @@ fn ui_init(
                                     .with_children(|parent| {
                                         parent
                                             .spawn((
-                                                LevelSelectButtonAction::SelectLevel {
-                                                    level_index,
-                                                },
+                                                ButtonAction::SelectLevel { level_index },
                                                 UiButton::new(),
                                                 UiContainer::new()
                                                     .with_variant(if level.error.is_none() {
@@ -180,7 +178,7 @@ fn ui_init(
                     #[cfg(not(target_arch = "wasm32"))]
                     parent
                         .spawn((
-                            LevelSelectButtonAction::UploadLevel,
+                            ButtonAction::UploadLevel,
                             UiButton::new().with_variant(UiButtonVariant::Primary),
                         ))
                         .with_child(UiText::new("ui.level_select.upload_level"));
@@ -195,10 +193,7 @@ fn ui_destroy(mut commands: Commands, query: Query<Entity, With<RootUiComponent>
 }
 
 fn ui_update(
-    interaction_query: Query<
-        (&Interaction, &LevelSelectButtonAction),
-        (Changed<Interaction>, With<UiButton>),
-    >,
+    interaction_query: Query<(&Interaction, &ButtonAction), (Changed<Interaction>, With<UiButton>)>,
     levels_assets: Res<LevelsAssets>,
     levels_assets_loader: Res<Assets<Level>>,
     mut next_ui_state: ResMut<NextState<UiState>>,
@@ -210,10 +205,10 @@ fn ui_update(
     for (interaction, button_action) in &interaction_query {
         if *interaction == Interaction::Pressed {
             match button_action {
-                LevelSelectButtonAction::BackToMenu => {
+                ButtonAction::BackToMenu => {
                     next_ui_state.set(UiState::Menu);
                 }
-                LevelSelectButtonAction::SelectLevel { level_index } => {
+                ButtonAction::SelectLevel { level_index } => {
                     let level: &Level = levels_assets_loader
                         .get(&levels_assets.compain[*level_index])
                         .unwrap();
@@ -224,7 +219,7 @@ fn ui_update(
                     *selected_level = level.clone();
                     next_game_state.set(GameState::Start);
                 }
-                LevelSelectButtonAction::UploadLevel => {
+                ButtonAction::UploadLevel => {
                     #[cfg(not(target_arch = "wasm32"))]
                     if let Some(path) = FileDialog::new()
                         .add_filter("RON Files", &["ron"])

@@ -27,7 +27,7 @@ impl Plugin for GameOverViewUiPlugin {
 struct RootUiComponent;
 
 #[derive(Component, PartialEq)]
-enum GameOverButtonAction {
+enum ButtonAction {
     BackToMenu,
 }
 
@@ -35,7 +35,7 @@ fn ui_init(mut commands: Commands, player: Res<Player>) {
     commands
         .spawn((
             RootUiComponent,
-            UiContainer::new().with_height(Val::Percent(100.0)).center(),
+            UiContainer::new().full().center(),
             BackgroundColor(Color::srgba(0.0, 0.0, 0.0, 0.5)),
         ))
         .with_children(|parent| {
@@ -77,7 +77,7 @@ fn ui_init(mut commands: Commands, player: Res<Player>) {
                         );
                     parent
                         .spawn((
-                            GameOverButtonAction::BackToMenu,
+                            ButtonAction::BackToMenu,
                             UiButton::new().with_variant(UiButtonVariant::Primary),
                         ))
                         .with_child(UiText::new("ui.game_over.back_to_menu"));
@@ -92,17 +92,14 @@ fn ui_destroy(mut commands: Commands, query: Query<Entity, With<RootUiComponent>
 }
 
 fn ui_update(
-    interaction_query: Query<
-        (&Interaction, &GameOverButtonAction),
-        (Changed<Interaction>, With<UiButton>),
-    >,
+    interaction_query: Query<(&Interaction, &ButtonAction), (Changed<Interaction>, With<UiButton>)>,
     mut next_ui_state: ResMut<NextState<UiState>>,
     mut next_game_state: ResMut<NextState<GameState>>,
 ) {
     for (interaction, button_action) in &interaction_query {
         if *interaction == Interaction::Pressed {
             match button_action {
-                GameOverButtonAction::BackToMenu => {
+                ButtonAction::BackToMenu => {
                     next_ui_state.set(UiState::Menu);
                     next_game_state.set(GameState::Pause);
                 }

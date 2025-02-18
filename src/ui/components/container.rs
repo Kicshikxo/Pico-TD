@@ -101,6 +101,10 @@ impl UiContainer {
         self.column_gap = column_gap;
         self
     }
+    pub fn full(self) -> Self {
+        self.with_width(Val::Percent(100.0))
+            .with_height(Val::Percent(100.0))
+    }
     pub fn center(self) -> Self {
         self.with_align_items(AlignItems::Center)
             .with_justify_content(JustifyContent::Center)

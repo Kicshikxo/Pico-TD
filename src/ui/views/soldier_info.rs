@@ -36,7 +36,7 @@ impl Plugin for SoldierInfoViewUiPlugin {
 struct RootUiComponent;
 
 #[derive(Component)]
-enum SoldierInfoButtonAction {
+enum ButtonAction {
     Close,
     UpgradeSoldier,
     SellSoldier,
@@ -52,7 +52,7 @@ fn ui_init(
     commands
         .spawn((
             RootUiComponent,
-            UiContainer::new().with_height(Val::Percent(100.0)).center(),
+            UiContainer::new().full().center(),
             BackgroundColor(Color::srgba(0.0, 0.0, 0.0, 0.5)),
         ))
         .with_children(|parent| {
@@ -69,7 +69,7 @@ fn ui_init(
                 .with_children(|parent| {
                     parent.spawn((
                         UiButton::new(),
-                        SoldierInfoButtonAction::Close,
+                        ButtonAction::Close,
                         Node {
                             position_type: PositionType::Absolute,
                             width: Val::Px(32.0),
@@ -208,7 +208,7 @@ fn ui_init(
                         .with_children(|parent| {
                             parent
                                 .spawn((
-                                    SoldierInfoButtonAction::UpgradeSoldier,
+                                    ButtonAction::UpgradeSoldier,
                                     UiButton::new()
                                         .with_variant(UiButtonVariant::Success)
                                         .with_padding(UiRect::all(Val::Px(8.0))),
@@ -217,7 +217,7 @@ fn ui_init(
 
                             parent
                                 .spawn((
-                                    SoldierInfoButtonAction::SellSoldier,
+                                    ButtonAction::SellSoldier,
                                     UiButton::new()
                                         .with_variant(UiButtonVariant::Danger)
                                         .with_padding(UiRect::all(Val::Px(8.0))),
@@ -236,10 +236,7 @@ fn ui_destroy(mut commands: Commands, query: Query<Entity, With<RootUiComponent>
 
 fn ui_update(
     mut commands: Commands,
-    interaction_query: Query<
-        (&Interaction, &SoldierInfoButtonAction),
-        (Changed<Interaction>, With<UiButton>),
-    >,
+    interaction_query: Query<(&Interaction, &ButtonAction), (Changed<Interaction>, With<UiButton>)>,
     mut soldiers: Query<(Entity, &Soldier, &TilePosition)>,
     mut player: ResMut<Player>,
     selected_soldier: Option<Res<SelectedSoldier>>,
@@ -249,15 +246,15 @@ fn ui_update(
     for (interaction, button_action) in &interaction_query {
         if *interaction == Interaction::Pressed {
             match button_action {
-                SoldierInfoButtonAction::Close => {
+                ButtonAction::Close => {
                     next_ui_state.set(UiState::InGame);
                     next_game_state.set(GameState::InGame);
                 }
-                SoldierInfoButtonAction::UpgradeSoldier => {
+                ButtonAction::UpgradeSoldier => {
                     next_ui_state.set(UiState::SoldierSelect);
                     next_game_state.set(GameState::Pause);
                 }
-                SoldierInfoButtonAction::SellSoldier => {
+                ButtonAction::SellSoldier => {
                     if let Some(selected_soldier) = &selected_soldier {
                         for (soldier_entity, soldier, soldier_tile_position) in soldiers.iter_mut()
                         {

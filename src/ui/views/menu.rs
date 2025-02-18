@@ -26,7 +26,7 @@ impl Plugin for MenuViewUiPlugin {
 struct RootUiComponent;
 
 #[derive(Component)]
-enum MenuButtonAction {
+enum ButtonAction {
     Start,
     Settings,
     Exit,
@@ -36,7 +36,7 @@ fn ui_init(mut commands: Commands, ui_assets: Res<UiAssets>) {
     commands
         .spawn((
             RootUiComponent,
-            UiContainer::new().with_height(Val::Percent(100.0)).center(),
+            UiContainer::new().full().center(),
             ImageNode {
                 image: ui_assets.ui_misc.clone(),
                 texture_atlas: Some(TextureAtlas {
@@ -75,14 +75,14 @@ fn ui_init(mut commands: Commands, ui_assets: Res<UiAssets>) {
 
                     parent
                         .spawn((
-                            MenuButtonAction::Start,
+                            ButtonAction::Start,
                             UiButton::new().with_variant(UiButtonVariant::Success),
                         ))
                         .with_child(UiText::new("ui.menu.start_game").with_size(UiTextSize::Large));
 
                     parent
                         .spawn((
-                            MenuButtonAction::Settings,
+                            ButtonAction::Settings,
                             UiButton::new().with_variant(UiButtonVariant::Primary),
                         ))
                         .with_child(UiText::new("ui.menu.settings").with_size(UiTextSize::Large));
@@ -90,7 +90,7 @@ fn ui_init(mut commands: Commands, ui_assets: Res<UiAssets>) {
                     #[cfg(not(target_arch = "wasm32"))]
                     parent
                         .spawn((
-                            MenuButtonAction::Exit,
+                            ButtonAction::Exit,
                             UiButton::new().with_variant(UiButtonVariant::Danger),
                         ))
                         .with_child(UiText::new("ui.menu.exit_game").with_size(UiTextSize::Large));
@@ -105,23 +105,20 @@ fn ui_destroy(mut commands: Commands, query: Query<Entity, With<RootUiComponent>
 }
 
 fn ui_update(
-    interaction_query: Query<
-        (&Interaction, &MenuButtonAction),
-        (Changed<Interaction>, With<UiButton>),
-    >,
+    interaction_query: Query<(&Interaction, &ButtonAction), (Changed<Interaction>, With<UiButton>)>,
     mut next_ui_state: ResMut<NextState<UiState>>,
     mut app_exit_events: EventWriter<AppExit>,
 ) {
     for (interaction, button_action) in &interaction_query {
         if *interaction == Interaction::Pressed {
             match button_action {
-                MenuButtonAction::Start => {
+                ButtonAction::Start => {
                     next_ui_state.set(UiState::LevelSelect);
                 }
-                MenuButtonAction::Settings => {
+                ButtonAction::Settings => {
                     next_ui_state.set(UiState::Settings);
                 }
-                MenuButtonAction::Exit => {
+                ButtonAction::Exit => {
                     app_exit_events.send(AppExit::Success);
                 }
             }

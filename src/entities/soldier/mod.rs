@@ -185,10 +185,10 @@ impl Plugin for SoldierPlugin {
     fn build(&self, app: &mut App) {
         app.add_plugins(ProjectilePlugin);
 
+        app.add_systems(Update, init_soldier);
         app.add_systems(
             Update,
-            (init_soldier, update_soldier, update_soldier_cooldown)
-                .run_if(in_state(GameState::InGame)),
+            (update_soldier, update_soldier_cooldown).run_if(in_state(GameState::InGame)),
         );
     }
 }

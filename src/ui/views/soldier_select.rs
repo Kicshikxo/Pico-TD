@@ -36,7 +36,7 @@ impl Plugin for SoldierSelectViewUiPlugin {
 struct RootUiComponent;
 
 #[derive(Component)]
-enum SoldierSelectButtonAction {
+enum ButtonAction {
     Close,
     Select(SoldierVariant),
 }
@@ -45,7 +45,7 @@ fn ui_init(mut commands: Commands, ui_assets: Res<UiAssets>, entity_assets: Res<
     commands
         .spawn((
             RootUiComponent,
-            UiContainer::new().with_height(Val::Percent(100.0)).center(),
+            UiContainer::new().full().center(),
             BackgroundColor(Color::srgba(0.0, 0.0, 0.0, 0.5)),
         ))
         .with_children(|parent| {
@@ -62,7 +62,7 @@ fn ui_init(mut commands: Commands, ui_assets: Res<UiAssets>, entity_assets: Res<
                 .with_children(|parent| {
                     parent.spawn((
                         UiButton::new(),
-                        SoldierSelectButtonAction::Close,
+                        ButtonAction::Close,
                         Node {
                             position_type: PositionType::Absolute,
                             width: Val::Px(32.0),
@@ -114,7 +114,7 @@ fn ui_init(mut commands: Commands, ui_assets: Res<UiAssets>, entity_assets: Res<
                                     .with_children(|parent| {
                                         parent
                                             .spawn((
-                                                SoldierSelectButtonAction::Select(variant),
+                                                ButtonAction::Select(variant),
                                                 UiButton::new(),
                                                 UiContainer::new()
                                                     .with_variant(UiContainerVariant::Secondary)
@@ -166,10 +166,7 @@ fn ui_destroy(mut commands: Commands, query: Query<Entity, With<RootUiComponent>
 
 fn ui_update(
     mut commands: Commands,
-    interaction_query: Query<
-        (&Interaction, &SoldierSelectButtonAction),
-        (Changed<Interaction>, With<UiButton>),
-    >,
+    interaction_query: Query<(&Interaction, &ButtonAction), (Changed<Interaction>, With<UiButton>)>,
     game_tilemap: Query<Entity, With<GameTilemap>>,
     mut soldiers: Query<(&mut Soldier, &TilePosition)>,
     mut player: ResMut<Player>,
@@ -180,11 +177,11 @@ fn ui_update(
     for (interaction, button_action) in &interaction_query {
         if *interaction == Interaction::Pressed {
             match button_action {
-                SoldierSelectButtonAction::Close => {
+                ButtonAction::Close => {
                     next_ui_state.set(UiState::InGame);
                     next_game_state.set(GameState::InGame);
                 }
-                SoldierSelectButtonAction::Select(variant) => {
+                ButtonAction::Select(variant) => {
                     let mut current_soldier: Option<&mut Soldier> = None;
                     for (soldier, tile_position) in soldiers.iter_mut() {
                         if tile_position.as_vec2() == selected_soldier.tile_position.as_vec2() {

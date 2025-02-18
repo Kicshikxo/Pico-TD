@@ -49,7 +49,7 @@ struct WaveTextComponent;
 struct CurrentSpeedTextComponent;
 
 #[derive(Component, PartialEq)]
-enum InGameButtonAction {
+enum ButtonAction {
     ChangeSpeed,
     Pause,
     NextWave,
@@ -63,10 +63,7 @@ fn ui_init(
     game_speed: Res<GameSpeed>,
 ) {
     commands
-        .spawn((
-            RootUiComponent,
-            UiContainer::new().with_height(Val::Percent(100.0)),
-        ))
+        .spawn((RootUiComponent, UiContainer::new().full()))
         .with_children(|parent| {
             parent
                 .spawn(Node {
@@ -168,7 +165,7 @@ fn ui_init(
                         .with_children(|parent| {
                             parent
                                 .spawn((
-                                    InGameButtonAction::ChangeSpeed,
+                                    ButtonAction::ChangeSpeed,
                                     UiButton::new()
                                         .with_variant(UiButtonVariant::Primary)
                                         .with_padding(UiRect::axes(Val::Px(16.0), Val::Px(8.0))),
@@ -185,7 +182,7 @@ fn ui_init(
 
                             parent
                                 .spawn((
-                                    InGameButtonAction::Pause,
+                                    ButtonAction::Pause,
                                     UiButton::new()
                                         .with_variant(UiButtonVariant::Primary)
                                         .with_padding(UiRect::axes(Val::Px(16.0), Val::Px(8.0))),
@@ -197,7 +194,7 @@ fn ui_init(
 
                     parent
                         .spawn((
-                            InGameButtonAction::NextWave,
+                            ButtonAction::NextWave,
                             UiButton::new()
                                 .with_variant(UiButtonVariant::Primary)
                                 .with_disabled(game_wave.is_next_wave_allowed() == false)
@@ -217,10 +214,7 @@ fn ui_destroy(mut commands: Commands, query: Query<Entity, With<RootUiComponent>
 }
 
 fn ui_update(
-    interaction_query: Query<
-        (&Interaction, &InGameButtonAction),
-        (Changed<Interaction>, With<UiButton>),
-    >,
+    interaction_query: Query<(&Interaction, &ButtonAction), (Changed<Interaction>, With<UiButton>)>,
     mut current_speed_text: Query<&mut I18nComponent, With<CurrentSpeedTextComponent>>,
     mut game_wave: ResMut<GameWave>,
     mut game_speed: ResMut<GameSpeed>,
@@ -230,18 +224,18 @@ fn ui_update(
     for (interaction, button_action) in &interaction_query {
         if *interaction == Interaction::Pressed {
             match button_action {
-                InGameButtonAction::ChangeSpeed => {
+                ButtonAction::ChangeSpeed => {
                     game_speed.toggle();
                     if let Ok(mut current_speed_text_i18n) = current_speed_text.get_single_mut() {
                         current_speed_text_i18n
                             .change_arg("speed", game_speed.as_f32().to_string());
                     }
                 }
-                InGameButtonAction::Pause => {
+                ButtonAction::Pause => {
                     next_ui_state.set(UiState::Pause);
                     next_game_state.set(GameState::Pause);
                 }
-                InGameButtonAction::NextWave => {
+                ButtonAction::NextWave => {
                     if game_wave.is_next_wave_allowed() == true {
                         game_wave.next_wave();
                     }
@@ -272,7 +266,7 @@ fn ui_update_after_player_change(
 
 fn ui_update_after_wave_change(
     game_wave: Res<GameWave>,
-    mut next_wave_button: Query<(&mut UiButton, &InGameButtonAction)>,
+    mut next_wave_button: Query<(&mut UiButton, &ButtonAction)>,
     mut wave_text: Query<&mut I18nComponent, With<WaveTextComponent>>,
 ) {
     for mut wave_text_i18n in wave_text.iter_mut() {
@@ -281,8 +275,7 @@ fn ui_update_after_wave_change(
     }
     for (mut ui_button, button_action) in next_wave_button.iter_mut() {
         ui_button.set_disabled(
-            *button_action == InGameButtonAction::NextWave
-                && game_wave.is_next_wave_allowed() == false,
+            *button_action == ButtonAction::NextWave && game_wave.is_next_wave_allowed() == false,
         );
     }
 }
