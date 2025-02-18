@@ -3,7 +3,6 @@ use bevy::{prelude::*, ui::widget::NodeImageMode};
 use crate::assets::sprites::ui::{UiAssets, UiContainerSpriteVariant};
 
 #[derive(Default, Clone, PartialEq)]
-#[allow(unused)]
 pub enum UiContainerVariant {
     #[default]
     None,

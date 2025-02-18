@@ -26,7 +26,6 @@ impl ProjectileVariantConfig {
 }
 
 #[derive(Clone, Copy, PartialEq)]
-#[allow(unused)]
 pub enum ProjectileVariant {
     Bullet,
     Rocket,

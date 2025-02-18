@@ -25,6 +25,7 @@ bevy = { version = "0.15.2", default-features = false, features = [
 rand = { version = "0.9.0" }
 ron = { version = "0.8.1" }
 serde = { version = "1.0.217" }
+js-sys = { version = "0.3.77" }
 
 bevy_asset_loader = { version = "0.22.0", features = ["2d"] }
 bevy_embedded_assets = { version = "0.12.0" }
@@ -40,8 +41,8 @@ log = { version = "*", features = [
     "release_max_level_warn",
 ] }
 
-getrandom = { version = "0.3", features = ["wasm_js"] }
 [target.'cfg(target_arch = "wasm32")'.dependencies]
+getrandom = { version = "0.3", features = ["wasm_js"] }
 uuid = { version = "1.12.1", default-features = false, features = ["js"] }
 
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]

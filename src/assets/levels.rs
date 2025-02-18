@@ -87,10 +87,14 @@ pub struct CompletedLevels(Vec<LevelCompletion>);
 
 impl CompletedLevels {
     pub fn add(&mut self, name: &str, stars: LevelCompletionStars) {
-        let timestamp = SystemTime::now()
-            .duration_since(SystemTime::UNIX_EPOCH)
-            .unwrap()
-            .as_secs();
+        let timestamp = if cfg!(target_arch = "wasm32") {
+            (js_sys::Date::now() / 1000.0) as u64
+        } else {
+            SystemTime::now()
+                .duration_since(SystemTime::UNIX_EPOCH)
+                .unwrap()
+                .as_secs()
+        };
 
         if let Some(level_completion) = self.get_completion_mut(name) {
             level_completion.stars = stars;

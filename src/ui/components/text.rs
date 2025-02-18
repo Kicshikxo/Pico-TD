@@ -3,13 +3,13 @@ use bevy::prelude::*;
 use crate::{assets::sprites::ui::UiAssets, ui::i18n::I18nComponent};
 
 #[derive(Default)]
-#[allow(unused)]
 pub enum UiTextSize {
     Small,
     #[default]
     Medium,
     Large,
     ExtraLarge,
+    #[allow(unused)]
     Custom(f32),
 }
 
