@@ -26,6 +26,9 @@ impl PlayerHealth {
     pub fn heal(&mut self, heal: u32) {
         self.current = self.current.saturating_add(heal).min(self.max);
     }
+    pub fn get_max(&self) -> u32 {
+        self.max
+    }
     pub fn get_current(&self) -> u32 {
         self.current
     }

@@ -13,12 +13,12 @@ pub struct UiAssets {
 
     #[asset(path = "embedded://images/ui/buttons.png")]
     pub ui_buttons: Handle<Image>,
-    #[asset(texture_atlas_layout(tile_size_x = 16, tile_size_y = 16, columns = 4, rows = 1))]
+    #[asset(texture_atlas_layout(tile_size_x = 16, tile_size_y = 16, columns = 5, rows = 1))]
     pub ui_buttons_layout: Handle<TextureAtlasLayout>,
 
     #[asset(path = "embedded://images/ui/misc.png")]
     pub ui_misc: Handle<Image>,
-    #[asset(texture_atlas_layout(tile_size_x = 16, tile_size_y = 16, columns = 3, rows = 1))]
+    #[asset(texture_atlas_layout(tile_size_x = 16, tile_size_y = 16, columns = 4, rows = 1))]
     pub ui_misc_layout: Handle<TextureAtlasLayout>,
 }
 
@@ -30,14 +30,17 @@ pub enum UiContainerSpriteVariant {
 }
 
 pub enum UiButtonSpriteVariant {
-    Primary = 0,
-    Success = 1,
-    Danger = 2,
-    Close = 3,
+    Primary = 1,
+    Secondary = 0,
+    Success = 2,
+    Danger = 3,
+    Close = 4,
 }
 
+#[derive(Copy, Clone)]
 pub enum UiMiscSpriteVariant {
     Background = 0,
     Health = 1,
     Money = 2,
+    Star = 3,
 }

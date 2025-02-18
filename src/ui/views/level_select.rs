@@ -1,10 +1,11 @@
 use bevy::{asset::LoadState, prelude::*, ui::widget::NodeImageMode};
+use bevy_persistent::Persistent;
 #[cfg(not(target_arch = "wasm32"))]
 use native_dialog::{FileDialog, MessageDialog, MessageType};
 
 use crate::{
     assets::{
-        levels::{Level, LevelsAssets},
+        levels::{CompletedLevels, Level, LevelCompletionStars, LevelsAssets},
         sprites::ui::{UiAssets, UiButtonSpriteVariant, UiMiscSpriteVariant},
     },
     game::GameState,
@@ -63,6 +64,7 @@ fn ui_init(
     levels_assets: Res<LevelsAssets>,
     levels_assets_loader: Res<Assets<Level>>,
     mut images: ResMut<Assets<Image>>,
+    completed_levels: Res<Persistent<CompletedLevels>>,
 ) {
     commands
         .spawn((
@@ -95,8 +97,8 @@ fn ui_init(
                 )
                 .with_children(|parent| {
                     parent.spawn((
-                        UiButton::new(),
                         ButtonAction::BackToMenu,
+                        UiButton::new(),
                         UiContainer::new()
                             .with_width(Val::Px(32.0))
                             .with_right(Val::Px(38.0))
@@ -135,33 +137,81 @@ fn ui_init(
                             {
                                 let level = levels_assets_loader.get(level_handle).unwrap();
 
+                                let level_completion = completed_levels.get_completion(&level.name);
+                                let level_stars = if level_completion.is_some() {
+                                    level_completion.unwrap().get_stars()
+                                } else {
+                                    &LevelCompletionStars::Zero
+                                };
+
                                 parent
                                     .spawn(UiContainer::new().column())
                                     .with_children(|parent| {
                                         parent
                                             .spawn((
                                                 ButtonAction::SelectLevel { level_index },
-                                                UiButton::new(),
-                                                UiContainer::new()
-                                                    .with_variant(if level.error.is_none() {
-                                                        UiContainerVariant::Secondary
+                                                UiButton::new()
+                                                    .with_variant(if level.error.is_some() {
+                                                        UiButtonVariant::Danger
                                                     } else {
-                                                        UiContainerVariant::Danger
+                                                        if level_completion.is_some() {
+                                                            UiButtonVariant::Success
+                                                        } else {
+                                                            UiButtonVariant::Secondary
+                                                        }
                                                     })
-                                                    .with_padding(UiRect::all(Val::Px(8.0)))
-                                                    .with_aspect_ratio(1.0)
-                                                    .center(),
+                                                    .with_height(Val::Percent(100.0))
+                                                    .with_padding(UiRect::all(Val::Px(10.0))),
                                             ))
                                             .with_children(|parent| {
-                                                if level.error.is_none() {
-                                                    parent.spawn((
-                                                        UiContainer::new().full(),
-                                                        ImageNode {
-                                                            image: images.add(level.get_preview()),
-                                                            ..default()
-                                                        },
-                                                    ));
+                                                if level.error.is_some() {
+                                                    return;
                                                 }
+
+                                                parent
+                                                    .spawn((
+                                                        UiContainer::new()
+                                                            .with_bottom(Val::Px(-4.0))
+                                                            .with_column_gap(Val::Px(4.0))
+                                                            .absolute()
+                                                            .center(),
+                                                        ZIndex(1),
+                                                    ))
+                                                    .with_children(|parent| {
+                                                        for star_index in 1..=3 {
+                                                            parent.spawn((
+                                                            UiContainer::new()
+                                                                .with_width(Val::Px(16.0))
+                                                                .with_height(Val::Px(16.0)),
+                                                            ImageNode {
+                                                                color: if star_index
+                                                                    <= level_stars.as_index()
+                                                                {
+                                                                    Color::srgb(1.0, 1.0, 0.0)
+                                                                } else {
+                                                                    Color::WHITE
+                                                                },
+                                                                image: ui_assets.ui_misc.clone(),
+                                                                texture_atlas: Some(TextureAtlas {
+                                                                    layout: ui_assets
+                                                                        .ui_misc_layout
+                                                                        .clone(),
+                                                                    index: UiMiscSpriteVariant::Star
+                                                                        as usize,
+                                                                }),
+                                                                ..default()
+                                                            },
+                                                        ));
+                                                        }
+                                                    });
+
+                                                parent.spawn((
+                                                    UiContainer::new().full(),
+                                                    ImageNode {
+                                                        image: images.add(level.get_preview()),
+                                                        ..default()
+                                                    },
+                                                ));
                                             });
 
                                         parent.spawn(UiText::new(&format!("level.{}", level.name)));

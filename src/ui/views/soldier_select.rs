@@ -61,8 +61,8 @@ fn ui_init(mut commands: Commands, ui_assets: Res<UiAssets>, entity_assets: Res<
                 )
                 .with_children(|parent| {
                     parent.spawn((
-                        UiButton::new(),
                         ButtonAction::Close,
+                        UiButton::new(),
                         UiContainer::new()
                             .with_width(Val::Px(32.0))
                             .with_right(Val::Px(38.0))

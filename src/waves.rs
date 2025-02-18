@@ -1,11 +1,13 @@
 use std::time::Duration;
 
 use bevy::prelude::*;
+use bevy_persistent::Persistent;
 
 use crate::{
-    assets::levels::Level,
+    assets::levels::{CompletedLevels, Level, LevelCompletionStars},
     entities::{enemy::Enemy, tile::movement::TileMovement},
     game::{GameState, GameTilemap},
+    player::Player,
     ui::UiState,
 };
 
@@ -98,7 +100,9 @@ fn update_wave(
     mut commands: Commands,
     game_tilemap: Query<Entity, With<GameTilemap>>,
     selected_level: Res<Level>,
+    mut completed_levels: ResMut<Persistent<CompletedLevels>>,
     mut game_wave: ResMut<GameWave>,
+    player: Res<Player>,
     mut next_ui_state: ResMut<NextState<UiState>>,
     mut next_game_state: ResMut<NextState<GameState>>,
 ) {
@@ -112,6 +116,14 @@ fn update_wave(
         if game_wave.is_fully_completed() == true {
             next_ui_state.set(UiState::GameOver);
             next_game_state.set(GameState::Pause);
+            completed_levels
+                .update(|levels| {
+                    levels.add(
+                        &selected_level.name,
+                        LevelCompletionStars::from_player_health(player.get_health()),
+                    )
+                })
+                .unwrap();
         }
         return;
     }

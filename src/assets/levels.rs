@@ -1,3 +1,5 @@
+use std::{path::Path, time::SystemTime};
+
 use bevy::{
     asset::{io::Reader, AssetLoader, LoadContext, RenderAssetUsages},
     math::VectorSpace,
@@ -5,11 +7,16 @@ use bevy::{
     render::render_resource::{Extent3d, TextureDimension, TextureFormat},
 };
 use bevy_asset_loader::asset_collection::AssetCollection;
-use serde::Deserialize;
+use bevy_persistent::prelude::*;
+use directories::ProjectDirs;
+use serde::{Deserialize, Serialize};
 
-use crate::entities::{
-    enemy::EnemyVariant,
-    tilemap::tile::{TilemapTile, TilemapTileVariant},
+use crate::{
+    entities::{
+        enemy::EnemyVariant,
+        tilemap::tile::{TilemapTile, TilemapTileVariant},
+    },
+    player::PlayerHealth,
 };
 
 #[derive(AssetCollection, Resource)]
@@ -21,6 +28,89 @@ pub struct LevelsAssets {
     pub compain: Vec<Handle<Level>>,
 }
 
+#[derive(Serialize, Deserialize, Default, Clone)]
+pub enum LevelCompletionStars {
+    #[default]
+    Zero,
+    One,
+    Two,
+    Three,
+}
+
+impl LevelCompletionStars {
+    pub fn as_index(&self) -> usize {
+        match self {
+            LevelCompletionStars::Zero => 0,
+            LevelCompletionStars::One => 1,
+            LevelCompletionStars::Two => 2,
+            LevelCompletionStars::Three => 3,
+        }
+    }
+}
+
+impl LevelCompletionStars {
+    pub fn from_player_health(health: &PlayerHealth) -> Self {
+        let health_percent = health.get_current() as f32 / health.get_max() as f32;
+
+        if health_percent > 2.0 / 3.0 {
+            LevelCompletionStars::Three
+        } else if health_percent > 1.0 / 3.0 {
+            LevelCompletionStars::Two
+        } else {
+            LevelCompletionStars::One
+        }
+    }
+}
+
+#[derive(Serialize, Deserialize, Clone, Default)]
+pub struct LevelCompletion {
+    name: String,
+    stars: LevelCompletionStars,
+    completed_at: u64,
+}
+
+#[allow(unused)]
+impl LevelCompletion {
+    pub fn get_name(&self) -> &str {
+        &self.name
+    }
+    pub fn get_stars(&self) -> &LevelCompletionStars {
+        &self.stars
+    }
+    pub fn get_completed_at(&self) -> u64 {
+        self.completed_at
+    }
+}
+
+#[derive(Resource, Serialize, Deserialize, Default)]
+pub struct CompletedLevels(Vec<LevelCompletion>);
+
+impl CompletedLevels {
+    pub fn add(&mut self, name: &str, stars: LevelCompletionStars) {
+        let timestamp = SystemTime::now()
+            .duration_since(SystemTime::UNIX_EPOCH)
+            .unwrap()
+            .as_secs();
+
+        if let Some(level_completion) = self.get_completion_mut(name) {
+            level_completion.stars = stars;
+            level_completion.completed_at = timestamp;
+        } else {
+            self.0.push(LevelCompletion {
+                name: name.into(),
+                stars,
+                completed_at: timestamp,
+            });
+        }
+    }
+    pub fn get_completion(&self, name: &str) -> Option<&LevelCompletion> {
+        self.0.iter().find(|level| level.name == name)
+    }
+    fn get_completion_mut(&mut self, name: &str) -> Option<&mut LevelCompletion> {
+        self.0.iter_mut().find(|level| level.name == name)
+    }
+}
+
 pub struct LevelsPlugin;
 
 impl Plugin for LevelsPlugin {
@@ -29,6 +119,24 @@ impl Plugin for LevelsPlugin {
             .init_asset_loader::<LevelsLoader>();
 
         app.insert_resource(Level::default());
+
+        app.insert_resource(
+            Persistent::<CompletedLevels>::builder()
+                .name("completed_levels")
+                .format(StorageFormat::Ron)
+                .default(CompletedLevels::default())
+                .path(
+                    if let Some(proj_dirs) = ProjectDirs::from("ru", "kicshikxo", "pico-td") {
+                        proj_dirs.data_dir().join("completed_levels.ron")
+                    } else {
+                        Path::new("local").join("completed_levels")
+                    },
+                )
+                .revertible(true)
+                .revert_to_default_on_deserialization_errors(true)
+                .build()
+                .unwrap(),
+        );
     }
 }
 
@@ -60,6 +168,9 @@ impl Level {
 
         for x in 0..self.size.x {
             for y in 0..self.size.y {
+                // if (x == 0 || x == self.size.x - 1) && (y == 0 || y == self.size.y - 1) {
+                //     continue;
+                // }
                 image
                     .set_color_at(
                         x,
@@ -224,7 +335,6 @@ impl AssetLoader for LevelsLoader {
             error: level_asset.error,
         })
     }
-
     fn extensions(&self) -> &[&str] {
         &["ron"]
     }

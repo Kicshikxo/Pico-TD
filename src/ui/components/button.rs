@@ -18,6 +18,7 @@ pub enum UiButtonVariant {
     #[default]
     None,
     Primary,
+    Secondary,
     Success,
     Danger,
 }
@@ -27,6 +28,7 @@ impl UiButtonVariant {
         match self {
             UiButtonVariant::None => unreachable!(),
             UiButtonVariant::Primary => UiButtonSpriteVariant::Primary as usize,
+            UiButtonVariant::Secondary => UiButtonSpriteVariant::Secondary as usize,
             UiButtonVariant::Success => UiButtonSpriteVariant::Success as usize,
             UiButtonVariant::Danger => UiButtonSpriteVariant::Danger as usize,
         }
