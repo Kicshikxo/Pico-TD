@@ -5,7 +5,7 @@ use crate::ui::{
     i18n::I18nComponent,
 };
 
-use super::{button::UiButtonVariant, text::UiTextSize};
+use super::button::UiButtonVariant;
 
 #[derive(Component)]
 pub struct UiSelectorDecreaseButton;
@@ -196,21 +196,22 @@ fn init_ui_selector(
                         UiSelectorDecreaseButton,
                         UiButton::new()
                             .with_variant(UiButtonVariant::Primary)
-                            .with_width(Val::Px(48.0 + UiTextSize::Medium.as_f32()))
+                            .with_width(Val::Px(48.0))
                             .with_height(Val::Px(48.0))
                             .with_padding(UiRect::ZERO),
                     ))
                     .with_child(UiText::new("<").without_i18n());
                 parent.spawn((
                     UiSelectorText,
-                    UiText::new(&ui_selector.get_current_item().unwrap().text),
+                    UiText::new(&ui_selector.get_current_item().unwrap().text)
+                        .with_width(Val::Auto),
                 ));
                 parent
                     .spawn((
                         UiSelectorIncreaseButton,
                         UiButton::new()
                             .with_variant(UiButtonVariant::Primary)
-                            .with_width(Val::Px(48.0 + UiTextSize::Medium.as_f32()))
+                            .with_width(Val::Px(48.0))
                             .with_height(Val::Px(48.0))
                             .with_padding(UiRect::ZERO),
                     ))

@@ -2,11 +2,14 @@ use bevy::{prelude::*, ui::widget::NodeImageMode};
 use bevy_persistent::Persistent;
 
 use crate::{
-    assets::sprites::ui::{UiAssets, UiButtonSpriteVariant, UiMiscSpriteVariant},
+    assets::{
+        levels::CompletedLevels,
+        sprites::ui::{UiAssets, UiButtonSpriteVariant, UiMiscSpriteVariant},
+    },
     audio::GameAudioVolume,
     ui::{
         components::{
-            button::UiButton,
+            button::{UiButton, UiButtonVariant},
             container::{UiContainer, UiContainerVariant},
             selector::{UiSelector, UiSelectorItem, UiSelectorItemValue},
             text::{UiText, UiTextSize},
@@ -41,6 +44,7 @@ struct MusicVolumeSelector;
 #[derive(Component)]
 enum ButtonAction {
     BackToMenu,
+    ResetProgress,
 }
 
 fn ui_init(
@@ -165,6 +169,13 @@ fn ui_init(
                                     ),
                             ));
                         });
+
+                    parent
+                        .spawn((
+                            ButtonAction::ResetProgress,
+                            UiButton::new().with_variant(UiButtonVariant::Danger),
+                        ))
+                        .with_child(UiText::new("ui.settings.reset_progress"));
                 });
         });
 }
@@ -184,6 +195,7 @@ fn ui_update(
     )>,
     mut next_ui_state: ResMut<NextState<UiState>>,
     mut i18n: ResMut<Persistent<I18n>>,
+    mut completed_levels: ResMut<Persistent<CompletedLevels>>,
     mut game_audio_volume: ResMut<Persistent<GameAudioVolume>>,
 ) {
     for mut locale_selector in settings_selectors.p0().iter_mut() {
@@ -216,6 +228,10 @@ fn ui_update(
         if *interaction == Interaction::Pressed {
             match button_action {
                 ButtonAction::BackToMenu => {
+                    next_ui_state.set(UiState::Menu);
+                }
+                ButtonAction::ResetProgress => {
+                    completed_levels.update(|levels| levels.reset()).unwrap();
                     next_ui_state.set(UiState::Menu);
                 }
             }

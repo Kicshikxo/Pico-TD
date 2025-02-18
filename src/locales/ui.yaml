@@ -31,6 +31,9 @@ ui.settings.music_volume:
 ui.settings.sfx_volume:
     en: "SFX volume"
     ru: "Громкость звуков"
+ui.settings.reset_progress:
+    en: "Reset Progress"
+    ru: "Сбросить прогресс"
 
 ui.level_select.title:
     en: "Select level"

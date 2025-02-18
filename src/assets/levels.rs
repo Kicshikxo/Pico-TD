@@ -109,6 +109,9 @@ impl CompletedLevels {
     fn get_completion_mut(&mut self, name: &str) -> Option<&mut LevelCompletion> {
         self.0.iter_mut().find(|level| level.name == name)
     }
+    pub fn reset(&mut self) {
+        self.0.clear();
+    }
 }
 
 pub struct LevelsPlugin;
