@@ -3,6 +3,7 @@ name = "pico_td"
 version = "0.0.1"
 edition = "2021"
 license = "WTFPL"
+build = "build/build.rs"
 
 [dependencies]
 bevy = { version = "0.15.2", default-features = false, features = [
@@ -47,6 +48,9 @@ uuid = { version = "1.12.1", default-features = false, features = ["js"] }
 
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
 native-dialog = { version = "0.7.0" }
+
+[build-dependencies]
+embed-resource = { version = "3.0.1" }
 
 [profile.dev]
 opt-level = 1
