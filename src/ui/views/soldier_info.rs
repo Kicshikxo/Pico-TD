@@ -3,7 +3,7 @@ use bevy::prelude::*;
 use crate::{
     assets::sprites::{
         entity::EntityAssets,
-        ui::{UiAssets, UiButtonSpriteVariant},
+        ui::{UiAssets, UiButtonSpriteVariant, UiMiscSpriteVariant},
     },
     entities::{
         soldier::Soldier,
@@ -36,9 +36,13 @@ impl Plugin for SoldierInfoViewUiPlugin {
 struct RootUiComponent;
 
 #[derive(Component)]
+struct MoneyTextComponent;
+
+#[derive(Component)]
 enum ButtonAction {
     Close,
     UpgradeSoldier,
+    ChangeSoldier,
     SellSoldier,
 }
 
@@ -46,6 +50,7 @@ fn ui_init(
     mut commands: Commands,
     ui_assets: Res<UiAssets>,
     entity_assets: Res<EntityAssets>,
+    player: Res<Player>,
     soldiers: Query<(&Soldier, &TilePosition)>,
     selected_soldier: Option<Res<SelectedSoldier>>,
 ) {
@@ -56,6 +61,72 @@ fn ui_init(
             BackgroundColor(Color::BLACK.with_alpha(0.5)),
         ))
         .with_children(|parent| {
+            parent
+                .spawn(
+                    UiContainer::new()
+                        .with_left(Val::Px(8.0))
+                        .with_top(Val::Px(8.0))
+                        .absolute(),
+                )
+                .with_children(|parent| {
+                    parent
+                        .spawn(UiContainer::new().column())
+                        .with_children(|parent| {
+                            parent
+                                .spawn(UiContainer::new().with_column_gap(Val::Px(8.0)).center())
+                                .with_children(|parent| {
+                                    parent.spawn((
+                                        UiContainer::new()
+                                            .with_width(Val::Px(32.0))
+                                            .with_height(Val::Px(32.0)),
+                                        ImageNode {
+                                            image: ui_assets.ui_misc.clone(),
+                                            texture_atlas: Some(TextureAtlas {
+                                                index: UiMiscSpriteVariant::Health as usize,
+                                                layout: ui_assets.ui_misc_layout.clone(),
+                                            }),
+                                            ..default()
+                                        },
+                                    ));
+                                    parent.spawn(
+                                        UiText::new("ui.in_game.health")
+                                            .with_justify(JustifyText::Left)
+                                            .with_arg(
+                                                "health",
+                                                player.get_health().get_current().to_string(),
+                                            ),
+                                    );
+                                });
+
+                            parent
+                                .spawn(UiContainer::new().with_column_gap(Val::Px(8.0)).center())
+                                .with_children(|parent| {
+                                    parent.spawn((
+                                        UiContainer::new()
+                                            .with_width(Val::Px(32.0))
+                                            .with_height(Val::Px(32.0)),
+                                        ImageNode {
+                                            image: ui_assets.ui_misc.clone(),
+                                            texture_atlas: Some(TextureAtlas {
+                                                index: UiMiscSpriteVariant::Money as usize,
+                                                layout: ui_assets.ui_misc_layout.clone(),
+                                            }),
+                                            ..default()
+                                        },
+                                    ));
+                                    parent.spawn((
+                                        MoneyTextComponent,
+                                        UiText::new("ui.in_game.money")
+                                            .with_justify(JustifyText::Left)
+                                            .with_arg(
+                                                "money",
+                                                player.get_money().get_current().to_string(),
+                                            ),
+                                    ));
+                                });
+                        });
+                });
+
             parent
                 .spawn(
                     UiContainer::new()
@@ -211,6 +282,15 @@ fn ui_init(
                                         .with_variant(UiButtonVariant::Success)
                                         .with_padding(UiRect::all(Val::Px(8.0))),
                                 ))
+                                .with_child(UiText::new("ui.soldier_info.upgrade_soldier"));
+
+                            parent
+                                .spawn((
+                                    ButtonAction::ChangeSoldier,
+                                    UiButton::new()
+                                        .with_variant(UiButtonVariant::Primary)
+                                        .with_padding(UiRect::all(Val::Px(8.0))),
+                                ))
                                 .with_child(UiText::new("ui.soldier_info.change_soldier"));
 
                             parent
@@ -249,6 +329,9 @@ fn ui_update(
                     next_game_state.set(GameState::InGame);
                 }
                 ButtonAction::UpgradeSoldier => {
+                    info!("Upgrade soldier");
+                }
+                ButtonAction::ChangeSoldier => {
                     next_ui_state.set(UiState::SoldierSelect);
                     next_game_state.set(GameState::Pause);
                 }

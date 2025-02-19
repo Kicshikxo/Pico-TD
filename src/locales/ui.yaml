@@ -84,6 +84,9 @@ ui.soldier_info.soldier_fire_radius:
 ui.soldier_info.soldier_fire_rate:
     en: "Fire rate: %{fire_rate}/s"
     ru: "Скорострельность: %{fire_rate}/с"
+ui.soldier_info.upgrade_soldier:
+    en: "Upgrade"
+    ru: "Улучшить"
 ui.soldier_info.change_soldier:
     en: "Change"
     ru: "Заменить"
