@@ -108,7 +108,11 @@ fn update_selected_soldier(
             if selected_tile.get_variant() != TilemapTileVariant::Ground {
                 return;
             }
+        } else {
+            return;
         }
+    } else {
+        return;
     }
 
     let soldier_found = soldiers.iter().any(|soldier_tile_position| {
