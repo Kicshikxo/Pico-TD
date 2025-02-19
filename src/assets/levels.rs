@@ -22,7 +22,11 @@ use crate::{
 #[derive(AssetCollection, Resource)]
 pub struct LevelsAssets {
     #[asset(
-        paths("embedded://levels/ring.ron", "embedded://levels/zigzag.ron"),
+        paths(
+            "embedded://levels/ring.ron",
+            "embedded://levels/zigzag.ron",
+            "embedded://levels/highway.ron"
+        ),
         collection(typed)
     )]
     pub compain: Vec<Handle<Level>>,
@@ -160,6 +164,16 @@ pub struct Level {
 }
 
 impl Level {
+    fn get_preview_color(variant: TilemapTileVariant) -> Color {
+        match variant {
+            TilemapTileVariant::Ground => Color::srgb(132.0 / 255.0, 198.0 / 255.0, 105.0 / 255.0),
+            TilemapTileVariant::Flower => Color::srgb(179.0 / 255.0, 195.0 / 255.0, 104.0 / 255.0),
+            TilemapTileVariant::Tree => Color::srgb(67.0 / 255.0, 149.0 / 255.0, 69.0 / 255.0),
+            TilemapTileVariant::Road => Color::srgb(82.0 / 255.0, 96.0 / 255.0, 124.0 / 255.0),
+            TilemapTileVariant::Water => Color::srgb(117.0 / 255.0, 227.0 / 255.0, 255.0 / 255.0),
+            _ => Color::srgba(0.0, 0.0, 0.0, 0.0),
+        }
+    }
     pub fn get_preview(&self) -> Image {
         let mut image = Image::new_fill(
             Extent3d {
@@ -182,9 +196,7 @@ impl Level {
                     .set_color_at(
                         x,
                         y,
-                        self.map[y as usize][x as usize]
-                            .get_variant()
-                            .get_preview_color(),
+                        Self::get_preview_color(self.map[y as usize][x as usize].get_variant()),
                     )
                     .unwrap();
             }
@@ -315,10 +327,24 @@ impl AssetLoader for LevelsLoader {
         reader.read_to_end(&mut bytes).await?;
 
         let data = std::str::from_utf8(&bytes).unwrap_or("");
-        let level_asset: LevelAsset = ron::from_str(&data).unwrap_or_else(|error| {
-            error!("Failed to deserialize RON: {}", error);
-            LevelAsset::error(error.to_string())
-        });
+        let level_asset = match ron::from_str::<LevelAsset>(&data) {
+            Ok(asset) => {
+                if asset.map.len() < asset.size.y as usize
+                    || asset
+                        .map
+                        .iter()
+                        .any(|row| row.len() < asset.size.x as usize)
+                {
+                    LevelAsset::error("LevelAsset error: map dimensions are incorrect".to_string())
+                } else {
+                    asset
+                }
+            }
+            Err(error) => {
+                error!("Failed to deserialize RON: {}", error);
+                LevelAsset::error(error.to_string())
+            }
+        };
 
         let tile_symbols = level_asset.tile_symbols.unwrap_or_default();
         let map: Vec<Vec<TilemapTile>> = level_asset

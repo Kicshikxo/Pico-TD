@@ -160,8 +160,8 @@ fn ui_init(
                                                             UiButtonVariant::Secondary
                                                         }
                                                     })
-                                                    .with_height(Val::Percent(100.0))
-                                                    .with_padding(UiRect::all(Val::Px(10.0))),
+                                                    .with_padding(UiRect::all(Val::Px(10.0)))
+                                                    .with_aspect_ratio(1.0),
                                             ))
                                             .with_children(|parent| {
                                                 if level.error.is_some() {

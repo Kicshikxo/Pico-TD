@@ -43,6 +43,7 @@ pub struct UiButton {
     width: Val,
     height: Val,
     padding: UiRect,
+    aspect_ratio: Option<f32>,
     update_required: bool,
 }
 
@@ -54,6 +55,7 @@ impl Default for UiButton {
             width: Val::Percent(100.0),
             height: Val::Auto,
             padding: UiRect::axes(Val::Px(24.0), Val::Px(12.0)),
+            aspect_ratio: None,
             update_required: true,
         }
     }
@@ -88,6 +90,10 @@ impl UiButton {
     }
     pub fn with_padding(mut self, padding: UiRect) -> Self {
         self.padding = padding;
+        self
+    }
+    pub fn with_aspect_ratio(mut self, aspect_ratio: f32) -> Self {
+        self.aspect_ratio = Some(aspect_ratio);
         self
     }
     pub fn get_update_required(&self) -> bool {
@@ -127,6 +133,7 @@ fn init_ui_button(
                     padding: ui_button.padding,
                     justify_content: JustifyContent::Center,
                     align_items: AlignItems::Center,
+                    aspect_ratio: ui_button.aspect_ratio,
                     ..default()
                 },
                 ImageNode {

@@ -9,6 +9,9 @@ level.ring:
 level.zigzag:
     en: "Zigzag"
     ru: "Зигзаг"
+level.highway:
+    en: "Highway"
+    ru: "Шоссе"
 level.error:
     en: "Error"
     ru: "Ошибка"
