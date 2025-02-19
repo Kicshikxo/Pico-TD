@@ -2,7 +2,7 @@ use bevy::prelude::*;
 
 use crate::{
     entities::{
-        soldier::Soldier,
+        soldier::{Soldier, SoldierVariant},
         tile::position::TilePosition,
         tilemap::{
             tile::{TilemapTile, TilemapTileVariant},
@@ -35,6 +35,7 @@ pub struct SelectedTile {
 
 #[derive(Resource, Default)]
 pub struct SelectedSoldier {
+    pub variant: Option<SoldierVariant>,
     pub tile_position: TilePosition,
 }
 
@@ -79,7 +80,7 @@ fn update_selected_tile(
 fn update_selected_soldier(
     game_tilemap: Query<&Tilemap, With<GameTilemap>>,
     tiles: Query<&TilemapTile>,
-    soldiers: Query<&TilePosition, With<Soldier>>,
+    soldiers: Query<(&Soldier, &TilePosition)>,
     selected_tile: Res<SelectedTile>,
     mut selected_soldier: ResMut<SelectedSoldier>,
     game_wave: Res<GameWave>,
@@ -115,15 +116,18 @@ fn update_selected_soldier(
         return;
     }
 
-    let soldier_found = soldiers.iter().any(|soldier_tile_position| {
-        soldier_tile_position.as_vec2() == selected_tile.tile_position.as_vec2()
-    });
+    if let Some((soldier, _soldier_tile_position)) =
+        soldiers.iter().find(|(_soldier, soldier_tile_position)| {
+            soldier_tile_position.as_vec2() == selected_tile.tile_position.as_vec2()
+        })
+    {
+        selected_soldier.variant = Some(soldier.get_variant());
+        next_ui_state.set(UiState::SoldierInfo);
+    } else {
+        selected_soldier.variant = None;
+        next_ui_state.set(UiState::SoldierSelect);
+    }
 
     selected_soldier.tile_position = selected_tile.tile_position;
-    next_ui_state.set(if soldier_found {
-        UiState::SoldierInfo
-    } else {
-        UiState::SoldierSelect
-    });
     next_game_state.set(GameState::Pause);
 }

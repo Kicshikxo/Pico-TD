@@ -16,6 +16,7 @@ use crate::{
     assets::audio::game::GameAudioAssets,
     audio::{GameAudio, GameAudioVolume},
     game::{GameSpeed, GameState, GameTilemap},
+    input::SelectedTile,
 };
 
 use super::{
@@ -29,6 +30,7 @@ use super::{
 
 pub struct SoldierVariantConfig {
     price: u32,
+    sell_price: u32,
     damage: u32,
     fire_radius: f32,
     fire_rate: Duration,
@@ -38,6 +40,9 @@ pub struct SoldierVariantConfig {
 impl SoldierVariantConfig {
     pub fn get_price(&self) -> u32 {
         self.price
+    }
+    pub fn get_sell_price(&self) -> u32 {
+        self.sell_price
     }
     pub fn get_damage(&self) -> u32 {
         self.damage
@@ -76,6 +81,7 @@ impl SoldierVariant {
         match self {
             SoldierVariant::Soldier => SoldierVariantConfig {
                 price: 50,
+                sell_price: 25,
                 damage: 25,
                 fire_radius: 3.0,
                 fire_rate: Duration::from_secs_f32(0.5),
@@ -83,6 +89,7 @@ impl SoldierVariant {
             },
             SoldierVariant::SoldierFast => SoldierVariantConfig {
                 price: 100,
+                sell_price: 50,
                 damage: 10,
                 fire_radius: 3.0,
                 fire_rate: Duration::from_secs_f32(0.2),
@@ -90,6 +97,7 @@ impl SoldierVariant {
             },
             SoldierVariant::SoldierStrong => SoldierVariantConfig {
                 price: 150,
+                sell_price: 75,
                 damage: 50,
                 fire_radius: 3.0,
                 fire_rate: Duration::from_secs_f32(1.0),
@@ -97,6 +105,7 @@ impl SoldierVariant {
             },
             SoldierVariant::SoldierSniper => SoldierVariantConfig {
                 price: 200,
+                sell_price: 100,
                 damage: 150,
                 fire_radius: 7.0,
                 fire_rate: Duration::from_secs_f32(5.0),
@@ -104,6 +113,7 @@ impl SoldierVariant {
             },
             SoldierVariant::RocketLauncher => SoldierVariantConfig {
                 price: 250,
+                sell_price: 125,
                 damage: 100,
                 fire_radius: 5.0,
                 fire_rate: Duration::from_secs_f32(2.0),
@@ -217,15 +227,21 @@ fn init_soldier(
 }
 
 fn update_soldier(
+    mut gizmos: Gizmos,
     mut commands: Commands,
     mut soldiers: Query<(&mut Soldier, &TilePosition, &mut TileSprite, &mut Transform)>,
-    game_tilemap: Query<Entity, With<GameTilemap>>,
+    game_tilemap: Query<(Entity, &Transform), (With<GameTilemap>, Without<Soldier>)>, // !
     enemies: Query<(Entity, &EnemyHealth, &TileMovement, &TilePosition), With<Enemy>>,
     projectiles: Query<&Projectile>,
     game_audio: Query<Entity, With<GameAudio>>,
+    selected_tile: Res<SelectedTile>,
     game_audio_assets: Res<GameAudioAssets>,
     game_audio_volume: Res<Persistent<GameAudioVolume>>,
 ) {
+    let Ok((game_tilemap_entity, game_tilemap_transform)) = game_tilemap.get_single() else {
+        return;
+    };
+
     let mut sorted_enemies = enemies.iter().collect::<Vec<_>>();
     sorted_enemies.sort_by(|(_, _, enemy_a_movement, _), (_, _, enemy_b_movement, _)| {
         enemy_b_movement
@@ -239,6 +255,15 @@ fn update_soldier(
     for (mut soldier, soldier_tile_position, mut soldier_tile_sprite, mut soldier_transform) in
         soldiers.iter_mut()
     {
+        // ! REFACTOR
+        if selected_tile.tile_position.as_vec2() == soldier_tile_position.as_vec2() {
+            gizmos.circle_2d(
+                soldier_transform.translation.xy() + game_tilemap_transform.translation.xy(),
+                soldier.get_fire_radius() * 16.0,
+                Color::srgb(1.0, 1.0, 0.0),
+            );
+        }
+
         if soldier.get_update_required() == true {
             soldier_tile_sprite
                 .set_variant(TileSpriteVariant::Soldier(soldier.get_variant().into()));
@@ -280,7 +305,7 @@ fn update_soldier(
 
                 let projectile =
                     Projectile::new(projectile_variant, *enemy_entity, soldier.get_damage());
-                commands.entity(game_tilemap.single()).with_child((
+                commands.entity(game_tilemap_entity).with_child((
                     projectile,
                     TileMovement::new(
                         vec![

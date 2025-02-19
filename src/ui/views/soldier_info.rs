@@ -52,7 +52,7 @@ fn ui_init(
     entity_assets: Res<EntityAssets>,
     player: Res<Player>,
     soldiers: Query<(&Soldier, &TilePosition)>,
-    selected_soldier: Option<Res<SelectedSoldier>>,
+    selected_soldier: Res<SelectedSoldier>,
 ) {
     commands
         .spawn((
@@ -165,143 +165,137 @@ fn ui_init(
                             UiText::new("ui.soldier_info.title").with_size(UiTextSize::Large),
                         );
 
-                    if let Some(selected_soldier) = selected_soldier {
-                        for (soldier, tile_position) in soldiers.iter() {
-                            if tile_position.as_vec2() == selected_soldier.tile_position.as_vec2() {
+                    let mut current_soldier: Option<&Soldier> = None;
+                    for (soldier, tile_position) in soldiers.iter() {
+                        if tile_position.as_vec2() == selected_soldier.tile_position.as_vec2() {
+                            current_soldier = Some(soldier);
+                            break;
+                        }
+                    }
+
+                    if let Some(soldier) = current_soldier {
+                        parent
+                            .spawn(UiContainer::new().with_column_gap(Val::Px(8.0)))
+                            .with_children(|parent| {
                                 parent
-                                    .spawn(UiContainer::new().with_column_gap(Val::Px(8.0)))
+                                    .spawn(
+                                        UiContainer::new()
+                                            .with_variant(UiContainerVariant::Secondary)
+                                            .with_width(Val::Px(64.0))
+                                            .with_height(Val::Px(64.0))
+                                            .center(),
+                                    )
+                                    .with_child((
+                                        UiContainer::new()
+                                            .with_width(Val::Px(32.0))
+                                            .with_height(Val::Px(32.0)),
+                                        ImageNode {
+                                            image: entity_assets.tilemap.clone(),
+                                            texture_atlas: Some(TextureAtlas {
+                                                index: TileSprite::new(
+                                                    soldier.get_variant().into(),
+                                                )
+                                                .get_variant()
+                                                .as_index(),
+                                                layout: entity_assets.tilemap_layout.clone(),
+                                            }),
+                                            ..default()
+                                        },
+                                    ));
+
+                                parent
+                                    .spawn(UiContainer::new().with_width(Val::Auto).column())
                                     .with_children(|parent| {
                                         parent
-                                            .spawn(
-                                                UiContainer::new()
-                                                    .with_variant(UiContainerVariant::Secondary)
-                                                    .with_width(Val::Px(64.0))
-                                                    .with_height(Val::Px(64.0))
-                                                    .center(),
-                                            )
-                                            .with_child((
-                                                UiContainer::new()
-                                                    .with_width(Val::Px(32.0))
-                                                    .with_height(Val::Px(32.0)),
-                                                ImageNode {
-                                                    image: entity_assets.tilemap.clone(),
-                                                    texture_atlas: Some(TextureAtlas {
-                                                        index: TileSprite::new(
-                                                            soldier.get_variant().into(),
-                                                        )
-                                                        .get_variant()
-                                                        .as_index(),
-                                                        layout: entity_assets
-                                                            .tilemap_layout
-                                                            .clone(),
-                                                    }),
-                                                    ..default()
-                                                },
-                                            ));
-
-                                        parent
-                                            .spawn(
-                                                UiContainer::new().with_width(Val::Auto).column(),
-                                            )
+                                            .spawn(UiContainer::new().with_column_gap(Val::Px(8.0)))
                                             .with_children(|parent| {
-                                                parent
-                                                    .spawn(
-                                                        UiContainer::new()
-                                                            .with_column_gap(Val::Px(8.0)),
-                                                    )
-                                                    .with_children(|parent| {
-                                                        parent.spawn(
-                                                            UiText::new(
-                                                                "ui.soldier_info.soldier_name",
-                                                            )
-                                                            .with_width(Val::Auto)
-                                                            .with_size(UiTextSize::Small)
-                                                            .with_justify(JustifyText::Left),
-                                                        );
-                                                        parent.spawn(
-                                                            UiText::new(
-                                                                &soldier.get_variant().to_string(),
-                                                            )
-                                                            .with_width(Val::Auto)
-                                                            .with_size(UiTextSize::Small)
-                                                            .with_justify(JustifyText::Left),
-                                                        );
-                                                    });
                                                 parent.spawn(
-                                                    UiText::new("ui.soldier_info.soldier_damage")
-                                                        .with_arg(
-                                                            "damage",
-                                                            soldier.get_damage().to_string(),
-                                                        )
+                                                    UiText::new("ui.soldier_info.soldier_name")
+                                                        .with_width(Val::Auto)
                                                         .with_size(UiTextSize::Small)
                                                         .with_justify(JustifyText::Left),
                                                 );
                                                 parent.spawn(
-                                                    UiText::new(
-                                                        "ui.soldier_info.soldier_fire_radius",
-                                                    )
-                                                    .with_arg(
-                                                        "fire_radius",
-                                                        soldier.get_fire_radius().to_string(),
-                                                    )
-                                                    .with_size(UiTextSize::Small)
-                                                    .with_justify(JustifyText::Left),
-                                                );
-                                                parent.spawn(
-                                                    UiText::new(
-                                                        "ui.soldier_info.soldier_fire_rate",
-                                                    )
-                                                    .with_arg(
-                                                        "fire_rate",
-                                                        ((1.0
-                                                            / soldier
-                                                                .get_fire_rate()
-                                                                .as_secs_f32()
-                                                            * 100.0)
-                                                            .round()
-                                                            / 100.0)
-                                                            .to_string(),
-                                                    )
-                                                    .with_size(UiTextSize::Small)
-                                                    .with_justify(JustifyText::Left),
+                                                    UiText::new(&soldier.get_variant().to_string())
+                                                        .with_width(Val::Auto)
+                                                        .with_size(UiTextSize::Small)
+                                                        .with_justify(JustifyText::Left),
                                                 );
                                             });
+                                        parent.spawn(
+                                            UiText::new("ui.soldier_info.soldier_damage")
+                                                .with_arg(
+                                                    "damage",
+                                                    soldier.get_damage().to_string(),
+                                                )
+                                                .with_size(UiTextSize::Small)
+                                                .with_justify(JustifyText::Left),
+                                        );
+                                        parent.spawn(
+                                            UiText::new("ui.soldier_info.soldier_fire_radius")
+                                                .with_arg(
+                                                    "fire_radius",
+                                                    soldier.get_fire_radius().to_string(),
+                                                )
+                                                .with_size(UiTextSize::Small)
+                                                .with_justify(JustifyText::Left),
+                                        );
+                                        parent.spawn(
+                                            UiText::new("ui.soldier_info.soldier_fire_rate")
+                                                .with_arg(
+                                                    "fire_rate",
+                                                    ((1.0 / soldier.get_fire_rate().as_secs_f32()
+                                                        * 100.0)
+                                                        .round()
+                                                        / 100.0)
+                                                        .to_string(),
+                                                )
+                                                .with_size(UiTextSize::Small)
+                                                .with_justify(JustifyText::Left),
+                                        );
                                     });
-                                break;
-                            }
-                        }
+                            });
+
+                        parent
+                            .spawn(UiContainer::new().with_row_gap(Val::Px(8.0)).column())
+                            .with_children(|parent| {
+                                parent
+                                    .spawn((
+                                        ButtonAction::UpgradeSoldier,
+                                        UiButton::new()
+                                            .with_variant(UiButtonVariant::Success)
+                                            .with_padding(UiRect::all(Val::Px(8.0))),
+                                    ))
+                                    .with_child(UiText::new("ui.soldier_info.upgrade_soldier"));
+
+                                parent
+                                    .spawn((
+                                        ButtonAction::ChangeSoldier,
+                                        UiButton::new()
+                                            .with_variant(UiButtonVariant::Primary)
+                                            .with_padding(UiRect::all(Val::Px(8.0))),
+                                    ))
+                                    .with_child(UiText::new("ui.soldier_info.change_soldier"));
+
+                                parent
+                                    .spawn((
+                                        ButtonAction::SellSoldier,
+                                        UiButton::new()
+                                            .with_variant(UiButtonVariant::Danger)
+                                            .with_padding(UiRect::all(Val::Px(8.0))),
+                                    ))
+                                    .with_child(
+                                        UiText::new("ui.soldier_info.sell_soldier").with_arg(
+                                            "sell_price",
+                                            soldier
+                                                .get_variant()
+                                                .get_config()
+                                                .get_sell_price()
+                                                .to_string(),
+                                        ),
+                                    );
+                            });
                     }
-
-                    parent
-                        .spawn(UiContainer::new().with_row_gap(Val::Px(8.0)).column())
-                        .with_children(|parent| {
-                            parent
-                                .spawn((
-                                    ButtonAction::UpgradeSoldier,
-                                    UiButton::new()
-                                        .with_variant(UiButtonVariant::Success)
-                                        .with_padding(UiRect::all(Val::Px(8.0))),
-                                ))
-                                .with_child(UiText::new("ui.soldier_info.upgrade_soldier"));
-
-                            parent
-                                .spawn((
-                                    ButtonAction::ChangeSoldier,
-                                    UiButton::new()
-                                        .with_variant(UiButtonVariant::Primary)
-                                        .with_padding(UiRect::all(Val::Px(8.0))),
-                                ))
-                                .with_child(UiText::new("ui.soldier_info.change_soldier"));
-
-                            parent
-                                .spawn((
-                                    ButtonAction::SellSoldier,
-                                    UiButton::new()
-                                        .with_variant(UiButtonVariant::Danger)
-                                        .with_padding(UiRect::all(Val::Px(8.0))),
-                                ))
-                                .with_child(UiText::new("ui.soldier_info.sell_soldier"));
-                        });
                 });
         });
 }
@@ -317,7 +311,7 @@ fn ui_update(
     interaction_query: Query<(&Interaction, &ButtonAction), (Changed<Interaction>, With<UiButton>)>,
     mut soldiers: Query<(Entity, &Soldier, &TilePosition)>,
     mut player: ResMut<Player>,
-    selected_soldier: Option<Res<SelectedSoldier>>,
+    selected_soldier: Res<SelectedSoldier>,
     mut next_ui_state: ResMut<NextState<UiState>>,
     mut next_game_state: ResMut<NextState<GameState>>,
 ) {
@@ -336,18 +330,15 @@ fn ui_update(
                     next_game_state.set(GameState::Pause);
                 }
                 ButtonAction::SellSoldier => {
-                    if let Some(selected_soldier) = &selected_soldier {
-                        for (soldier_entity, soldier, soldier_tile_position) in soldiers.iter_mut()
+                    for (soldier_entity, soldier, soldier_tile_position) in soldiers.iter_mut() {
+                        if soldier_tile_position.as_vec2()
+                            == selected_soldier.tile_position.as_vec2()
                         {
-                            if soldier_tile_position.as_vec2()
-                                == selected_soldier.tile_position.as_vec2()
-                            {
-                                commands.entity(soldier_entity).despawn_recursive();
-                                player
-                                    .get_money_mut()
-                                    .increase(soldier.get_variant().get_config().get_price());
-                                break;
-                            }
+                            commands.entity(soldier_entity).despawn_recursive();
+                            player
+                                .get_money_mut()
+                                .increase(soldier.get_variant().get_config().get_sell_price());
+                            break;
                         }
                     }
                     next_ui_state.set(UiState::InGame);

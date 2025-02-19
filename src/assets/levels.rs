@@ -101,7 +101,9 @@ impl CompletedLevels {
         };
 
         if let Some(level_completion) = self.get_completion_mut(name) {
-            level_completion.stars = stars;
+            if stars.as_index() > level_completion.stars.as_index() {
+                level_completion.stars = stars;
+            }
             level_completion.completed_at = timestamp;
         } else {
             self.0.push(LevelCompletion {

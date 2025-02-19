@@ -46,6 +46,7 @@ fn ui_init(
     ui_assets: Res<UiAssets>,
     entity_assets: Res<EntityAssets>,
     player: Res<Player>,
+    selected_soldier: Res<SelectedSoldier>,
 ) {
     commands
         .spawn((
@@ -172,6 +173,10 @@ fn ui_init(
                                 SoldierVariant::SoldierSniper,
                                 SoldierVariant::RocketLauncher,
                             ] {
+                                if Some(variant) == selected_soldier.variant {
+                                    continue;
+                                }
+
                                 parent
                                     .spawn(
                                         UiContainer::new()
@@ -211,7 +216,17 @@ fn ui_init(
                                             UiText::new("ui.soldier_select.price")
                                                 .with_arg(
                                                     "price",
-                                                    variant.get_config().get_price().to_string(),
+                                                    if let Some(selected_soldier_variant) =
+                                                        selected_soldier.variant
+                                                    {
+                                                        (variant.get_config().get_price()
+                                                            - selected_soldier_variant
+                                                                .get_config()
+                                                                .get_sell_price())
+                                                        .to_string()
+                                                    } else {
+                                                        variant.get_config().get_price().to_string()
+                                                    },
                                                 )
                                                 .with_size(UiTextSize::Small),
                                         );
@@ -259,7 +274,7 @@ fn ui_update(
                     }
                     if player.get_money().get_current()
                         + if let Some(current_soldier) = &current_soldier {
-                            current_soldier.get_variant().get_config().get_price()
+                            current_soldier.get_variant().get_config().get_sell_price()
                         } else {
                             0
                         }
@@ -271,7 +286,7 @@ fn ui_update(
                     if let Some(current_soldier) = current_soldier {
                         player
                             .get_money_mut()
-                            .increase(current_soldier.get_variant().get_config().get_price());
+                            .increase(current_soldier.get_variant().get_config().get_sell_price());
                         current_soldier.set_variant(variant.clone());
                     } else {
                         commands.entity(game_tilemap.single()).with_child((
