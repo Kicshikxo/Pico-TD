@@ -7,7 +7,7 @@ use crate::{
     },
     entities::{
         soldier::{Soldier, SoldierVariant},
-        tile::{position::TilePosition, sprite::TileSprite},
+        tile::sprite::TileSprite,
     },
     game::{GameState, GameTilemap},
     input::SelectedSoldier,
@@ -46,7 +46,6 @@ fn ui_init(
     ui_assets: Res<UiAssets>,
     entity_assets: Res<EntityAssets>,
     player: Res<Player>,
-    selected_soldier: Res<SelectedSoldier>,
 ) {
     commands
         .spawn((
@@ -166,17 +165,13 @@ fn ui_init(
                             ..default()
                         })
                         .with_children(|parent| {
-                            for variant in [
+                            for soldier_variant in [
                                 SoldierVariant::Soldier,
                                 SoldierVariant::SoldierFast,
                                 SoldierVariant::SoldierStrong,
                                 SoldierVariant::SoldierSniper,
                                 SoldierVariant::RocketLauncher,
                             ] {
-                                if Some(variant) == selected_soldier.variant {
-                                    continue;
-                                }
-
                                 parent
                                     .spawn(
                                         UiContainer::new()
@@ -187,7 +182,7 @@ fn ui_init(
                                     .with_children(|parent| {
                                         parent
                                             .spawn((
-                                                ButtonAction::Select(variant),
+                                                ButtonAction::Select(soldier_variant),
                                                 UiButton::new(),
                                                 UiContainer::new()
                                                     .with_variant(UiContainerVariant::Secondary)
@@ -201,9 +196,11 @@ fn ui_init(
                                                 ImageNode {
                                                     image: entity_assets.tilemap.clone(),
                                                     texture_atlas: Some(TextureAtlas {
-                                                        index: TileSprite::new(variant.into())
-                                                            .get_variant()
-                                                            .as_index(),
+                                                        index: TileSprite::new(
+                                                            soldier_variant.into(),
+                                                        )
+                                                        .get_variant()
+                                                        .as_index(),
                                                         layout: entity_assets
                                                             .tilemap_layout
                                                             .clone(),
@@ -216,22 +213,24 @@ fn ui_init(
                                             UiText::new("ui.soldier_select.price")
                                                 .with_arg(
                                                     "price",
-                                                    if let Some(selected_soldier_variant) =
-                                                        selected_soldier.variant
-                                                    {
-                                                        (variant.get_config().get_price()
-                                                            - selected_soldier_variant
-                                                                .get_config()
-                                                                .get_sell_price())
-                                                        .to_string()
-                                                    } else {
-                                                        variant.get_config().get_price().to_string()
-                                                    },
+                                                    soldier_variant
+                                                        .get_config()
+                                                        .get_price()
+                                                        .to_string(),
                                                 )
-                                                .with_size(UiTextSize::Small),
+                                                .with_size(UiTextSize::Small)
+                                                .with_color(
+                                                    if soldier_variant.get_config().get_price()
+                                                        > player.get_money().get_current()
+                                                    {
+                                                        Color::srgb(1.0, 0.25, 0.25)
+                                                    } else {
+                                                        Color::WHITE
+                                                    },
+                                                ),
                                         );
                                         parent.spawn(
-                                            UiText::new(&variant.to_string())
+                                            UiText::new(&soldier_variant.to_string())
                                                 .with_size(UiTextSize::Small),
                                         );
                                     });
@@ -251,7 +250,6 @@ fn ui_update(
     mut commands: Commands,
     interaction_query: Query<(&Interaction, &ButtonAction), (Changed<Interaction>, With<UiButton>)>,
     game_tilemap: Query<Entity, With<GameTilemap>>,
-    mut soldiers: Query<(&mut Soldier, &TilePosition)>,
     mut player: ResMut<Player>,
     selected_soldier: Res<SelectedSoldier>,
     mut next_ui_state: ResMut<NextState<UiState>>,
@@ -265,35 +263,15 @@ fn ui_update(
                     next_game_state.set(GameState::InGame);
                 }
                 ButtonAction::Select(variant) => {
-                    let mut current_soldier: Option<&mut Soldier> = None;
-                    for (soldier, tile_position) in soldiers.iter_mut() {
-                        if tile_position.as_vec2() == selected_soldier.tile_position.as_vec2() {
-                            current_soldier = Some(soldier.into_inner());
-                            break;
-                        }
-                    }
-                    if player.get_money().get_current()
-                        + if let Some(current_soldier) = &current_soldier {
-                            current_soldier.get_variant().get_config().get_sell_price()
-                        } else {
-                            0
-                        }
-                        < variant.get_config().get_price()
-                    {
+                    if player.get_money().get_current() < variant.get_config().get_price() {
                         continue;
                     }
 
-                    if let Some(current_soldier) = current_soldier {
-                        player
-                            .get_money_mut()
-                            .increase(current_soldier.get_variant().get_config().get_sell_price());
-                        current_soldier.set_variant(variant.clone());
-                    } else {
-                        commands.entity(game_tilemap.single()).with_child((
-                            Soldier::new(variant.clone()),
-                            selected_soldier.tile_position.clone(),
-                        ));
-                    }
+                    commands.entity(game_tilemap.single()).with_child((
+                        Soldier::new(variant.clone()),
+                        selected_soldier.tile_position.clone(),
+                    ));
+
                     player
                         .get_money_mut()
                         .decrease(variant.get_config().get_price());

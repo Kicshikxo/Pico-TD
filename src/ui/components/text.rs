@@ -31,6 +31,7 @@ pub struct UiText {
     size: UiTextSize,
     justify: JustifyText,
     linebreak: LineBreak,
+    color: Color,
     i18n_key: String,
     i18n_args: Vec<(String, String)>,
     enable_i18n: bool,
@@ -43,6 +44,7 @@ impl Default for UiText {
             size: UiTextSize::default(),
             justify: JustifyText::Center,
             linebreak: LineBreak::default(),
+            color: Color::WHITE,
             i18n_key: String::new(),
             i18n_args: Vec::new(),
             enable_i18n: true,
@@ -68,6 +70,10 @@ impl UiText {
     }
     pub fn with_linebreak(mut self, linebreak: LineBreak) -> Self {
         self.linebreak = linebreak;
+        self
+    }
+    pub fn with_color(mut self, color: Color) -> Self {
+        self.color = color;
         self
     }
     pub fn no_wrap(self) -> Self {
@@ -120,6 +126,7 @@ fn init_ui_text(
                 linebreak: ui_text.linebreak.clone(),
                 ..default()
             },
+            TextColor(ui_text.color.clone()),
         ));
 
         if ui_text.enable_i18n {

@@ -87,12 +87,9 @@ ui.soldier_info.soldier_fire_rate:
 ui.soldier_info.upgrade_soldier:
     en: "Upgrade"
     ru: "Улучшить"
-ui.soldier_info.change_soldier:
-    en: "Change"
-    ru: "Заменить"
 ui.soldier_info.sell_soldier:
-    en: "Sell"
-    ru: "Продать"
+    en: "Sell %{sell_price}$"
+    ru: "Продать %{sell_price}$"
 
 ui.soldier.soldier:
     en: "Soldier"

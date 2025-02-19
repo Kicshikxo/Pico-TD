@@ -134,6 +134,7 @@ pub struct Soldier {
     update_required: bool,
 }
 
+#[allow(unused)]
 impl Soldier {
     pub fn new(variant: SoldierVariant) -> Self {
         let config = variant.get_config();
@@ -367,7 +368,7 @@ fn update_soldier_cooldown(
             cooldown_bar_transform.translation = soldier_transform.translation
                 + Vec3::new(8.0, cooldown_bar_sprite_size.y / 2.0 * -1.0, 1.0);
         } else {
-            commands.entity(cooldown_bar_entity).despawn();
+            commands.entity(cooldown_bar_entity).despawn_recursive();
         }
     }
 }

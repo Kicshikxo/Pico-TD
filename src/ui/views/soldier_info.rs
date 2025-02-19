@@ -42,7 +42,6 @@ struct MoneyTextComponent;
 enum ButtonAction {
     Close,
     UpgradeSoldier,
-    ChangeSoldier,
     SellSoldier,
 }
 
@@ -270,15 +269,6 @@ fn ui_init(
 
                                 parent
                                     .spawn((
-                                        ButtonAction::ChangeSoldier,
-                                        UiButton::new()
-                                            .with_variant(UiButtonVariant::Primary)
-                                            .with_padding(UiRect::all(Val::Px(8.0))),
-                                    ))
-                                    .with_child(UiText::new("ui.soldier_info.change_soldier"));
-
-                                parent
-                                    .spawn((
                                         ButtonAction::SellSoldier,
                                         UiButton::new()
                                             .with_variant(UiButtonVariant::Danger)
@@ -324,10 +314,6 @@ fn ui_update(
                 }
                 ButtonAction::UpgradeSoldier => {
                     info!("Upgrade soldier");
-                }
-                ButtonAction::ChangeSoldier => {
-                    next_ui_state.set(UiState::SoldierSelect);
-                    next_game_state.set(GameState::Pause);
                 }
                 ButtonAction::SellSoldier => {
                     for (soldier_entity, soldier, soldier_tile_position) in soldiers.iter_mut() {

@@ -11,6 +11,7 @@ bevy = { version = "0.15.2", default-features = false, features = [
     "bevy_audio",
     "bevy_color",
     "bevy_core_pipeline",
+    "bevy_gizmos",        # ! REFACTOR
     "bevy_render",
     "bevy_sprite",
     "bevy_text",

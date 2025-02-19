@@ -5,7 +5,7 @@ use crate::{
     game::{GameState, GameTilemap},
 };
 
-#[derive(Component, Clone, Copy, PartialEq)]
+#[derive(Component, Clone, Copy)]
 #[require(Transform)]
 pub struct TilePosition {
     x: f32,
