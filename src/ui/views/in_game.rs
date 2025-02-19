@@ -182,7 +182,7 @@ fn ui_init(
                                 .spawn((
                                     ButtonAction::Pause,
                                     UiButton::new()
-                                        .with_variant(UiButtonVariant::Primary)
+                                        .with_variant(UiButtonVariant::Danger)
                                         .with_padding(UiRect::axes(Val::Px(16.0), Val::Px(8.0))),
                                 ))
                                 .with_child(
@@ -194,7 +194,7 @@ fn ui_init(
                         .spawn((
                             ButtonAction::NextWave,
                             UiButton::new()
-                                .with_variant(UiButtonVariant::Primary)
+                                .with_variant(UiButtonVariant::Success)
                                 .with_disabled(game_wave.is_next_wave_allowed() == false)
                                 .with_padding(UiRect::axes(Val::Px(16.0), Val::Px(8.0))),
                         ))

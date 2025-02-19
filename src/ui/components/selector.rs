@@ -198,7 +198,8 @@ fn init_ui_selector(
                             .with_variant(UiButtonVariant::Primary)
                             .with_width(Val::Px(48.0))
                             .with_height(Val::Px(48.0))
-                            .with_padding(UiRect::ZERO),
+                            .with_padding(UiRect::ZERO)
+                            .with_aspect_ratio(1.0),
                     ))
                     .with_child(UiText::new("<").without_i18n());
                 parent.spawn((
@@ -213,7 +214,8 @@ fn init_ui_selector(
                             .with_variant(UiButtonVariant::Primary)
                             .with_width(Val::Px(48.0))
                             .with_height(Val::Px(48.0))
-                            .with_padding(UiRect::ZERO),
+                            .with_padding(UiRect::ZERO)
+                            .with_aspect_ratio(1.0),
                     ))
                     .with_child(UiText::new(">").without_i18n());
             });
