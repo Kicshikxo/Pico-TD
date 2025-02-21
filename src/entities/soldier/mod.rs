@@ -177,7 +177,7 @@ impl Soldier {
         self.cooldown
     }
     pub fn get_cooldown_percentage(&self) -> f32 {
-        (self.cooldown.as_secs_f32() / self.fire_rate.as_secs_f32()).clamp(0.0, 1.0)
+        (self.get_cooldown().as_secs_f32() / self.get_fire_rate().as_secs_f32()).clamp(0.0, 1.0)
     }
     pub fn decrease_cooldown(&mut self, delta_time: Duration) {
         self.cooldown = self.cooldown.checked_sub(delta_time).unwrap_or_default();

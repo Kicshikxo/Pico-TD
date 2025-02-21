@@ -54,7 +54,7 @@ impl LevelCompletionStars {
 
 impl LevelCompletionStars {
     pub fn from_player_health(health: &PlayerHealth) -> Self {
-        let health_percent = health.get_current() as f32 / health.get_max() as f32;
+        let health_percent = health.get_percentage();
 
         if health_percent > 2.0 / 3.0 {
             LevelCompletionStars::Three

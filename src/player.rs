@@ -32,6 +32,9 @@ impl PlayerHealth {
     pub fn get_current(&self) -> u32 {
         self.current
     }
+    pub fn get_percentage(&self) -> f32 {
+        (self.get_current() as f32 / self.get_max() as f32).clamp(0.0, 1.0)
+    }
     pub fn is_dead(&self) -> bool {
         self.current == 0
     }
