@@ -1,4 +1,5 @@
-pub mod cooldown_bar;
+pub mod cooldown_indicator;
+pub mod fire_radius;
 pub mod projectile;
 
 use std::time::Duration;
@@ -6,17 +7,16 @@ use std::time::Duration;
 use bevy::{
     audio::{PlaybackMode, Volume},
     prelude::*,
-    sprite::Anchor,
 };
 use bevy_persistent::Persistent;
-use cooldown_bar::CooldownBar;
+use cooldown_indicator::{CooldownIndicator, CooldownIndicatorPlugin};
+use fire_radius::{FireRadius, FireRadiusPlugin};
 use projectile::{Projectile, ProjectilePlugin, ProjectileVariant};
 
 use crate::{
     assets::audio::game::GameAudioAssets,
     audio::{GameAudio, GameAudioVolume},
     game::{GameSpeed, GameState, GameTilemap},
-    input::SelectedTile,
 };
 
 use super::{
@@ -81,7 +81,7 @@ impl SoldierVariant {
         match self {
             SoldierVariant::Soldier => SoldierVariantConfig {
                 price: 50,
-                sell_price: 25,
+                sell_price: 35,
                 damage: 25,
                 fire_radius: 3.0,
                 fire_rate: Duration::from_secs_f32(0.5),
@@ -89,7 +89,7 @@ impl SoldierVariant {
             },
             SoldierVariant::SoldierFast => SoldierVariantConfig {
                 price: 100,
-                sell_price: 50,
+                sell_price: 70,
                 damage: 10,
                 fire_radius: 3.0,
                 fire_rate: Duration::from_secs_f32(0.2),
@@ -97,7 +97,7 @@ impl SoldierVariant {
             },
             SoldierVariant::SoldierStrong => SoldierVariantConfig {
                 price: 150,
-                sell_price: 75,
+                sell_price: 105,
                 damage: 50,
                 fire_radius: 3.0,
                 fire_rate: Duration::from_secs_f32(1.0),
@@ -105,7 +105,7 @@ impl SoldierVariant {
             },
             SoldierVariant::SoldierSniper => SoldierVariantConfig {
                 price: 200,
-                sell_price: 100,
+                sell_price: 140,
                 damage: 150,
                 fire_radius: 7.0,
                 fire_rate: Duration::from_secs_f32(5.0),
@@ -113,7 +113,7 @@ impl SoldierVariant {
             },
             SoldierVariant::RocketLauncher => SoldierVariantConfig {
                 price: 250,
-                sell_price: 125,
+                sell_price: 175,
                 damage: 100,
                 fire_radius: 5.0,
                 fire_rate: Duration::from_secs_f32(2.0),
@@ -176,6 +176,9 @@ impl Soldier {
     pub fn get_cooldown(&self) -> Duration {
         self.cooldown
     }
+    pub fn get_cooldown_percentage(&self) -> f32 {
+        (self.cooldown.as_secs_f32() / self.fire_rate.as_secs_f32()).clamp(0.0, 1.0)
+    }
     pub fn decrease_cooldown(&mut self, delta_time: Duration) {
         self.cooldown = self.cooldown.checked_sub(delta_time).unwrap_or_default();
     }
@@ -194,7 +197,7 @@ pub struct SoldierPlugin;
 
 impl Plugin for SoldierPlugin {
     fn build(&self, app: &mut App) {
-        app.add_plugins(ProjectilePlugin);
+        app.add_plugins((CooldownIndicatorPlugin, FireRadiusPlugin, ProjectilePlugin));
 
         app.add_systems(Update, init_soldier);
         app.add_systems(
@@ -215,34 +218,26 @@ fn init_soldier(
             .insert(TileSprite::new(soldier.get_variant().into()));
         soldier_tile_position.set_z(1.0);
 
-        commands.entity(game_tilemap.single()).with_child((
-            CooldownBar::new(soldier_entity),
-            Sprite {
-                custom_size: Some(Vec2::new(2.0, 16.0)),
-                color: Color::srgba(1.0, 1.0, 0.0, 0.75),
-                anchor: Anchor::BottomRight,
-                ..default()
-            },
-        ));
+        commands
+            .entity(game_tilemap.single())
+            .with_child(FireRadius::new(soldier_entity));
+
+        commands
+            .entity(game_tilemap.single())
+            .with_child(CooldownIndicator::new(soldier_entity));
     }
 }
 
 fn update_soldier(
-    mut gizmos: Gizmos,
     mut commands: Commands,
     mut soldiers: Query<(&mut Soldier, &TilePosition, &mut TileSprite, &mut Transform)>,
-    game_tilemap: Query<(Entity, &Transform), (With<GameTilemap>, Without<Soldier>)>, // !
+    game_tilemap: Query<Entity, With<GameTilemap>>,
     enemies: Query<(Entity, &EnemyHealth, &TileMovement, &TilePosition), With<Enemy>>,
     projectiles: Query<&Projectile>,
     game_audio: Query<Entity, With<GameAudio>>,
-    selected_tile: Res<SelectedTile>,
     game_audio_assets: Res<GameAudioAssets>,
     game_audio_volume: Res<Persistent<GameAudioVolume>>,
 ) {
-    let Ok((game_tilemap_entity, game_tilemap_transform)) = game_tilemap.get_single() else {
-        return;
-    };
-
     let mut sorted_enemies = enemies.iter().collect::<Vec<_>>();
     sorted_enemies.sort_by(|(_, _, enemy_a_movement, _), (_, _, enemy_b_movement, _)| {
         enemy_b_movement
@@ -256,15 +251,6 @@ fn update_soldier(
     for (mut soldier, soldier_tile_position, mut soldier_tile_sprite, mut soldier_transform) in
         soldiers.iter_mut()
     {
-        // ! REFACTOR
-        if selected_tile.tile_position.as_vec2() == soldier_tile_position.as_vec2() {
-            gizmos.circle_2d(
-                soldier_transform.translation.xy() + game_tilemap_transform.translation.xy(),
-                soldier.get_fire_radius() * 16.0,
-                Color::srgb(1.0, 1.0, 0.0),
-            );
-        }
-
         if soldier.get_update_required() == true {
             soldier_tile_sprite
                 .set_variant(TileSpriteVariant::Soldier(soldier.get_variant().into()));
@@ -306,7 +292,7 @@ fn update_soldier(
 
                 let projectile =
                     Projectile::new(projectile_variant, *enemy_entity, soldier.get_damage());
-                commands.entity(game_tilemap_entity).with_child((
+                commands.entity(game_tilemap.single()).with_child((
                     projectile,
                     TileMovement::new(
                         vec![
@@ -342,33 +328,23 @@ fn update_soldier(
 }
 
 fn update_soldier_cooldown(
-    mut commands: Commands,
-    mut soldiers: Query<(&mut Soldier, &Transform)>,
-    mut cooldown_bars: Query<(Entity, &CooldownBar, &Sprite, &mut Transform), Without<Soldier>>,
+    mut soldiers: Query<(Entity, &mut Soldier)>,
+    mut cooldown_indicators: Query<&mut CooldownIndicator>,
     game_speed: Res<GameSpeed>,
     time: Res<Time>,
 ) {
-    for (mut soldier, _soldier_transform) in soldiers.iter_mut() {
+    for (soldier_entity, mut soldier) in soldiers.iter_mut() {
         if soldier.get_cooldown() > Duration::ZERO {
             soldier.decrease_cooldown(Duration::from_secs_f32(
                 time.delta_secs() * game_speed.as_f32(),
             ));
-            continue;
-        }
-    }
-    for (cooldown_bar_entity, cooldown_bar, cooldown_bar_sprite, mut cooldown_bar_transform) in
-        cooldown_bars.iter_mut()
-    {
-        if let Ok((soldier, soldier_transform)) = soldiers.get(cooldown_bar.get_soldier_entity()) {
-            let cooldown_percentage =
-                soldier.get_cooldown().as_secs_f32() / soldier.get_fire_rate().as_secs_f32();
-            cooldown_bar_transform.scale = Vec3::new(1.0, cooldown_percentage, 1.0);
 
-            let cooldown_bar_sprite_size = cooldown_bar_sprite.custom_size.unwrap();
-            cooldown_bar_transform.translation = soldier_transform.translation
-                + Vec3::new(8.0, cooldown_bar_sprite_size.y / 2.0 * -1.0, 1.0);
-        } else {
-            commands.entity(cooldown_bar_entity).despawn_recursive();
+            for mut cooldown_indicator in cooldown_indicators.iter_mut() {
+                if cooldown_indicator.get_soldier_entity() == soldier_entity {
+                    cooldown_indicator.set_update_required(true);
+                    break;
+                }
+            }
         }
     }
 }

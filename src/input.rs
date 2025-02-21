@@ -73,7 +73,9 @@ fn update_selected_tile(
         let cursor_tile_position =
             TilePosition::from_tilemap_position(game_tilemap, cursor_in_tilemap_position);
 
-        selected_tile.tile_position = cursor_tile_position;
+        if selected_tile.tile_position.as_vec2() != cursor_tile_position.as_vec2() {
+            selected_tile.tile_position = cursor_tile_position;
+        }
     }
 }
 

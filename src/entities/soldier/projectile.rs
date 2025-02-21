@@ -1,4 +1,4 @@
-use std::{f32::consts::PI, time::Duration};
+use std::{f32::consts::FRAC_PI_2, time::Duration};
 
 use bevy::prelude::*;
 
@@ -147,7 +147,7 @@ fn update_projectile(
         .normalize_or_zero();
 
         projectile_transform.rotation =
-            Quat::from_rotation_z(direction.x.atan2(direction.y) - PI / 2.0);
+            Quat::from_rotation_z(direction.x.atan2(direction.y) - FRAC_PI_2);
         projectile_transform.scale = projectile.get_variant().get_config().get_sprite_scale();
     }
 }

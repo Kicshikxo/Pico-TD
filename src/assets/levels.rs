@@ -186,7 +186,7 @@ impl Level {
             TextureDimension::D2,
             &Srgba::ZERO.to_u8_array(),
             TextureFormat::Rgba8UnormSrgb,
-            RenderAssetUsages::all(),
+            RenderAssetUsages::default(),
         );
 
         for x in 0..self.size.x {

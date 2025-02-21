@@ -80,14 +80,16 @@ fn update_game_audio(
 ) {
     if let Ok(game_audio_children) = game_audio.get_single() {
         for game_audio_child in game_audio_children.iter() {
-            if let Ok(game_audio_child_audio_sink) = audio_sinks.get(*game_audio_child) {
-                if let Some(game_audio_child_audio_sink) = game_audio_child_audio_sink {
-                    if game_audio_volume.is_changed() {
-                        game_audio_child_audio_sink.set_volume(game_audio_volume.get_sfx_volume());
-                    }
-                } else {
-                    commands.entity(*game_audio_child).despawn_recursive();
-                }
+            let Ok(game_audio_child_audio_sink) = audio_sinks.get(*game_audio_child) else {
+                continue;
+            };
+            let Some(game_audio_child_audio_sink) = game_audio_child_audio_sink else {
+                commands.entity(*game_audio_child).despawn_recursive();
+                continue;
+            };
+
+            if game_audio_volume.is_changed() {
+                game_audio_child_audio_sink.set_volume(game_audio_volume.get_sfx_volume());
             }
         }
     }

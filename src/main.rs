@@ -6,6 +6,7 @@ mod game;
 mod input;
 mod player;
 mod ui;
+mod utils;
 mod waves;
 
 use bevy::{

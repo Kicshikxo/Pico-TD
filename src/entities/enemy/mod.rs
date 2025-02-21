@@ -1,11 +1,11 @@
 pub mod health;
 pub mod health_bar;
 
-use std::f32::consts::PI;
+use std::f32::consts::{FRAC_PI_2, PI, TAU};
 
-use bevy::{prelude::*, sprite::Anchor};
+use bevy::prelude::*;
 use health::EnemyHealth;
-use health_bar::EnemyHealthBar;
+use health_bar::{HealthBar, HealthBarPlugin};
 use serde::Deserialize;
 
 use crate::{
@@ -164,6 +164,8 @@ pub struct EnemyPlugin;
 
 impl Plugin for EnemyPlugin {
     fn build(&self, app: &mut App) {
+        app.add_plugins(HealthBarPlugin);
+
         app.add_systems(Update, init_enemy);
         app.add_systems(
             Update,
@@ -183,14 +185,9 @@ fn init_enemy(
             TileSprite::new(enemy.get_variant().into()),
         ));
 
-        commands.entity(game_tilemap.single()).with_child((
-            EnemyHealthBar::new(enemy_entity),
-            Sprite {
-                custom_size: Some(Vec2::new(16.0, 2.0)),
-                anchor: Anchor::TopLeft,
-                ..default()
-            },
-        ));
+        commands
+            .entity(game_tilemap.single())
+            .with_child((HealthBar::new(enemy_entity),));
     }
 }
 
@@ -244,9 +241,9 @@ fn update_enemy_movement(
         let direction = (enemy_movement.get_position() - enemy_movement.get_previous_position())
             .normalize_or_zero();
 
-        let target_z = direction.x.atan2(direction.y) - PI / 2.0;
+        let target_z = direction.x.atan2(direction.y) - FRAC_PI_2;
         let rotation_z = current_z
-            + ((target_z - current_z + PI).rem_euclid(2.0 * PI) - PI)
+            + ((target_z - current_z + PI).rem_euclid(TAU) - PI)
                 * time.delta_secs()
                 * game_speed.as_f32()
                 * 10.0;
@@ -257,7 +254,7 @@ fn update_enemy_movement(
 fn update_enemy_health(
     mut commands: Commands,
     mut enemies: Query<(Entity, &Enemy, &mut EnemyHealth, &mut Sprite, &Transform), With<Enemy>>,
-    mut health_bars: Query<(Entity, &EnemyHealthBar, &mut Sprite, &mut Transform), Without<Enemy>>,
+    mut health_bars: Query<&mut HealthBar>,
     mut player: ResMut<Player>,
     game_speed: Res<GameSpeed>,
     time: Res<Time>,
@@ -279,31 +276,14 @@ fn update_enemy_health(
 
         if enemy_health.get_damage_indicator() == true {
             enemy_sprite.color = Color::srgb(1.0, 0.0, 0.0);
+
+            for mut health_bar in health_bars.iter_mut() {
+                if health_bar.get_enemy_entity() == enemy_entity {
+                    health_bar.set_update_required(true);
+                }
+            }
+
             enemy_health.clear_damage_indicator();
-        }
-    }
-
-    for (health_bar_entity, health_bar, mut health_bar_sprite, mut health_bar_transform) in
-        health_bars.iter_mut()
-    {
-        if let Ok((_enemy_entity, _enemy, enemy_health, _enemy_sprite, enemy_transform)) =
-            enemies.get(health_bar.get_enemy_entity())
-        {
-            let health_percentage =
-                enemy_health.get_current() as f32 / enemy_health.get_max() as f32;
-            health_bar_transform.scale = Vec3::new(health_percentage, 1.0, 1.0);
-            health_bar_sprite.color = match health_percentage {
-                health_percentage if health_percentage < 0.25 => Color::srgba(1.0, 0.0, 0.0, 0.75),
-                health_percentage if health_percentage < 0.75 => Color::srgba(1.0, 1.0, 0.0, 0.75),
-                health_percentage if health_percentage == 1.0 => Color::srgba(0.0, 0.0, 0.0, 0.0),
-                _ => Color::srgba(0.0, 1.0, 0.0, 0.75),
-            };
-
-            let health_bar_sprite_size = health_bar_sprite.custom_size.unwrap();
-            health_bar_transform.translation = enemy_transform.translation
-                + Vec3::new(health_bar_sprite_size.x / 2.0 * -1.0, 8.0, 1.0);
-        } else {
-            commands.entity(health_bar_entity).despawn_recursive();
         }
     }
 }

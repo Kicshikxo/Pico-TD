@@ -45,6 +45,9 @@ impl EnemyHealth {
     pub fn get_max(&self) -> u32 {
         self.max
     }
+    pub fn get_percentage(&self) -> f32 {
+        (self.get_current() as f32 / self.get_max() as f32).clamp(0.0, 1.0)
+    }
     pub fn set_max(&mut self, max: u32) {
         self.max = max;
     }
