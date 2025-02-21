@@ -51,6 +51,7 @@ fn ui_init(
     mut commands: Commands,
     ui_assets: Res<UiAssets>,
     i18n: Res<Persistent<I18n>>,
+    completed_levels: Res<Persistent<CompletedLevels>>,
     game_audio_volume: Res<Persistent<GameAudioVolume>>,
 ) {
     commands
@@ -173,7 +174,9 @@ fn ui_init(
                     parent
                         .spawn((
                             ButtonAction::ResetProgress,
-                            UiButton::new().with_variant(UiButtonVariant::Danger),
+                            UiButton::new()
+                                .with_variant(UiButtonVariant::Danger)
+                                .with_disabled(completed_levels.is_empty()),
                         ))
                         .with_child(UiText::new("ui.settings.reset_progress"));
                 });
@@ -231,6 +234,9 @@ fn ui_update(
                     next_ui_state.set(UiState::Menu);
                 }
                 ButtonAction::ResetProgress => {
+                    if completed_levels.is_empty() {
+                        continue;
+                    }
                     completed_levels.update(|levels| levels.reset()).unwrap();
                     next_ui_state.set(UiState::Menu);
                 }
