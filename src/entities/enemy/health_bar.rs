@@ -33,7 +33,9 @@ pub struct HealthBarPlugin;
 
 impl Plugin for HealthBarPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(Update, (init_enemy_health_bar, despawn_health_bar));
+        app.add_systems(PreUpdate, init_enemy_health_bar);
+        app.add_systems(PostUpdate, despawn_health_bar);
+
         app.add_systems(
             Update,
             update_enemy_health_bar.run_if(in_state(GameState::InGame)),

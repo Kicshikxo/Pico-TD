@@ -2,10 +2,7 @@ use bevy::prelude::*;
 
 use crate::{
     assets::sprites::{
-        entity::{
-            EnemySpriteVariant, EntityAssets, ProjectileSpriteVariant, SoldierSpriteVariant,
-            UtilSpriteVariant,
-        },
+        entity::{EnemySpriteVariant, EntityAssets, ProjectileSpriteVariant, UtilSpriteVariant},
         tile::{TileAssets, TilemapTileSpriteVariant},
     },
     entities::{
@@ -56,13 +53,9 @@ impl TileSpriteVariant {
                 ProjectileVariant::Bullet => ProjectileSpriteVariant::Bullet as usize,
                 ProjectileVariant::Rocket => ProjectileSpriteVariant::Rocket as usize,
             },
-            TileSpriteVariant::Soldier(variant) => match variant {
-                SoldierVariant::Soldier => SoldierSpriteVariant::Soldier as usize,
-                SoldierVariant::SoldierFast => SoldierSpriteVariant::SoldierFast as usize,
-                SoldierVariant::SoldierStrong => SoldierSpriteVariant::SoldierStrong as usize,
-                SoldierVariant::SoldierSniper => SoldierSpriteVariant::SoldierSniper as usize,
-                SoldierVariant::RocketLauncher => SoldierSpriteVariant::RocketLauncher as usize,
-            },
+            TileSpriteVariant::Soldier(variant) => {
+                variant.get_config().get_sprite_variant() as usize
+            }
             TileSpriteVariant::Tilemap(variant) => match variant {
                 TilemapTileVariant::Ground => TilemapTileSpriteVariant::Ground as usize,
                 TilemapTileVariant::Flower => TilemapTileSpriteVariant::GroundWithFlower as usize,
@@ -121,6 +114,7 @@ pub struct TileSpritePlugin;
 impl Plugin for TileSpritePlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(PostUpdate, init_tile_sprite);
+
         app.add_systems(
             Update,
             update_tile_sprite.run_if(in_state(GameState::InGame)),

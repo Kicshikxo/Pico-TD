@@ -67,9 +67,9 @@ impl EnemyVariant {
                 z_position: 0.03,
             },
             EnemyVariant::Truck => EnemyVariantConfig {
-                health: 100,
+                health: 50,
                 damage: 5,
-                kill_reward: 20,
+                kill_reward: 10,
                 sprite_scale: Vec3::new(0.75, 0.75, 1.0),
                 z_position: 0.01,
             },
@@ -116,20 +116,14 @@ impl EnemyVariant {
 #[require(EnemyHealth, TileMovement, TilePosition)]
 pub struct Enemy {
     variant: EnemyVariant,
-    damage: u32,
-    kill_reward: u32,
     update_required: bool,
 }
 
 #[allow(unused)]
 impl Enemy {
     pub fn new(variant: EnemyVariant) -> Self {
-        let config = variant.get_config();
-
         Self {
             variant,
-            damage: config.damage,
-            kill_reward: config.kill_reward,
             update_required: true,
         }
     }
@@ -141,16 +135,10 @@ impl Enemy {
         self.update_required = true;
     }
     pub fn get_damage(&self) -> u32 {
-        self.damage
-    }
-    pub fn set_damage(&mut self, damage: u32) {
-        self.damage = damage;
+        self.get_variant().get_config().get_damage()
     }
     pub fn get_kill_reward(&self) -> u32 {
-        self.kill_reward
-    }
-    pub fn set_kill_reward(&mut self, kill_reward: u32) {
-        self.kill_reward = kill_reward;
+        self.get_variant().get_config().get_kill_reward()
     }
     pub fn get_update_required(&self) -> bool {
         self.update_required
@@ -166,10 +154,15 @@ impl Plugin for EnemyPlugin {
     fn build(&self, app: &mut App) {
         app.add_plugins(HealthBarPlugin);
 
-        app.add_systems(Update, init_enemy);
+        app.add_systems(PreUpdate, init_enemy);
+
         app.add_systems(
             Update,
-            (update_enemy_movement, update_enemy_health).run_if(in_state(GameState::InGame)),
+            update_enemy_movement.run_if(in_state(GameState::InGame)),
+        );
+        app.add_systems(
+            PostUpdate,
+            update_enemy_health.run_if(in_state(GameState::InGame)),
         );
     }
 }
@@ -227,8 +220,6 @@ fn update_enemy_movement(
         if enemy.get_update_required() == true {
             enemy_tile_sprite.set_variant(TileSpriteVariant::Enemy(enemy.get_variant().into()));
             let config = enemy.get_variant().get_config();
-            enemy.set_damage(config.get_damage());
-            enemy.set_kill_reward(config.get_kill_reward());
             enemy_health.set_max(config.get_health());
             enemy_health.heal(config.get_health());
             enemy_tile_position.set_z(config.get_z_position());

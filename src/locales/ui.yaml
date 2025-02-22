@@ -85,8 +85,8 @@ ui.soldier_info.soldier_fire_rate:
     en: "Fire rate: %{fire_rate}/s"
     ru: "Скорострельность: %{fire_rate}/с"
 ui.soldier_info.upgrade_soldier:
-    en: "Upgrade"
-    ru: "Улучшить"
+    en: "Upgrade %{price}$"
+    ru: "Улучшить %{price}$"
 ui.soldier_info.sell_soldier:
     en: "Sell %{sell_price}$"
     ru: "Продать %{sell_price}$"
@@ -94,15 +94,9 @@ ui.soldier_info.sell_soldier:
 ui.soldier.soldier:
     en: "Soldier"
     ru: "Солдат"
-ui.soldier.soldier_fast:
-    en: "Soldier fast"
-    ru: "Солдат быстрый"
-ui.soldier.soldier_strong:
-    en: "Soldier strong"
-    ru: "Солдат сильный"
-ui.soldier.soldier_sniper:
-    en: "Soldier sniper"
-    ru: "Солдат снайпер"
+ui.soldier.sniper:
+    en: "Sniper"
+    ru: "Снайпер"
 ui.soldier.rocket_launcher:
     en: "Rocket launcher"
     ru: "Ракетница"

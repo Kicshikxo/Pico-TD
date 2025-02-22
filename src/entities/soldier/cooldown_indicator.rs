@@ -33,10 +33,9 @@ pub struct CooldownIndicatorPlugin;
 
 impl Plugin for CooldownIndicatorPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(
-            Update,
-            (init_cooldown_indicator, despawn_cooldown_indicator),
-        );
+        app.add_systems(PreUpdate, init_cooldown_indicator);
+        app.add_systems(PostUpdate, despawn_cooldown_indicator);
+
         app.add_systems(
             Update,
             update_cooldown_indicator.run_if(in_state(GameState::InGame)),

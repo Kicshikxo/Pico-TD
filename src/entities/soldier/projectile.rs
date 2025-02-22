@@ -77,7 +77,8 @@ pub struct ProjectilePlugin;
 
 impl Plugin for ProjectilePlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(Update, init_projectile);
+        app.add_systems(PreUpdate, init_projectile);
+
         app.add_systems(
             Update,
             update_projectile.run_if(in_state(GameState::InGame)),

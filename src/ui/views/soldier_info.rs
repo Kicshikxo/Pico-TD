@@ -258,14 +258,33 @@ fn init_ui(
                         parent
                             .spawn(UiContainer::new().with_row_gap(Val::Px(8.0)).column())
                             .with_children(|parent| {
-                                parent
-                                    .spawn((
-                                        ButtonAction::UpgradeSoldier,
-                                        UiButton::new()
-                                            .with_variant(UiButtonVariant::Success)
-                                            .with_padding(UiRect::all(Val::Px(8.0))),
-                                    ))
-                                    .with_child(UiText::new("ui.soldier_info.upgrade_soldier"));
+                                if soldier.get_variant().is_next_level_allowed() == true {
+                                    parent
+                                        .spawn((
+                                            ButtonAction::UpgradeSoldier,
+                                            UiButton::new()
+                                                .with_variant(UiButtonVariant::Success)
+                                                .with_disabled(
+                                                    player.get_money().get_current()
+                                                        < soldier
+                                                            .get_variant()
+                                                            .get_next_level_config()
+                                                            .get_price(),
+                                                )
+                                                .with_padding(UiRect::all(Val::Px(8.0))),
+                                        ))
+                                        .with_child(
+                                            UiText::new("ui.soldier_info.upgrade_soldier")
+                                                .with_arg(
+                                                    "price",
+                                                    soldier
+                                                        .get_variant()
+                                                        .get_next_level_config()
+                                                        .get_price()
+                                                        .to_string(),
+                                                ),
+                                        );
+                                }
 
                                 parent
                                     .spawn((
@@ -299,7 +318,7 @@ fn destroy_ui(mut commands: Commands, query: Query<Entity, With<RootUiComponent>
 fn update_ui(
     mut commands: Commands,
     interaction_query: Query<(&Interaction, &ButtonAction), (Changed<Interaction>, With<UiButton>)>,
-    mut soldiers: Query<(Entity, &Soldier, &TilePosition)>,
+    mut soldiers: Query<(Entity, &mut Soldier, &TilePosition)>,
     mut player: ResMut<Player>,
     selected_soldier: Res<SelectedSoldier>,
     mut next_ui_state: ResMut<NextState<UiState>>,
@@ -313,7 +332,23 @@ fn update_ui(
                     next_game_state.set(GameState::InGame);
                 }
                 ButtonAction::UpgradeSoldier => {
-                    info!("Upgrade soldier");
+                    for (_soldier_entity, mut soldier, tile_position) in soldiers.iter_mut() {
+                        if tile_position.as_vec2() == selected_soldier.tile_position.as_vec2() {
+                            let next_level_price =
+                                soldier.get_variant().get_next_level_config().get_price();
+
+                            if player.get_money().get_current() < next_level_price {
+                                break;
+                            }
+
+                            soldier.get_variant_mut().next_level();
+                            player.get_money_mut().decrease(next_level_price);
+
+                            next_ui_state.set(UiState::InGame);
+                            next_game_state.set(GameState::InGame);
+                            break;
+                        }
+                    }
                 }
                 ButtonAction::SellSoldier => {
                     for (soldier_entity, soldier, soldier_tile_position) in soldiers.iter_mut() {

@@ -37,14 +37,16 @@ pub struct FireRadiusPlugin;
 
 impl Plugin for FireRadiusPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(Update, (init_fire_radius, despawn_file_radius));
+        app.add_systems(PreUpdate, init_fire_radius);
+        app.add_systems(PostUpdate, despawn_file_radius);
+
         app.add_systems(
             Update,
             update_fire_radius
                 .run_if(in_state(GameState::InGame).and(resource_changed::<SelectedTile>)),
         );
         app.add_systems(
-            Update,
+            PostUpdate,
             update_fire_radius_opacity.run_if(in_state(GameState::InGame)),
         );
     }

@@ -14,7 +14,7 @@ use fire_radius::{FireRadius, FireRadiusPlugin};
 use projectile::{Projectile, ProjectilePlugin, ProjectileVariant};
 
 use crate::{
-    assets::audio::game::GameAudioAssets,
+    assets::{audio::game::GameAudioAssets, sprites::entity::SoldierSpriteVariant},
     audio::{GameAudio, GameAudioVolume},
     game::{GameSpeed, GameState, GameTilemap},
 };
@@ -34,6 +34,7 @@ pub struct SoldierVariantConfig {
     damage: u32,
     fire_radius: f32,
     fire_rate: Duration,
+    sprite_variant: SoldierSpriteVariant,
     projectile_variant: ProjectileVariant,
 }
 
@@ -53,6 +54,9 @@ impl SoldierVariantConfig {
     pub fn get_fire_rate(&self) -> Duration {
         self.fire_rate
     }
+    pub fn get_sprite_variant(&self) -> SoldierSpriteVariant {
+        self.sprite_variant
+    }
     pub fn get_projectile_variant(&self) -> ProjectileVariant {
         self.projectile_variant
     }
@@ -60,66 +64,127 @@ impl SoldierVariantConfig {
 
 #[derive(Clone, Copy, PartialEq)]
 pub enum SoldierVariant {
-    Soldier,
-    SoldierFast,
-    SoldierStrong,
-    SoldierSniper,
-    RocketLauncher,
+    Soldier { level: u32 },
+    Sniper { level: u32 },
+    RocketLauncher { level: u32 },
 }
 
 impl SoldierVariant {
     pub fn to_string(&self) -> String {
         match self {
-            SoldierVariant::Soldier => "ui.soldier.soldier".to_string(),
-            SoldierVariant::SoldierFast => "ui.soldier.soldier_fast".to_string(),
-            SoldierVariant::SoldierStrong => "ui.soldier.soldier_strong".to_string(),
-            SoldierVariant::SoldierSniper => "ui.soldier.soldier_sniper".to_string(),
-            SoldierVariant::RocketLauncher => "ui.soldier.rocket_launcher".to_string(),
+            SoldierVariant::Soldier { .. } => "ui.soldier.soldier".to_string(),
+            SoldierVariant::Sniper { .. } => "ui.soldier.sniper".to_string(),
+            SoldierVariant::RocketLauncher { .. } => "ui.soldier.rocket_launcher".to_string(),
         }
+    }
+    pub fn get_level(&self) -> u32 {
+        match self {
+            SoldierVariant::Soldier { level }
+            | SoldierVariant::Sniper { level }
+            | SoldierVariant::RocketLauncher { level } => level.clone(),
+        }
+    }
+    pub fn next_level(&mut self) {
+        let max_level = self.get_max_level();
+
+        match self {
+            SoldierVariant::Soldier { level }
+            | SoldierVariant::Sniper { level }
+            | SoldierVariant::RocketLauncher { level } => {
+                *level = level.saturating_add(1).min(max_level)
+            }
+        }
+    }
+    pub fn get_max_level(&self) -> u32 {
+        match self {
+            SoldierVariant::Soldier { .. } => 2,
+            SoldierVariant::Sniper { .. } => 1,
+            SoldierVariant::RocketLauncher { .. } => 1,
+        }
+    }
+    pub fn is_next_level_allowed(&self) -> bool {
+        self.get_level() < self.get_max_level()
     }
     pub fn get_config(&self) -> SoldierVariantConfig {
         match self {
-            SoldierVariant::Soldier => SoldierVariantConfig {
-                price: 50,
-                sell_price: 35,
-                damage: 25,
-                fire_radius: 3.0,
-                fire_rate: Duration::from_secs_f32(0.5),
-                projectile_variant: ProjectileVariant::Bullet,
+            SoldierVariant::Soldier { level } => match level {
+                0 => SoldierVariantConfig {
+                    price: 50,
+                    sell_price: 35,
+                    damage: 25,
+                    fire_radius: 3.0,
+                    fire_rate: Duration::from_secs_f32(0.5),
+                    sprite_variant: SoldierSpriteVariant::Soldier,
+                    projectile_variant: ProjectileVariant::Bullet,
+                },
+                1 => SoldierVariantConfig {
+                    price: 100,
+                    sell_price: 105,
+                    damage: 50,
+                    fire_radius: 3.5,
+                    fire_rate: Duration::from_secs_f32(0.5),
+                    sprite_variant: SoldierSpriteVariant::SoldierFast,
+                    projectile_variant: ProjectileVariant::Bullet,
+                },
+                2 => SoldierVariantConfig {
+                    price: 150,
+                    sell_price: 210,
+                    damage: 50,
+                    fire_radius: 4.0,
+                    fire_rate: Duration::from_secs_f32(0.25),
+                    sprite_variant: SoldierSpriteVariant::SoldierStrong,
+                    projectile_variant: ProjectileVariant::Bullet,
+                },
+                _ => unreachable!(),
             },
-            SoldierVariant::SoldierFast => SoldierVariantConfig {
-                price: 100,
-                sell_price: 70,
-                damage: 10,
-                fire_radius: 3.0,
-                fire_rate: Duration::from_secs_f32(0.2),
-                projectile_variant: ProjectileVariant::Bullet,
+            SoldierVariant::Sniper { level } => match level {
+                0 => SoldierVariantConfig {
+                    price: 100,
+                    sell_price: 70,
+                    damage: 100,
+                    fire_radius: 5.0,
+                    fire_rate: Duration::from_secs_f32(2.5),
+                    sprite_variant: SoldierSpriteVariant::Sniper,
+                    projectile_variant: ProjectileVariant::Bullet,
+                },
+                1 => SoldierVariantConfig {
+                    price: 150,
+                    sell_price: 175,
+                    damage: 100,
+                    fire_radius: 7.0,
+                    fire_rate: Duration::from_secs_f32(2.0),
+                    sprite_variant: SoldierSpriteVariant::Sniper,
+                    projectile_variant: ProjectileVariant::Bullet,
+                },
+                _ => unreachable!(),
             },
-            SoldierVariant::SoldierStrong => SoldierVariantConfig {
-                price: 150,
-                sell_price: 105,
-                damage: 50,
-                fire_radius: 3.0,
-                fire_rate: Duration::from_secs_f32(1.0),
-                projectile_variant: ProjectileVariant::Bullet,
-            },
-            SoldierVariant::SoldierSniper => SoldierVariantConfig {
-                price: 200,
-                sell_price: 140,
-                damage: 150,
-                fire_radius: 7.0,
-                fire_rate: Duration::from_secs_f32(5.0),
-                projectile_variant: ProjectileVariant::Bullet,
-            },
-            SoldierVariant::RocketLauncher => SoldierVariantConfig {
-                price: 250,
-                sell_price: 175,
-                damage: 100,
-                fire_radius: 5.0,
-                fire_rate: Duration::from_secs_f32(2.0),
-                projectile_variant: ProjectileVariant::Rocket,
+            SoldierVariant::RocketLauncher { level } => match level {
+                0 => SoldierVariantConfig {
+                    price: 150,
+                    sell_price: 105,
+                    damage: 100,
+                    fire_radius: 4.0,
+                    fire_rate: Duration::from_secs_f32(1.0),
+                    sprite_variant: SoldierSpriteVariant::RocketLauncher,
+                    projectile_variant: ProjectileVariant::Rocket,
+                },
+                1 => SoldierVariantConfig {
+                    price: 200,
+                    sell_price: 245,
+                    damage: 150,
+                    fire_radius: 5.0,
+                    fire_rate: Duration::from_secs_f32(1.0),
+                    sprite_variant: SoldierSpriteVariant::RocketLauncher,
+                    projectile_variant: ProjectileVariant::Rocket,
+                },
+                _ => unreachable!(),
             },
         }
+    }
+    pub fn get_next_level_config(&self) -> SoldierVariantConfig {
+        let mut soldier_variant = self.clone();
+        soldier_variant.next_level();
+        soldier_variant.get_config()
     }
 }
 
@@ -127,9 +192,6 @@ impl SoldierVariant {
 #[require(TilePosition)]
 pub struct Soldier {
     variant: SoldierVariant,
-    damage: u32,
-    fire_radius: f32,
-    fire_rate: Duration,
     cooldown: Duration,
     update_required: bool,
 }
@@ -137,13 +199,8 @@ pub struct Soldier {
 #[allow(unused)]
 impl Soldier {
     pub fn new(variant: SoldierVariant) -> Self {
-        let config = variant.get_config();
-
         Self {
             variant,
-            damage: config.damage,
-            fire_radius: config.fire_radius,
-            fire_rate: config.fire_rate,
             cooldown: Duration::ZERO,
             update_required: false,
         }
@@ -151,27 +208,22 @@ impl Soldier {
     pub fn get_variant(&self) -> SoldierVariant {
         self.variant
     }
+    pub fn get_variant_mut(&mut self) -> &mut SoldierVariant {
+        self.update_required = true;
+        &mut self.variant
+    }
     pub fn set_variant(&mut self, variant: SoldierVariant) {
         self.variant = variant;
         self.update_required = true;
     }
-    pub fn set_damage(&mut self, damage: u32) {
-        self.damage = damage;
-    }
     pub fn get_damage(&self) -> u32 {
-        self.damage
-    }
-    pub fn set_fire_radius(&mut self, fire_radius: f32) {
-        self.fire_radius = fire_radius;
+        self.get_variant().get_config().get_damage()
     }
     pub fn get_fire_radius(&self) -> f32 {
-        self.fire_radius
-    }
-    pub fn set_fire_rate(&mut self, fire_rate: Duration) {
-        self.fire_rate = fire_rate;
+        self.get_variant().get_config().get_fire_radius()
     }
     pub fn get_fire_rate(&self) -> Duration {
-        self.fire_rate
+        self.get_variant().get_config().get_fire_rate()
     }
     pub fn get_cooldown(&self) -> Duration {
         self.cooldown
@@ -183,7 +235,7 @@ impl Soldier {
         self.cooldown = self.cooldown.checked_sub(delta_time).unwrap_or_default();
     }
     pub fn update_cooldown(&mut self) {
-        self.cooldown = self.fire_rate;
+        self.cooldown = self.get_fire_rate();
     }
     pub fn get_update_required(&self) -> bool {
         self.update_required
@@ -199,10 +251,12 @@ impl Plugin for SoldierPlugin {
     fn build(&self, app: &mut App) {
         app.add_plugins((CooldownIndicatorPlugin, FireRadiusPlugin, ProjectilePlugin));
 
-        app.add_systems(Update, init_soldier);
+        app.add_systems(PreUpdate, init_soldier);
+
+        app.add_systems(Update, update_soldier.run_if(in_state(GameState::InGame)));
         app.add_systems(
-            Update,
-            (update_soldier, update_soldier_cooldown).run_if(in_state(GameState::InGame)),
+            PostUpdate,
+            update_soldier_cooldown.run_if(in_state(GameState::InGame)),
         );
     }
 }
@@ -254,10 +308,6 @@ fn update_soldier(
         if soldier.get_update_required() == true {
             soldier_tile_sprite
                 .set_variant(TileSpriteVariant::Soldier(soldier.get_variant().into()));
-            let config = soldier.get_variant().get_config();
-            soldier.set_damage(config.get_damage());
-            soldier.set_fire_radius(config.get_fire_radius());
-            soldier.set_fire_rate(config.get_fire_rate());
             soldier.set_update_required(false);
         }
 

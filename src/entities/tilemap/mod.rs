@@ -69,6 +69,7 @@ pub struct TilemapPlugin;
 impl Plugin for TilemapPlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(Update, init_tilemap);
+
         app.add_systems(Update, update_tilemap.run_if(in_state(GameState::InGame)));
     }
 }

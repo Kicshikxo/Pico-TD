@@ -25,7 +25,8 @@ pub struct TileIndicatorPlugin;
 
 impl Plugin for TileIndicatorPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(Update, init_tile_indicator);
+        app.add_systems(PreUpdate, init_tile_indicator);
+
         app.add_systems(
             Update,
             update_tile_indicator

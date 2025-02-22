@@ -166,11 +166,9 @@ fn init_ui(
                         })
                         .with_children(|parent| {
                             for soldier_variant in [
-                                SoldierVariant::Soldier,
-                                SoldierVariant::SoldierFast,
-                                SoldierVariant::SoldierStrong,
-                                SoldierVariant::SoldierSniper,
-                                SoldierVariant::RocketLauncher,
+                                SoldierVariant::Soldier { level: 0 },
+                                SoldierVariant::Sniper { level: 0 },
+                                SoldierVariant::RocketLauncher { level: 0 },
                             ] {
                                 parent
                                     .spawn(
