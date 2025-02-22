@@ -20,9 +20,9 @@ pub struct PauseViewUiPlugin;
 
 impl Plugin for PauseViewUiPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(OnEnter(UiState::Pause), ui_init)
-            .add_systems(OnExit(UiState::Pause), ui_destroy)
-            .add_systems(Update, ui_update.run_if(in_state(UiState::Pause)));
+        app.add_systems(OnEnter(UiState::Pause), init_ui)
+            .add_systems(OnExit(UiState::Pause), destroy_ui)
+            .add_systems(Update, update_ui.run_if(in_state(UiState::Pause)));
     }
 }
 
@@ -41,7 +41,7 @@ enum ButtonAction {
     BackToMenu,
 }
 
-fn ui_init(
+fn init_ui(
     mut commands: Commands,
     ui_assets: Res<UiAssets>,
     game_audio_volume: Res<Persistent<GameAudioVolume>>,
@@ -133,13 +133,13 @@ fn ui_init(
         });
 }
 
-fn ui_destroy(mut commands: Commands, query: Query<Entity, With<RootUiComponent>>) {
+fn destroy_ui(mut commands: Commands, query: Query<Entity, With<RootUiComponent>>) {
     for entity in query.iter() {
         commands.entity(entity).despawn_recursive();
     }
 }
 
-fn ui_update(
+fn update_ui(
     interaction_query: Query<(&Interaction, &ButtonAction), (Changed<Interaction>, With<UiButton>)>,
     mut pause_selectors: ParamSet<(
         Query<&mut UiSelector, With<SfxVolumeSelector>>,

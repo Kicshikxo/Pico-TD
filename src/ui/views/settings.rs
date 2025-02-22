@@ -23,9 +23,9 @@ pub struct SettingsViewUiPlugin;
 
 impl Plugin for SettingsViewUiPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(OnEnter(UiState::Settings), ui_init)
-            .add_systems(OnExit(UiState::Settings), ui_destroy)
-            .add_systems(Update, ui_update.run_if(in_state(UiState::Settings)));
+        app.add_systems(OnEnter(UiState::Settings), init_ui)
+            .add_systems(OnExit(UiState::Settings), destroy_ui)
+            .add_systems(Update, update_ui.run_if(in_state(UiState::Settings)));
     }
 }
 
@@ -47,7 +47,7 @@ enum ButtonAction {
     ResetProgress,
 }
 
-fn ui_init(
+fn init_ui(
     mut commands: Commands,
     ui_assets: Res<UiAssets>,
     i18n: Res<Persistent<I18n>>,
@@ -183,13 +183,13 @@ fn ui_init(
         });
 }
 
-fn ui_destroy(mut commands: Commands, query: Query<Entity, With<RootUiComponent>>) {
+fn destroy_ui(mut commands: Commands, query: Query<Entity, With<RootUiComponent>>) {
     for entity in query.iter() {
         commands.entity(entity).despawn_recursive();
     }
 }
 
-fn ui_update(
+fn update_ui(
     interaction_query: Query<(&Interaction, &ButtonAction), (Changed<Interaction>, With<UiButton>)>,
     mut settings_selectors: ParamSet<(
         Query<&mut UiSelector, With<LocaleSelector>>,

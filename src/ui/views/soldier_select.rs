@@ -26,9 +26,9 @@ pub struct SoldierSelectViewUiPlugin;
 
 impl Plugin for SoldierSelectViewUiPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(OnEnter(UiState::SoldierSelect), ui_init)
-            .add_systems(OnExit(UiState::SoldierSelect), ui_destroy)
-            .add_systems(Update, ui_update.run_if(in_state(UiState::SoldierSelect)));
+        app.add_systems(OnEnter(UiState::SoldierSelect), init_ui)
+            .add_systems(OnExit(UiState::SoldierSelect), destroy_ui)
+            .add_systems(Update, update_ui.run_if(in_state(UiState::SoldierSelect)));
     }
 }
 
@@ -41,7 +41,7 @@ enum ButtonAction {
     Select(SoldierVariant),
 }
 
-fn ui_init(
+fn init_ui(
     mut commands: Commands,
     ui_assets: Res<UiAssets>,
     entity_assets: Res<EntityAssets>,
@@ -240,13 +240,13 @@ fn ui_init(
         });
 }
 
-fn ui_destroy(mut commands: Commands, query: Query<Entity, With<RootUiComponent>>) {
+fn destroy_ui(mut commands: Commands, query: Query<Entity, With<RootUiComponent>>) {
     for entity in query.iter() {
         commands.entity(entity).despawn_recursive();
     }
 }
 
-fn ui_update(
+fn update_ui(
     mut commands: Commands,
     interaction_query: Query<(&Interaction, &ButtonAction), (Changed<Interaction>, With<UiButton>)>,
     game_tilemap: Query<Entity, With<GameTilemap>>,

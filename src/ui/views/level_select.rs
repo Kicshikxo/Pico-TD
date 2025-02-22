@@ -25,12 +25,12 @@ impl Plugin for LevelSelectViewUiPlugin {
     fn build(&self, app: &mut App) {
         app.insert_resource(UploadedLevel::default());
 
-        app.add_systems(OnEnter(UiState::LevelSelect), ui_init)
-            .add_systems(OnExit(UiState::LevelSelect), ui_destroy)
+        app.add_systems(OnEnter(UiState::LevelSelect), init_ui)
+            .add_systems(OnExit(UiState::LevelSelect), destroy_ui)
             .add_systems(
                 Update,
                 (
-                    ui_update.run_if(in_state(UiState::LevelSelect)),
+                    update_ui.run_if(in_state(UiState::LevelSelect)),
                     uploaded_level_update.run_if(in_state(UiState::LevelSelect)), // resource_exists::<UploadedLevel>
                 ),
             );
@@ -58,7 +58,7 @@ impl Default for UploadedLevel {
     }
 }
 
-fn ui_init(
+fn init_ui(
     mut commands: Commands,
     ui_assets: Res<UiAssets>,
     levels_assets: Res<LevelsAssets>,
@@ -230,13 +230,13 @@ fn ui_init(
         });
 }
 
-fn ui_destroy(mut commands: Commands, query: Query<Entity, With<RootUiComponent>>) {
+fn destroy_ui(mut commands: Commands, query: Query<Entity, With<RootUiComponent>>) {
     for entity in query.iter() {
         commands.entity(entity).despawn_recursive();
     }
 }
 
-fn ui_update(
+fn update_ui(
     interaction_query: Query<(&Interaction, &ButtonAction), (Changed<Interaction>, With<UiButton>)>,
     levels_assets: Res<LevelsAssets>,
     levels_assets_loader: Res<Assets<Level>>,

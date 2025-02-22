@@ -16,9 +16,9 @@ pub struct MenuViewUiPlugin;
 
 impl Plugin for MenuViewUiPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(OnEnter(UiState::Menu), ui_init)
-            .add_systems(OnExit(UiState::Menu), ui_destroy)
-            .add_systems(Update, ui_update.run_if(in_state(UiState::Menu)));
+        app.add_systems(OnEnter(UiState::Menu), init_ui)
+            .add_systems(OnExit(UiState::Menu), destroy_ui)
+            .add_systems(Update, update_ui.run_if(in_state(UiState::Menu)));
     }
 }
 
@@ -32,7 +32,7 @@ enum ButtonAction {
     Exit,
 }
 
-fn ui_init(mut commands: Commands, ui_assets: Res<UiAssets>) {
+fn init_ui(mut commands: Commands, ui_assets: Res<UiAssets>) {
     commands
         .spawn((
             RootUiComponent,
@@ -98,13 +98,13 @@ fn ui_init(mut commands: Commands, ui_assets: Res<UiAssets>) {
         });
 }
 
-fn ui_destroy(mut commands: Commands, query: Query<Entity, With<RootUiComponent>>) {
+fn destroy_ui(mut commands: Commands, query: Query<Entity, With<RootUiComponent>>) {
     for entity in query.iter() {
         commands.entity(entity).despawn_recursive();
     }
 }
 
-fn ui_update(
+fn update_ui(
     interaction_query: Query<(&Interaction, &ButtonAction), (Changed<Interaction>, With<UiButton>)>,
     mut next_ui_state: ResMut<NextState<UiState>>,
     mut app_exit_events: EventWriter<AppExit>,

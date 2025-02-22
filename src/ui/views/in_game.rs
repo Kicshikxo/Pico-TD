@@ -20,17 +20,17 @@ pub struct InGameViewUiPlugin;
 
 impl Plugin for InGameViewUiPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(OnEnter(UiState::InGame), ui_init)
-            .add_systems(OnExit(UiState::InGame), ui_destroy)
-            .add_systems(Update, ui_update.run_if(in_state(UiState::InGame)))
+        app.add_systems(OnEnter(UiState::InGame), init_ui)
+            .add_systems(OnExit(UiState::InGame), destroy_ui)
+            .add_systems(Update, update_ui.run_if(in_state(UiState::InGame)))
             .add_systems(
                 Update,
-                ui_update_after_player_change
+                update_ui_after_player_change
                     .run_if(in_state(UiState::InGame).and(resource_changed::<Player>)),
             )
             .add_systems(
                 Update,
-                ui_update_after_wave_change
+                update_ui_after_wave_change
                     .run_if(in_state(UiState::InGame).and(resource_changed::<GameWave>)),
             );
     }
@@ -55,7 +55,7 @@ enum ButtonAction {
     NextWave,
 }
 
-fn ui_init(
+fn init_ui(
     mut commands: Commands,
     ui_assets: Res<UiAssets>,
     player: Res<Player>,
@@ -205,13 +205,13 @@ fn ui_init(
         });
 }
 
-fn ui_destroy(mut commands: Commands, query: Query<Entity, With<RootUiComponent>>) {
+fn destroy_ui(mut commands: Commands, query: Query<Entity, With<RootUiComponent>>) {
     for entity in query.iter() {
         commands.entity(entity).despawn_recursive();
     }
 }
 
-fn ui_update(
+fn update_ui(
     interaction_query: Query<(&Interaction, &ButtonAction), (Changed<Interaction>, With<UiButton>)>,
     mut current_speed_text: Query<&mut I18nComponent, With<CurrentSpeedTextComponent>>,
     mut game_wave: ResMut<GameWave>,
@@ -243,7 +243,7 @@ fn ui_update(
     }
 }
 
-fn ui_update_after_player_change(
+fn update_ui_after_player_change(
     player: Res<Player>,
     mut health_text: Query<
         &mut I18nComponent,
@@ -262,7 +262,7 @@ fn ui_update_after_player_change(
     }
 }
 
-fn ui_update_after_wave_change(
+fn update_ui_after_wave_change(
     game_wave: Res<GameWave>,
     mut next_wave_button: Query<(&mut UiButton, &ButtonAction)>,
     mut wave_text: Query<&mut I18nComponent, With<WaveTextComponent>>,

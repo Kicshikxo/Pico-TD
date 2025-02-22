@@ -17,9 +17,9 @@ pub struct GameOverViewUiPlugin;
 
 impl Plugin for GameOverViewUiPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(OnEnter(UiState::GameOver), ui_init)
-            .add_systems(OnExit(UiState::GameOver), ui_destroy)
-            .add_systems(Update, ui_update.run_if(in_state(UiState::GameOver)));
+        app.add_systems(OnEnter(UiState::GameOver), init_ui)
+            .add_systems(OnExit(UiState::GameOver), destroy_ui)
+            .add_systems(Update, update_ui.run_if(in_state(UiState::GameOver)));
     }
 }
 
@@ -31,7 +31,7 @@ enum ButtonAction {
     BackToMenu,
 }
 
-fn ui_init(mut commands: Commands, player: Res<Player>) {
+fn init_ui(mut commands: Commands, player: Res<Player>) {
     commands
         .spawn((
             RootUiComponent,
@@ -85,13 +85,13 @@ fn ui_init(mut commands: Commands, player: Res<Player>) {
         });
 }
 
-fn ui_destroy(mut commands: Commands, query: Query<Entity, With<RootUiComponent>>) {
+fn destroy_ui(mut commands: Commands, query: Query<Entity, With<RootUiComponent>>) {
     for entity in query.iter() {
         commands.entity(entity).despawn_recursive();
     }
 }
 
-fn ui_update(
+fn update_ui(
     interaction_query: Query<(&Interaction, &ButtonAction), (Changed<Interaction>, With<UiButton>)>,
     mut next_ui_state: ResMut<NextState<UiState>>,
     mut next_game_state: ResMut<NextState<GameState>>,
