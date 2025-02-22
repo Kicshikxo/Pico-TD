@@ -19,8 +19,8 @@ pub enum SoldierSpriteVariant {
     SoldierGray = 8,
     SoldierYellow = 56,
     SoldierRed = 44,
-    Sniper = 20,
-    RocketLauncher = 9,
+    SoldierGreen = 20,
+    RocketLauncherGray = 9,
 }
 
 pub enum EnemySpriteVariant {
