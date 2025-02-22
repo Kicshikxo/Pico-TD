@@ -9,7 +9,7 @@ use bevy_embedded_assets::EmbeddedAssetPlugin;
 use crate::game::GameState;
 use audio::{game::GameAudioAssets, ui::UiAudioAssets};
 use levels::{LevelsAssets, LevelsPlugin};
-use sprites::{entity::EntityAssets, tile::TileAssets, ui::UiAssets};
+use sprites::{entity::EntityAssets, tilemap::TilemapTileAssets, ui::UiAssets};
 
 pub struct AssetsPlugin;
 
@@ -19,7 +19,7 @@ impl Plugin for AssetsPlugin {
         app.add_loading_state(
             LoadingState::new(GameState::AssetsLoading)
                 .load_collection::<EntityAssets>()
-                .load_collection::<TileAssets>()
+                .load_collection::<TilemapTileAssets>()
                 .load_collection::<UiAssets>()
                 .load_collection::<UiAudioAssets>()
                 .load_collection::<GameAudioAssets>()

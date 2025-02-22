@@ -10,7 +10,7 @@ use crate::{
         tile::{position::TilePosition, sprite::TileSprite},
     },
     game::GameState,
-    input::SelectedSoldier,
+    input::{SelectedSoldier, SelectedTile},
     player::Player,
     ui::{
         components::{
@@ -222,6 +222,27 @@ fn init_ui(
                                                 );
                                             });
                                         parent.spawn(
+                                            UiText::new("ui.soldier_info.soldier_level")
+                                                .with_arg(
+                                                    "level",
+                                                    soldier
+                                                        .get_variant()
+                                                        .get_level()
+                                                        .saturating_add(1)
+                                                        .to_string(),
+                                                )
+                                                .with_arg(
+                                                    "max_level",
+                                                    soldier
+                                                        .get_variant()
+                                                        .get_max_level()
+                                                        .saturating_add(1)
+                                                        .to_string(),
+                                                )
+                                                .with_size(UiTextSize::Small)
+                                                .with_justify(JustifyText::Left),
+                                        );
+                                        parent.spawn(
                                             UiText::new("ui.soldier_info.soldier_damage")
                                                 .with_arg(
                                                     "damage",
@@ -321,6 +342,7 @@ fn update_ui(
     mut soldiers: Query<(Entity, &mut Soldier, &TilePosition)>,
     mut player: ResMut<Player>,
     selected_soldier: Res<SelectedSoldier>,
+    mut selected_tile: ResMut<SelectedTile>,
     mut next_ui_state: ResMut<NextState<UiState>>,
     mut next_game_state: ResMut<NextState<GameState>>,
 ) {
@@ -332,8 +354,11 @@ fn update_ui(
                     next_game_state.set(GameState::InGame);
                 }
                 ButtonAction::UpgradeSoldier => {
-                    for (_soldier_entity, mut soldier, tile_position) in soldiers.iter_mut() {
-                        if tile_position.as_vec2() == selected_soldier.tile_position.as_vec2() {
+                    for (_soldier_entity, mut soldier, soldier_tile_position) in soldiers.iter_mut()
+                    {
+                        if soldier_tile_position.as_vec2()
+                            == selected_soldier.tile_position.as_vec2()
+                        {
                             let next_level_price =
                                 soldier.get_variant().get_next_level_config().get_price();
 
@@ -343,6 +368,10 @@ fn update_ui(
 
                             soldier.get_variant_mut().next_level();
                             player.get_money_mut().decrease(next_level_price);
+
+                            selected_tile
+                                .tile_position
+                                .set_from_vec2(soldier_tile_position.as_vec2());
 
                             next_ui_state.set(UiState::InGame);
                             next_game_state.set(GameState::InGame);

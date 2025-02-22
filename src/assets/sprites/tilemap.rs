@@ -5,7 +5,7 @@ use rand::Rng;
 use crate::entities::tilemap::tile::TilemapTileVariant;
 
 #[derive(AssetCollection, Resource)]
-pub struct TileAssets {
+pub struct TilemapTileAssets {
     #[asset(path = "embedded://images/tiles/tilemap_tiles.png")]
     pub tilemap: Handle<Image>,
     #[asset(texture_atlas_layout(tile_size_x = 16, tile_size_y = 16, columns = 8, rows = 10))]
@@ -82,7 +82,7 @@ pub enum TilemapTileSpriteVariant {
     WaterShoreDiagonalLeftTopBottom = 42,
 }
 
-impl TileAssets {
+impl TilemapTileAssets {
     pub fn get_tile_index(
         &self,
         variant: TilemapTileVariant,
@@ -91,21 +91,9 @@ impl TileAssets {
         match variant {
             TilemapTileVariant::Road => self.get_road_tile_index(tiles_around) as usize,
             TilemapTileVariant::Water => self.get_water_tile_index(tiles_around) as usize,
-            TilemapTileVariant::Ground => {
-                if rand::rng().random_bool(0.25) {
-                    TilemapTileSpriteVariant::GroundWithGrass as usize
-                } else {
-                    TilemapTileSpriteVariant::Ground as usize
-                }
-            }
+            TilemapTileVariant::Ground => self.get_ground_tile_index(tiles_around) as usize,
             TilemapTileVariant::Flower => TilemapTileSpriteVariant::GroundWithFlower as usize,
-            TilemapTileVariant::Tree => {
-                if rand::rng().random_bool(0.25) {
-                    TilemapTileSpriteVariant::GroundWithDoubleTree as usize
-                } else {
-                    TilemapTileSpriteVariant::GroundWithTree as usize
-                }
-            }
+            TilemapTileVariant::Tree => self.get_tree_tile_index(tiles_around) as usize,
             _ => 0,
         }
     }
@@ -262,6 +250,36 @@ impl TileAssets {
 
                 _ => TilemapTileSpriteVariant::Water,
             },
+        }
+    }
+    pub fn get_ground_tile_index(
+        &self,
+        _tiles_around: [[TilemapTileVariant; 3]; 3],
+    ) -> TilemapTileSpriteVariant {
+        if rand::rng().random_bool(0.25) {
+            TilemapTileSpriteVariant::GroundWithGrass
+        } else {
+            TilemapTileSpriteVariant::Ground
+        }
+    }
+    pub fn get_tree_tile_index(
+        &self,
+        tiles_around: [[TilemapTileVariant; 3]; 3],
+    ) -> TilemapTileSpriteVariant {
+        let tree_top = tiles_around[0][1] == TilemapTileVariant::Tree;
+        let tree_right = tiles_around[1][2] == TilemapTileVariant::Tree;
+        let tree_bottom = tiles_around[2][1] == TilemapTileVariant::Tree;
+        let tree_left = tiles_around[1][0] == TilemapTileVariant::Tree;
+
+        let tree_count = [tree_top, tree_right, tree_bottom, tree_left]
+            .iter()
+            .filter(|&&x| x)
+            .count();
+
+        if tree_count >= 2 {
+            TilemapTileSpriteVariant::GroundWithDoubleTree
+        } else {
+            TilemapTileSpriteVariant::GroundWithTree
         }
     }
 }

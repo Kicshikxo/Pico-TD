@@ -3,7 +3,7 @@ use bevy::prelude::*;
 use crate::{
     assets::sprites::{
         entity::{EnemySpriteVariant, EntityAssets, ProjectileSpriteVariant, UtilSpriteVariant},
-        tile::{TileAssets, TilemapTileSpriteVariant},
+        tilemap::{TilemapTileAssets, TilemapTileSpriteVariant},
     },
     entities::{
         enemy::EnemyVariant,
@@ -125,22 +125,22 @@ impl Plugin for TileSpritePlugin {
 fn init_tile_sprite(
     mut commands: Commands,
     tile_sprites: Query<(Entity, &TileSprite), Added<TileSprite>>,
-    tile_assets: Option<Res<TileAssets>>,
+    tilemap_tile_assets: Option<Res<TilemapTileAssets>>,
     entity_assets: Option<Res<EntityAssets>>,
 ) {
     for (tile_sprite_entity, tile_sprite) in tile_sprites.iter() {
-        let Some(tile_assets) = &tile_assets else {
+        let Some(tilemap_tile_assets) = &tilemap_tile_assets else {
             return;
         };
         let Some(entity_assets) = &entity_assets else {
             return;
         };
         let image = match tile_sprite.variant {
-            TileSpriteVariant::Tilemap(_) => tile_assets.tilemap.clone(),
+            TileSpriteVariant::Tilemap(_) => tilemap_tile_assets.tilemap.clone(),
             _ => entity_assets.tilemap.clone(),
         };
         let layout = match tile_sprite.variant {
-            TileSpriteVariant::Tilemap(_) => tile_assets.tilemap_layout.clone(),
+            TileSpriteVariant::Tilemap(_) => tilemap_tile_assets.tilemap_layout.clone(),
             _ => entity_assets.tilemap_layout.clone(),
         };
         let index = tile_sprite.get_variant().as_index();

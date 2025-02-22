@@ -8,7 +8,7 @@ use crate::{
             Tilemap,
         },
     },
-    game::{GameState, GameTilemap},
+    game::GameTilemap,
     input::SelectedTile,
 };
 
@@ -29,8 +29,7 @@ impl Plugin for TileIndicatorPlugin {
 
         app.add_systems(
             Update,
-            update_tile_indicator
-                .run_if(in_state(GameState::InGame).and(resource_changed::<SelectedTile>)),
+            update_tile_indicator.run_if(resource_changed::<SelectedTile>),
         );
     }
 }

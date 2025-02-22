@@ -16,9 +16,9 @@ pub enum ProjectileSpriteVariant {
 
 #[derive(Clone, Copy)]
 pub enum SoldierSpriteVariant {
-    Soldier = 8,
-    SoldierFast = 56,
-    SoldierStrong = 44,
+    SoldierGray = 8,
+    SoldierYellow = 56,
+    SoldierRed = 44,
     Sniper = 20,
     RocketLauncher = 9,
 }

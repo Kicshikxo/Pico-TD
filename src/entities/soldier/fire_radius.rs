@@ -42,8 +42,7 @@ impl Plugin for FireRadiusPlugin {
 
         app.add_systems(
             Update,
-            update_fire_radius
-                .run_if(in_state(GameState::InGame).and(resource_changed::<SelectedTile>)),
+            update_fire_radius.run_if(resource_changed::<SelectedTile>),
         );
         app.add_systems(
             PostUpdate,
@@ -64,7 +63,7 @@ fn init_fire_radius(
             .insert((
                 Mesh2d(meshes.add(Annulus::new(0.0, 0.0))),
                 MeshMaterial2d(materials.add(ColorMaterial {
-                    color: Color::srgb(1.0, 1.0, 0.0).with_alpha(0.0),
+                    color: Color::srgb(0.0, 0.0, 0.5).with_alpha(0.0),
                     alpha_mode: AlphaMode2d::Blend,
                     ..default()
                 })),
@@ -72,7 +71,7 @@ fn init_fire_radius(
             .with_child((
                 Mesh2d(meshes.add(Circle::new(0.0))),
                 MeshMaterial2d(materials.add(ColorMaterial {
-                    color: Color::srgb(1.0, 1.0, 0.0).with_alpha(0.0),
+                    color: Color::srgb(0.0, 0.0, 0.5).with_alpha(0.0),
                     alpha_mode: AlphaMode2d::Blend,
                     ..default()
                 })),
@@ -113,7 +112,7 @@ fn update_fire_radius(
                     * game_tilemap.single().get_tile_size().max_element() as f32;
 
                 if let Some(fire_radius_mesh) = meshes.get_mut(&fire_radius_mesh_2d.0) {
-                    *fire_radius_mesh = Annulus::new(inner_radius, inner_radius + 2.0)
+                    *fire_radius_mesh = Annulus::new(inner_radius, inner_radius + 1.0)
                         .mesh()
                         .build();
                 }

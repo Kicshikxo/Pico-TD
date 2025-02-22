@@ -10,7 +10,7 @@ use crate::{
         tile::sprite::TileSprite,
     },
     game::{GameState, GameTilemap},
-    input::SelectedSoldier,
+    input::{SelectedSoldier, SelectedTile},
     player::Player,
     ui::{
         components::{
@@ -250,6 +250,7 @@ fn update_ui(
     game_tilemap: Query<Entity, With<GameTilemap>>,
     mut player: ResMut<Player>,
     selected_soldier: Res<SelectedSoldier>,
+    mut selected_tile: ResMut<SelectedTile>,
     mut next_ui_state: ResMut<NextState<UiState>>,
     mut next_game_state: ResMut<NextState<GameState>>,
 ) {
@@ -273,6 +274,10 @@ fn update_ui(
                     player
                         .get_money_mut()
                         .decrease(variant.get_config().get_price());
+
+                    selected_tile
+                        .tile_position
+                        .set_from_vec2(selected_soldier.tile_position.as_vec2());
 
                     next_ui_state.set(UiState::InGame);
                     next_game_state.set(GameState::InGame);

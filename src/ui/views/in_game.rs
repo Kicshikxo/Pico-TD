@@ -143,7 +143,10 @@ fn init_ui(
                 .with_child((
                     WaveTextComponent,
                     UiText::new("ui.in_game.wave")
-                        .with_arg("current", (game_wave.get_current() + 1).to_string())
+                        .with_arg(
+                            "current",
+                            game_wave.get_current().saturating_add(1).to_string(),
+                        )
                         .with_arg("total", game_wave.get_total().to_string()),
                 ));
 
@@ -268,7 +271,10 @@ fn update_ui_after_wave_change(
     mut wave_text: Query<&mut I18nComponent, With<WaveTextComponent>>,
 ) {
     for mut wave_text_i18n in wave_text.iter_mut() {
-        wave_text_i18n.change_arg("current", (game_wave.get_current() + 1).to_string());
+        wave_text_i18n.change_arg(
+            "current",
+            game_wave.get_current().saturating_add(1).to_string(),
+        );
         wave_text_i18n.change_arg("total", game_wave.get_total().to_string())
     }
     for (mut ui_button, button_action) in next_wave_button.iter_mut() {

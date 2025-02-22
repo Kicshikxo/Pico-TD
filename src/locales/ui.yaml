@@ -75,6 +75,9 @@ ui.soldier_info.title:
 ui.soldier_info.soldier_name:
     en: "Name:"
     ru: "Название:"
+ui.soldier_info.soldier_level:
+    en: "Level: %{level}/%{max_level}"
+    ru: "Уровень: %{level}/%{max_level}"
 ui.soldier_info.soldier_damage:
     en: "Damage: %{damage}"
     ru: "Урон: %{damage}"
