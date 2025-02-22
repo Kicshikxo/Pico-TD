@@ -6,9 +6,9 @@ use bevy::{
     render::mesh::{Indices, PrimitiveTopology},
 };
 
-pub struct ArcMesh;
+pub struct AnnularSegment;
 
-impl ArcMesh {
+impl AnnularSegment {
     pub fn new(inner_radius: f32, outer_radius: f32) -> Mesh {
         let mut mesh = Mesh::new(
             PrimitiveTopology::TriangleList,

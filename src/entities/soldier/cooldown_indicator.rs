@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-use crate::{game::GameState, utils::meshes::ArcMesh};
+use crate::{game::GameState, utils::meshes::AnnularSegment};
 
 use super::Soldier;
 
@@ -33,7 +33,10 @@ pub struct CooldownIndicatorPlugin;
 
 impl Plugin for CooldownIndicatorPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(Update, init_cooldown_indicator);
+        app.add_systems(
+            Update,
+            (init_cooldown_indicator, despawn_cooldown_indicator),
+        );
         app.add_systems(
             Update,
             update_cooldown_indicator.run_if(in_state(GameState::InGame)),
@@ -49,18 +52,32 @@ fn init_cooldown_indicator(
 ) {
     for cooldown_indicator_entity in cooldown_indicators.iter_mut() {
         commands.entity(cooldown_indicator_entity).insert((
-            Mesh2d(meshes.add(ArcMesh::new(1.0, 2.0))),
+            Mesh2d(meshes.add(AnnularSegment::new(1.0, 2.0))),
             MeshMaterial2d(materials.add(Color::default())),
         ));
     }
 }
 
-fn update_cooldown_indicator(
+fn despawn_cooldown_indicator(
     mut commands: Commands,
+    cooldown_indicators: Query<(Entity, &CooldownIndicator)>,
+    mut removed_soldiers: RemovedComponents<Soldier>,
+) {
+    for removed_soldier_entity in removed_soldiers.read() {
+        for (cooldown_indicator_entity, cooldown_indicator) in cooldown_indicators.iter() {
+            if cooldown_indicator.get_soldier_entity() == removed_soldier_entity {
+                commands
+                    .entity(cooldown_indicator_entity)
+                    .despawn_recursive();
+            }
+        }
+    }
+}
+
+fn update_cooldown_indicator(
     soldiers: Query<(&Soldier, &Transform)>,
     mut cooldown_indicators: Query<
         (
-            Entity,
             &mut CooldownIndicator,
             &Mesh2d,
             &MeshMaterial2d<ColorMaterial>,
@@ -72,7 +89,6 @@ fn update_cooldown_indicator(
     mut materials: ResMut<Assets<ColorMaterial>>,
 ) {
     for (
-        cooldown_indicator_entity,
         mut cooldown_indicator,
         cooldown_indicator_mesh_2d,
         cooldown_indicator_mesh_material_2d,
@@ -83,30 +99,30 @@ fn update_cooldown_indicator(
             continue;
         }
 
-        let Ok((soldier, soldier_transform)) =
+        if let Ok((soldier, soldier_transform)) =
             soldiers.get(cooldown_indicator.get_soldier_entity())
-        else {
-            commands
-                .entity(cooldown_indicator_entity)
-                .despawn_recursive();
-            continue;
-        };
-
-        let cooldown_percentage = soldier.get_cooldown_percentage();
-
-        if let Some(cooldown_indicator_mesh) = meshes.get_mut(&cooldown_indicator_mesh_2d.0) {
-            ArcMesh::update_with_progress(cooldown_indicator_mesh, 1.0, 2.0, cooldown_percentage);
-        }
-        if let Some(cooldown_indicator_color_material) =
-            materials.get_mut(&cooldown_indicator_mesh_material_2d.0)
         {
-            cooldown_indicator_color_material.color =
-                Color::srgb(0.5 + cooldown_percentage / 2.0, 1.0, 0.0);
+            let cooldown_percentage = soldier.get_cooldown_percentage();
+
+            if let Some(cooldown_indicator_mesh) = meshes.get_mut(&cooldown_indicator_mesh_2d.0) {
+                AnnularSegment::update_with_progress(
+                    cooldown_indicator_mesh,
+                    1.0,
+                    2.0,
+                    cooldown_percentage,
+                );
+            }
+            if let Some(cooldown_indicator_color_material) =
+                materials.get_mut(&cooldown_indicator_mesh_material_2d.0)
+            {
+                cooldown_indicator_color_material.color =
+                    Color::srgb(0.5 + cooldown_percentage / 2.0, 1.0, 0.0);
+            }
+
+            cooldown_indicator_transform.translation =
+                soldier_transform.translation + Vec3::new(8.0 - 2.0, 8.0 - 2.0, 1.0);
+
+            cooldown_indicator.set_update_required(false);
         }
-
-        cooldown_indicator_transform.translation =
-            soldier_transform.translation + Vec3::new(8.0 - 2.0, 8.0 - 2.0, 1.0);
-
-        cooldown_indicator.set_update_required(false);
     }
 }

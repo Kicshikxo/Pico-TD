@@ -37,7 +37,7 @@ pub struct FireRadiusPlugin;
 
 impl Plugin for FireRadiusPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(Update, init_fire_radius);
+        app.add_systems(Update, (init_fire_radius, despawn_file_radius));
         app.add_systems(
             Update,
             update_fire_radius
@@ -78,61 +78,63 @@ fn init_fire_radius(
     }
 }
 
-fn update_fire_radius(
+fn despawn_file_radius(
     mut commands: Commands,
+    fire_radii: Query<(Entity, &FireRadius)>,
+    mut removed_soldiers: RemovedComponents<Soldier>,
+) {
+    for removed_soldier_entity in removed_soldiers.read() {
+        for (fire_radius_entity, fire_radius) in fire_radii.iter() {
+            if fire_radius.get_soldier_entity() == removed_soldier_entity {
+                commands.entity(fire_radius_entity).despawn_recursive();
+            }
+        }
+    }
+}
+
+fn update_fire_radius(
     game_tilemap: Query<&Tilemap, With<GameTilemap>>,
     soldiers: Query<(&Soldier, &TilePosition, &Transform)>,
-    mut fire_radii: Query<
-        (Entity, &mut FireRadius, &Mesh2d, &mut Transform, &Children),
-        Without<Soldier>,
-    >,
+    mut fire_radii: Query<(&mut FireRadius, &Mesh2d, &mut Transform, &Children), Without<Soldier>>,
     inner_fire_radii: Query<&Mesh2d, Without<FireRadius>>,
     selected_tile: Res<SelectedTile>,
     mut meshes: ResMut<Assets<Mesh>>,
 ) {
-    for (
-        fire_radius_entity,
-        mut fire_radius,
-        fire_radius_mesh_2d,
-        mut fire_radius_transform,
-        fire_radius_children,
-    ) in fire_radii.iter_mut()
+    for (mut fire_radius, fire_radius_mesh_2d, mut fire_radius_transform, fire_radius_children) in
+        fire_radii.iter_mut()
     {
-        let Ok((soldier, soldier_tile_position, soldier_transform)) =
+        if let Ok((soldier, soldier_tile_position, soldier_transform)) =
             soldiers.get(fire_radius.get_soldier_entity())
-        else {
-            commands.entity(fire_radius_entity).despawn_recursive();
-            continue;
-        };
+        {
+            if soldier_tile_position.as_vec2() == selected_tile.tile_position.as_vec2() {
+                let inner_radius = soldier.get_fire_radius()
+                    * game_tilemap.single().get_tile_size().max_element() as f32;
 
-        if soldier_tile_position.as_vec2() == selected_tile.tile_position.as_vec2() {
-            let inner_radius = soldier.get_fire_radius()
-                * game_tilemap.single().get_tile_size().max_element() as f32;
+                if let Some(fire_radius_mesh) = meshes.get_mut(&fire_radius_mesh_2d.0) {
+                    *fire_radius_mesh = Annulus::new(inner_radius, inner_radius + 2.0)
+                        .mesh()
+                        .build();
+                }
 
-            if let Some(fire_radius_mesh) = meshes.get_mut(&fire_radius_mesh_2d.0) {
-                *fire_radius_mesh = Annulus::new(inner_radius, inner_radius + 2.0)
-                    .mesh()
-                    .build();
-            }
-
-            for inner_fire_radius_entity in fire_radius_children {
-                if let Ok(inner_fire_radius_mesh_2d) =
-                    inner_fire_radii.get(*inner_fire_radius_entity)
-                {
-                    if let Some(inner_fire_radius_mesh) =
-                        meshes.get_mut(&inner_fire_radius_mesh_2d.0)
+                for inner_fire_radius_entity in fire_radius_children {
+                    if let Ok(inner_fire_radius_mesh_2d) =
+                        inner_fire_radii.get(*inner_fire_radius_entity)
                     {
-                        *inner_fire_radius_mesh = Circle::new(inner_radius).mesh().build();
+                        if let Some(inner_fire_radius_mesh) =
+                            meshes.get_mut(&inner_fire_radius_mesh_2d.0)
+                        {
+                            *inner_fire_radius_mesh = Circle::new(inner_radius).mesh().build();
+                        }
                     }
                 }
+
+                fire_radius_transform.translation = soldier_transform.translation.with_z(-1.0);
+
+                fire_radius.set_visible(true);
+            } else {
+                fire_radius.set_visible(false);
             }
-
-            fire_radius_transform.translation = soldier_transform.translation.with_z(-1.0);
-
-            fire_radius.set_visible(true);
-        } else {
-            fire_radius.set_visible(false);
-        }
+        };
     }
 }
 

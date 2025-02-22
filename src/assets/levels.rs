@@ -1,4 +1,4 @@
-use std::{path::Path, time::SystemTime};
+use std::path::Path;
 
 use bevy::{
     asset::{io::Reader, AssetLoader, LoadContext, RenderAssetUsages},
@@ -70,7 +70,6 @@ impl LevelCompletionStars {
 pub struct LevelCompletion {
     name: String,
     stars: LevelCompletionStars,
-    completed_at: u64,
 }
 
 #[allow(unused)]
@@ -81,9 +80,6 @@ impl LevelCompletion {
     pub fn get_stars(&self) -> &LevelCompletionStars {
         &self.stars
     }
-    pub fn get_completed_at(&self) -> u64 {
-        self.completed_at
-    }
 }
 
 #[derive(Resource, Serialize, Deserialize, Default)]
@@ -91,25 +87,14 @@ pub struct CompletedLevels(Vec<LevelCompletion>);
 
 impl CompletedLevels {
     pub fn add(&mut self, name: &str, stars: LevelCompletionStars) {
-        let timestamp = if cfg!(target_arch = "wasm32") {
-            (js_sys::Date::now() / 1000.0) as u64
-        } else {
-            SystemTime::now()
-                .duration_since(SystemTime::UNIX_EPOCH)
-                .unwrap()
-                .as_secs()
-        };
-
         if let Some(level_completion) = self.get_completion_mut(name) {
             if stars.as_index() > level_completion.stars.as_index() {
                 level_completion.stars = stars;
             }
-            level_completion.completed_at = timestamp;
         } else {
             self.0.push(LevelCompletion {
                 name: name.into(),
                 stars,
-                completed_at: timestamp,
             });
         }
     }
