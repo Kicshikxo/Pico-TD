@@ -274,7 +274,7 @@ fn update_enemy_health(
         ))
         .into();
 
-        if enemy_health.get_damage_indicator() == true {
+        if enemy_health.get_update_required() == true {
             enemy_sprite.color = Color::srgb(1.0, 0.0, 0.0);
 
             for mut health_bar in health_bars.iter_mut() {
@@ -283,7 +283,7 @@ fn update_enemy_health(
                 }
             }
 
-            enemy_health.clear_damage_indicator();
+            enemy_health.set_update_required(false);
         }
     }
 }

@@ -100,9 +100,12 @@ fn update_enemy_health_bar(
                 if let Some(health_bar_color_material) =
                     materials.get_mut(&health_bar_mesh_material_2d.0)
                 {
-                    let t = (health_percentage * 2.0).clamp(0.0, 2.0);
-                    health_bar_color_material.color =
-                        Color::srgb(1.0 - t.max(1.0) + 1.0, t.min(1.0), 0.0);
+                    let health_color_intensity = health_percentage * 2.0;
+                    health_bar_color_material.color = Color::srgb(
+                        2.0 - health_color_intensity.max(1.0),
+                        health_color_intensity.min(1.0),
+                        0.0,
+                    );
                 }
                 health_bar.set_update_required(false);
             }

@@ -5,7 +5,7 @@ use bevy::prelude::*;
 pub struct EnemyHealth {
     max: u32,
     current: u32,
-    damage_indicator: bool,
+    update_requiredd: bool,
 }
 
 impl Default for EnemyHealth {
@@ -13,7 +13,7 @@ impl Default for EnemyHealth {
         Self {
             max: 0,
             current: 0,
-            damage_indicator: false,
+            update_requiredd: false,
         }
     }
 }
@@ -28,13 +28,13 @@ impl EnemyHealth {
     }
     pub fn damage(&mut self, damage: u32) {
         self.current = self.current.saturating_sub(damage);
-        self.damage_indicator = true;
+        self.update_requiredd = true;
     }
-    pub fn get_damage_indicator(&self) -> bool {
-        self.damage_indicator
+    pub fn get_update_required(&self) -> bool {
+        self.update_requiredd
     }
-    pub fn clear_damage_indicator(&mut self) {
-        self.damage_indicator = false;
+    pub fn set_update_required(&mut self, value: bool) {
+        self.update_requiredd = value;
     }
     pub fn heal(&mut self, heal: u32) {
         self.current = self.current.saturating_add(heal).min(self.max);
