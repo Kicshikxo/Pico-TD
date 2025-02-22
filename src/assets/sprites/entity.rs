@@ -14,13 +14,19 @@ pub enum ProjectileSpriteVariant {
     Rocket = 121,
 }
 
+#[allow(unused)]
 #[derive(Clone, Copy)]
 pub enum SoldierSpriteVariant {
     SoldierGray = 8,
-    SoldierYellow = 56,
-    SoldierRed = 44,
     SoldierGreen = 20,
+    SoldierBlue = 32,
+    SoldierRed = 44,
+    SoldierYellow = 56,
     RocketLauncherGray = 9,
+    RocketLauncherGreen = 21,
+    RocketLauncherBlue = 33,
+    RocketLauncherRed = 45,
+    RocketLauncherYellow = 57,
 }
 
 pub enum EnemySpriteVariant {

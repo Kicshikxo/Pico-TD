@@ -99,7 +99,7 @@ impl SoldierVariant {
         match self {
             SoldierVariant::Soldier { .. } => 2,
             SoldierVariant::Sniper { .. } => 1,
-            SoldierVariant::RocketLauncher { .. } => 1,
+            SoldierVariant::RocketLauncher { .. } => 2,
         }
     }
     pub fn is_next_level_allowed(&self) -> bool {
@@ -153,7 +153,7 @@ impl SoldierVariant {
                     damage: 100,
                     fire_radius: 7.0,
                     fire_rate: Duration::from_secs_f32(1.0),
-                    sprite_variant: SoldierSpriteVariant::SoldierGreen,
+                    sprite_variant: SoldierSpriteVariant::SoldierBlue,
                     projectile_variant: ProjectileVariant::Bullet,
                 },
                 _ => unreachable!(),
@@ -174,7 +174,16 @@ impl SoldierVariant {
                     damage: 150,
                     fire_radius: 5.0,
                     fire_rate: Duration::from_secs_f32(1.0),
-                    sprite_variant: SoldierSpriteVariant::RocketLauncherGray,
+                    sprite_variant: SoldierSpriteVariant::RocketLauncherYellow,
+                    projectile_variant: ProjectileVariant::Rocket,
+                },
+                2 => SoldierVariantConfig {
+                    price: 250,
+                    sell_price: 245,
+                    damage: 300,
+                    fire_radius: 6.0,
+                    fire_rate: Duration::from_secs_f32(1.0),
+                    sprite_variant: SoldierSpriteVariant::RocketLauncherRed,
                     projectile_variant: ProjectileVariant::Rocket,
                 },
                 _ => unreachable!(),
