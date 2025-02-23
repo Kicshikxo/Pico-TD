@@ -7,18 +7,9 @@ build = "build/build.rs"
 
 [dependencies]
 bevy = { version = "0.15.2", default-features = false, features = [
-    "bevy_asset",
-    "bevy_audio",
-    "bevy_color",
-    "bevy_core_pipeline",
-    "bevy_render",
-    "bevy_sprite",
-    "bevy_text",
     "bevy_ui",
     "bevy_window",
-    "bevy_winit",
     "multi_threaded",
-    "png",
     "vorbis",
     "webgl2",
     "x11",
