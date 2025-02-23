@@ -1,6 +1,10 @@
 use bevy::prelude::*;
 
 use crate::{
+    assets::{
+        levels::LevelCompletionStars,
+        sprites::ui::{UiAssets, UiMiscSpriteVariant},
+    },
     game::GameState,
     player::Player,
     ui::{
@@ -31,7 +35,7 @@ enum ButtonAction {
     BackToMenu,
 }
 
-fn init_ui(mut commands: Commands, player: Res<Player>) {
+fn init_ui(mut commands: Commands, ui_assets: Res<UiAssets>, player: Res<Player>) {
     commands
         .spawn((
             RootUiComponent,
@@ -57,6 +61,7 @@ fn init_ui(mut commands: Commands, player: Res<Player>) {
                                 .with_padding(UiRect::all(Val::Px(8.0))),
                         )
                         .with_child(UiText::new("ui.game_over.title").with_size(UiTextSize::Large));
+
                     parent
                         .spawn(
                             UiContainer::new()
@@ -65,16 +70,51 @@ fn init_ui(mut commands: Commands, player: Res<Player>) {
                                 } else {
                                     UiContainerVariant::Danger
                                 })
-                                .with_padding(UiRect::all(Val::Px(8.0))),
+                                .with_padding(UiRect::all(Val::Px(12.0)).with_bottom(Val::Px(20.0)))
+                                .column()
+                                .center(),
                         )
-                        .with_child(
-                            UiText::new(if player.get_health().is_alive() {
-                                "ui.game_over.player_win"
-                            } else {
-                                "ui.game_over.player_lose"
-                            })
-                            .with_size(UiTextSize::Large),
-                        );
+                        .with_children(|parent| {
+                            parent.spawn(
+                                UiText::new(if player.get_health().is_alive() {
+                                    "ui.game_over.player_win"
+                                } else {
+                                    "ui.game_over.player_lose"
+                                })
+                                .with_size(UiTextSize::Large),
+                            );
+
+                            parent
+                                .spawn(UiContainer::new().with_column_gap(Val::Px(4.0)).center())
+                                .with_children(|parent| {
+                                    for star_index in 1..=3 {
+                                        parent.spawn((
+                                            UiContainer::new()
+                                                .with_width(Val::Px(32.0))
+                                                .with_height(Val::Px(32.0)),
+                                            ImageNode {
+                                                color: if star_index
+                                                    <= LevelCompletionStars::from_player_health(
+                                                        player.get_health(),
+                                                    )
+                                                    .as_index()
+                                                {
+                                                    Color::srgb(1.0, 1.0, 0.0)
+                                                } else {
+                                                    Color::WHITE
+                                                },
+                                                image: ui_assets.ui_misc.clone(),
+                                                texture_atlas: Some(TextureAtlas {
+                                                    layout: ui_assets.ui_misc_layout.clone(),
+                                                    index: UiMiscSpriteVariant::Star as usize,
+                                                }),
+                                                ..default()
+                                            },
+                                        ));
+                                    }
+                                });
+                        });
+
                     parent
                         .spawn((
                             ButtonAction::BackToMenu,

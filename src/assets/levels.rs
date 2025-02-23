@@ -60,8 +60,10 @@ impl LevelCompletionStars {
             LevelCompletionStars::Three
         } else if health_percent > 1.0 / 3.0 {
             LevelCompletionStars::Two
-        } else {
+        } else if health_percent > 0.0 {
             LevelCompletionStars::One
+        } else {
+            LevelCompletionStars::Zero
         }
     }
 }
