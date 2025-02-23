@@ -8,6 +8,7 @@ pub enum TilemapTileVariant {
     Flower,
     Tree,
     Road,
+    Bridge,
     Water,
     Unknown,
 }

@@ -10,36 +10,36 @@ pub struct EntityAssets {
 }
 
 pub enum ProjectileSpriteVariant {
-    Bullet = 120,
-    Rocket = 121,
+    Bullet = 10,
+    Rocket = 11,
 }
 
 #[allow(unused)]
 #[derive(Clone, Copy)]
 pub enum SoldierSpriteVariant {
-    SoldierGray = 8,
-    SoldierGreen = 20,
-    SoldierBlue = 32,
-    SoldierRed = 44,
-    SoldierYellow = 56,
-    RocketLauncherGray = 9,
-    RocketLauncherGreen = 21,
-    RocketLauncherBlue = 33,
-    RocketLauncherRed = 45,
-    RocketLauncherYellow = 57,
+    SoldierGray = 0,
+    SoldierRed = 1,
+    SoldierGreen = 2,
+    SoldierBlue = 3,
+    SoldierYellow = 4,
+    RocketLauncherGray = 5,
+    RocketLauncherRed = 6,
+    RocketLauncherGreen = 7,
+    RocketLauncherBlue = 8,
+    RocketLauncherYellow = 9,
 }
 
 pub enum EnemySpriteVariant {
-    Dron = 67,
-    Truck = 60,
-    Tank = 63,
-    Plane = 65,
-    Helicopter = 66,
-    Boat = 69,
-    Submarine = 71,
+    Dron = 19,
+    Truck = 12,
+    Tank = 15,
+    Plane = 17,
+    Helicopter = 18,
+    Boat = 21,
+    Submarine = 23,
 }
 
 pub enum UtilSpriteVariant {
-    TileIndicator = 122,
-    Glow = 123,
+    TileIndicator = 72,
+    Glow = 73,
 }

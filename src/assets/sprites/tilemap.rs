@@ -13,11 +13,12 @@ pub struct TilemapTileAssets {
 }
 
 pub enum TilemapTileSpriteVariant {
-    Unknown = 0,
+    Unknown = 79,
 
-    Ground = 1,
-    GroundWithGrass = 2,
-    GroundWithFlower = 3,
+    Ground = 0,
+    GroundWithGrass = 1,
+    GroundWithFlower = 2,
+    GroundWithDoubleFlower = 3,
     GroundWithTree = 4,
     GroundWithDoubleTree = 5,
 
@@ -37,6 +38,15 @@ pub enum TilemapTileSpriteVariant {
     RoadBottomLeftRight = 58,
     RoadLeftTopBottom = 67,
     RoadTopRightBottomLeft = 66,
+
+    BridgeTopBottom = 62,
+    BridgeTopBottomRoadTop = 61,
+    BridgeTopBottomRoadTopBottom = 60,
+    BridgeTopBottomRoadBottom = 63,
+    BridgeLeftRight = 54,
+    BridgeLeftRightRoadLeft = 53,
+    BridgeLeftRightRoadLeftRight = 52,
+    BridgeLeftRightRoadRight = 55,
 
     Water = 6,
     WaterShoreTop = 12,
@@ -90,9 +100,10 @@ impl TilemapTileAssets {
     ) -> usize {
         match variant {
             TilemapTileVariant::Road => self.get_road_tile_index(tiles_around) as usize,
+            TilemapTileVariant::Bridge => self.get_bridge_tile_index(tiles_around) as usize,
             TilemapTileVariant::Water => self.get_water_tile_index(tiles_around) as usize,
             TilemapTileVariant::Ground => self.get_ground_tile_index(tiles_around) as usize,
-            TilemapTileVariant::Flower => TilemapTileSpriteVariant::GroundWithFlower as usize,
+            TilemapTileVariant::Flower => self.get_flower_tile_index(tiles_around) as usize,
             TilemapTileVariant::Tree => self.get_tree_tile_index(tiles_around) as usize,
             _ => 0,
         }
@@ -102,10 +113,22 @@ impl TilemapTileAssets {
         &self,
         tiles_around: [[TilemapTileVariant; 3]; 3],
     ) -> TilemapTileSpriteVariant {
-        let road_top = tiles_around[0][1] == TilemapTileVariant::Road;
-        let road_right = tiles_around[1][2] == TilemapTileVariant::Road;
-        let road_bottom = tiles_around[2][1] == TilemapTileVariant::Road;
-        let road_left = tiles_around[1][0] == TilemapTileVariant::Road;
+        let road_top = matches!(
+            tiles_around[0][1],
+            TilemapTileVariant::Road | TilemapTileVariant::Bridge
+        );
+        let road_right = matches!(
+            tiles_around[1][2],
+            TilemapTileVariant::Road | TilemapTileVariant::Bridge
+        );
+        let road_bottom = matches!(
+            tiles_around[2][1],
+            TilemapTileVariant::Road | TilemapTileVariant::Bridge
+        );
+        let road_left = matches!(
+            tiles_around[1][0],
+            TilemapTileVariant::Road | TilemapTileVariant::Bridge
+        );
 
         match (road_top, road_right, road_bottom, road_left) {
             (false, false, false, false) => TilemapTileSpriteVariant::Road,
@@ -129,6 +152,37 @@ impl TilemapTileAssets {
             (true, false, true, true) => TilemapTileSpriteVariant::RoadLeftTopBottom,
 
             (true, true, true, true) => TilemapTileSpriteVariant::RoadTopRightBottomLeft,
+        }
+    }
+
+    pub fn get_bridge_tile_index(
+        &self,
+        tiles_around: [[TilemapTileVariant; 3]; 3],
+    ) -> TilemapTileSpriteVariant {
+        let road_top = tiles_around[0][1] == TilemapTileVariant::Road;
+        let road_right = tiles_around[1][2] == TilemapTileVariant::Road;
+        let road_bottom = tiles_around[2][1] == TilemapTileVariant::Road;
+        let road_left = tiles_around[1][0] == TilemapTileVariant::Road;
+
+        let water_top = tiles_around[0][1] == TilemapTileVariant::Water;
+        let water_right = tiles_around[1][2] == TilemapTileVariant::Water;
+        let water_bottom = tiles_around[2][1] == TilemapTileVariant::Water;
+        let water_left = tiles_around[1][0] == TilemapTileVariant::Water;
+
+        match (water_top, water_right, water_bottom, water_left) {
+            (true, false, true, false) => match (road_left, road_right) {
+                (false, false) => TilemapTileSpriteVariant::BridgeLeftRight,
+                (true, false) => TilemapTileSpriteVariant::BridgeLeftRightRoadLeft,
+                (false, true) => TilemapTileSpriteVariant::BridgeLeftRightRoadRight,
+                (true, true) => TilemapTileSpriteVariant::BridgeLeftRightRoadLeftRight,
+            },
+            (false, true, false, true) => match (road_top, road_bottom) {
+                (false, false) => TilemapTileSpriteVariant::BridgeTopBottom,
+                (true, false) => TilemapTileSpriteVariant::BridgeTopBottomRoadTop,
+                (false, true) => TilemapTileSpriteVariant::BridgeTopBottomRoadBottom,
+                (true, true) => TilemapTileSpriteVariant::BridgeTopBottomRoadTopBottom,
+            },
+            _ => self.get_road_tile_index(tiles_around),
         }
     }
 
@@ -260,6 +314,26 @@ impl TilemapTileAssets {
             TilemapTileSpriteVariant::GroundWithGrass
         } else {
             TilemapTileSpriteVariant::Ground
+        }
+    }
+    pub fn get_flower_tile_index(
+        &self,
+        tiles_around: [[TilemapTileVariant; 3]; 3],
+    ) -> TilemapTileSpriteVariant {
+        let flower_top = tiles_around[0][1] == TilemapTileVariant::Flower;
+        let flower_right = tiles_around[1][2] == TilemapTileVariant::Flower;
+        let flower_bottom = tiles_around[2][1] == TilemapTileVariant::Flower;
+        let flower_left = tiles_around[1][0] == TilemapTileVariant::Flower;
+
+        let flower_count = [flower_top, flower_right, flower_bottom, flower_left]
+            .iter()
+            .filter(|&&x| x)
+            .count();
+
+        if flower_count >= 3 {
+            TilemapTileSpriteVariant::GroundWithDoubleFlower
+        } else {
+            TilemapTileSpriteVariant::GroundWithFlower
         }
     }
     pub fn get_tree_tile_index(

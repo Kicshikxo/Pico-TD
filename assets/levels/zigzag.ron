@@ -30,6 +30,7 @@ LevelAsset(
         flower: 'F',
         tree: 'T',
         road: '.',
+        bridge: 'B',
         water: '~',
     )),
     paths: Some([

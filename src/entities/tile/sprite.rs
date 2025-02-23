@@ -61,6 +61,7 @@ impl TileSpriteVariant {
                 TilemapTileVariant::Flower => TilemapTileSpriteVariant::GroundWithFlower as usize,
                 TilemapTileVariant::Tree => TilemapTileSpriteVariant::GroundWithTree as usize,
                 TilemapTileVariant::Road => TilemapTileSpriteVariant::Road as usize,
+                TilemapTileVariant::Bridge => TilemapTileSpriteVariant::Water as usize,
                 TilemapTileVariant::Water => TilemapTileSpriteVariant::Water as usize,
                 TilemapTileVariant::Unknown => TilemapTileSpriteVariant::Unknown as usize,
             },
