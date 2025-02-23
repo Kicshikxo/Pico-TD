@@ -129,13 +129,42 @@ impl TilemapTileAssets {
             TilemapTileVariant::Road | TilemapTileVariant::Bridge
         );
 
+        let unknown_top = tiles_around[0][1] == TilemapTileVariant::Unknown;
+        let unknown_right = tiles_around[1][2] == TilemapTileVariant::Unknown;
+        let unknown_bottom = tiles_around[2][1] == TilemapTileVariant::Unknown;
+        let unknown_left = tiles_around[1][0] == TilemapTileVariant::Unknown;
+
         match (road_top, road_right, road_bottom, road_left) {
             (false, false, false, false) => TilemapTileSpriteVariant::Road,
 
-            (true, false, false, false) => TilemapTileSpriteVariant::RoadTop,
-            (false, true, false, false) => TilemapTileSpriteVariant::RoadRight,
-            (false, false, true, false) => TilemapTileSpriteVariant::RoadBottom,
-            (false, false, false, true) => TilemapTileSpriteVariant::RoadLeft,
+            (true, false, false, false) => {
+                if unknown_bottom {
+                    TilemapTileSpriteVariant::RoadTopBottom
+                } else {
+                    TilemapTileSpriteVariant::RoadTop
+                }
+            }
+            (false, true, false, false) => {
+                if unknown_left {
+                    TilemapTileSpriteVariant::RoadLeftRight
+                } else {
+                    TilemapTileSpriteVariant::RoadRight
+                }
+            }
+            (false, false, true, false) => {
+                if unknown_top {
+                    TilemapTileSpriteVariant::RoadTopBottom
+                } else {
+                    TilemapTileSpriteVariant::RoadBottom
+                }
+            }
+            (false, false, false, true) => {
+                if unknown_right {
+                    TilemapTileSpriteVariant::RoadLeftRight
+                } else {
+                    TilemapTileSpriteVariant::RoadLeft
+                }
+            }
 
             (true, false, true, false) => TilemapTileSpriteVariant::RoadTopBottom,
             (false, true, false, true) => TilemapTileSpriteVariant::RoadLeftRight,
