@@ -42,7 +42,7 @@ impl Plugin for GamePlugin {
 pub struct GameTilemap;
 
 #[derive(Component)]
-pub struct GameBackgroundSound;
+pub struct GameBackgroundAudio;
 
 #[derive(Resource, Default)]
 pub enum GameSpeed {
@@ -130,7 +130,7 @@ fn start_game(
             Tilemap::new(selected_level.size, UVec2::new(16, 16)),
         ))
         .with_child((
-            GameBackgroundSound,
+            GameBackgroundAudio,
             AudioPlayer::new(game_audio_assets.background.clone()),
             PlaybackSettings {
                 mode: PlaybackMode::Loop,
@@ -149,7 +149,7 @@ fn start_game(
 }
 
 fn pause_game(
-    mut background_sound: Query<&mut AudioSink, With<GameBackgroundSound>>,
+    mut background_audio: Query<&mut AudioSink, With<GameBackgroundAudio>>,
     ui_state: Res<State<UiState>>,
 ) {
     if matches!(
@@ -158,13 +158,13 @@ fn pause_game(
     ) {
         return;
     }
-    if let Ok(background_sound_sink) = background_sound.get_single_mut() {
-        background_sound_sink.pause();
+    if let Ok(background_audio_sink) = background_audio.get_single_mut() {
+        background_audio_sink.pause();
     }
 }
 
-fn resume_game(mut background_sound: Query<&mut AudioSink, With<GameBackgroundSound>>) {
-    if let Ok(background_sound_sink) = background_sound.get_single_mut() {
-        background_sound_sink.play();
+fn resume_game(mut background_audio: Query<&mut AudioSink, With<GameBackgroundAudio>>) {
+    if let Ok(background_audio_sink) = background_audio.get_single_mut() {
+        background_audio_sink.play();
     }
 }

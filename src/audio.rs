@@ -6,7 +6,7 @@ use bevy_persistent::prelude::*;
 use directories::ProjectDirs;
 use serde::{Deserialize, Serialize};
 
-use crate::game::GameBackgroundSound;
+use crate::game::GameBackgroundAudio;
 
 #[derive(Resource, Serialize, Deserialize)]
 pub struct GameAudioVolume {
@@ -81,16 +81,18 @@ fn despawn_game_audio(
     mut removed_audio_sinks: RemovedComponents<AudioSink>,
 ) {
     for removed_audio_sink_entity in removed_audio_sinks.read() {
-        commands
-            .entity(removed_audio_sink_entity)
-            .despawn_recursive();
+        if commands.get_entity(removed_audio_sink_entity).is_some() {
+            commands
+                .entity(removed_audio_sink_entity)
+                .despawn_recursive();
+        }
     }
 }
 
 fn update_game_audio_volume(
     game_audio: Query<&Children, With<GameAudio>>,
-    audio_sinks: Query<&AudioSink, Without<GameBackgroundSound>>,
-    mut background_sound: Query<&mut AudioSink, With<GameBackgroundSound>>,
+    audio_sinks: Query<&AudioSink>,
+    background_audio: Query<&GameBackgroundAudio>,
     game_audio_volume: Res<Persistent<GameAudioVolume>>,
 ) {
     if let Ok(game_audio_children) = game_audio.get_single() {
@@ -99,10 +101,13 @@ fn update_game_audio_volume(
                 continue;
             };
 
-            game_audio_child_audio_sink.set_volume(game_audio_volume.get_sfx_volume());
+            let volume = if background_audio.get(*game_audio_child).is_ok() {
+                game_audio_volume.get_music_volume()
+            } else {
+                game_audio_volume.get_sfx_volume()
+            };
+
+            game_audio_child_audio_sink.set_volume(volume);
         }
-    }
-    if let Ok(background_sound_sink) = background_sound.get_single_mut() {
-        background_sound_sink.set_volume(game_audio_volume.get_music_volume());
     }
 }
