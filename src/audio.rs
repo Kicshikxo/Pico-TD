@@ -62,8 +62,13 @@ impl Plugin for GameAudioPlugin {
                 .unwrap(),
         );
 
-        app.add_systems(Startup, init_game_audio)
-            .add_systems(Update, update_game_audio);
+        app.add_systems(Startup, init_game_audio);
+        app.add_systems(PostUpdate, despawn_game_audio);
+
+        app.add_systems(
+            Update,
+            update_game_audio_volume.run_if(resource_changed::<Persistent<GameAudioVolume>>),
+        );
     }
 }
 
@@ -71,10 +76,20 @@ fn init_game_audio(mut commands: Commands) {
     commands.spawn(GameAudio);
 }
 
-fn update_game_audio(
+fn despawn_game_audio(
     mut commands: Commands,
+    mut removed_audio_sinks: RemovedComponents<AudioSink>,
+) {
+    for removed_audio_sink_entity in removed_audio_sinks.read() {
+        commands
+            .entity(removed_audio_sink_entity)
+            .despawn_recursive();
+    }
+}
+
+fn update_game_audio_volume(
     game_audio: Query<&Children, With<GameAudio>>,
-    audio_sinks: Query<Option<&AudioSink>, Without<GameBackgroundSound>>,
+    audio_sinks: Query<&AudioSink, Without<GameBackgroundSound>>,
     mut background_sound: Query<&mut AudioSink, With<GameBackgroundSound>>,
     game_audio_volume: Res<Persistent<GameAudioVolume>>,
 ) {
@@ -83,19 +98,11 @@ fn update_game_audio(
             let Ok(game_audio_child_audio_sink) = audio_sinks.get(*game_audio_child) else {
                 continue;
             };
-            let Some(game_audio_child_audio_sink) = game_audio_child_audio_sink else {
-                commands.entity(*game_audio_child).despawn_recursive();
-                continue;
-            };
 
-            if game_audio_volume.is_changed() {
-                game_audio_child_audio_sink.set_volume(game_audio_volume.get_sfx_volume());
-            }
+            game_audio_child_audio_sink.set_volume(game_audio_volume.get_sfx_volume());
         }
     }
     if let Ok(background_sound_sink) = background_sound.get_single_mut() {
-        if game_audio_volume.is_changed() {
-            background_sound_sink.set_volume(game_audio_volume.get_music_volume());
-        }
+        background_sound_sink.set_volume(game_audio_volume.get_music_volume());
     }
 }
