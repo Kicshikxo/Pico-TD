@@ -1,6 +1,5 @@
 use bevy::prelude::*;
 use bevy_asset_loader::asset_collection::AssetCollection;
-use rand::Rng;
 
 use crate::entities::tilemap::tile::TilemapTileVariant;
 
@@ -308,9 +307,26 @@ impl TilemapTileAssets {
     }
     pub fn get_ground_tile_index(
         &self,
-        _tiles_around: [[TilemapTileVariant; 3]; 3],
+        tiles_around: [[TilemapTileVariant; 3]; 3],
     ) -> TilemapTileSpriteVariant {
-        if rand::rng().random_bool(0.25) {
+        let plant_top = matches!(
+            tiles_around[0][1],
+            TilemapTileVariant::Flower | TilemapTileVariant::Tree
+        );
+        let plant_right = matches!(
+            tiles_around[1][2],
+            TilemapTileVariant::Flower | TilemapTileVariant::Tree
+        );
+        let plant_bottom = matches!(
+            tiles_around[2][1],
+            TilemapTileVariant::Flower | TilemapTileVariant::Tree
+        );
+        let plant_left = matches!(
+            tiles_around[1][0],
+            TilemapTileVariant::Flower | TilemapTileVariant::Tree
+        );
+
+        if plant_top || plant_right || plant_bottom || plant_left {
             TilemapTileSpriteVariant::GroundWithGrass
         } else {
             TilemapTileSpriteVariant::Ground
@@ -327,7 +343,7 @@ impl TilemapTileAssets {
 
         let flower_count = [flower_top, flower_right, flower_bottom, flower_left]
             .iter()
-            .filter(|&&x| x)
+            .filter(|&&side| side)
             .count();
 
         if flower_count >= 3 {
@@ -347,7 +363,7 @@ impl TilemapTileAssets {
 
         let tree_count = [tree_top, tree_right, tree_bottom, tree_left]
             .iter()
-            .filter(|&&x| x)
+            .filter(|&&side| side)
             .count();
 
         if tree_count >= 2 {
