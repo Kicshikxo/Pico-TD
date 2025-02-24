@@ -92,7 +92,7 @@ fn despawn_game_audio(
 fn update_game_audio_volume(
     game_audio: Query<&Children, With<GameAudio>>,
     audio_sinks: Query<&AudioSink>,
-    background_audio: Query<&GameBackgroundAudio>,
+    background_audio: Query<&AudioSink, With<GameBackgroundAudio>>,
     game_audio_volume: Res<Persistent<GameAudioVolume>>,
 ) {
     if let Ok(game_audio_children) = game_audio.get_single() {
@@ -101,13 +101,11 @@ fn update_game_audio_volume(
                 continue;
             };
 
-            let volume = if background_audio.get(*game_audio_child).is_ok() {
-                game_audio_volume.get_music_volume()
-            } else {
-                game_audio_volume.get_sfx_volume()
-            };
-
-            game_audio_child_audio_sink.set_volume(volume);
+            game_audio_child_audio_sink.set_volume(game_audio_volume.get_sfx_volume());
         }
+    }
+
+    if let Ok(background_audio_sink) = background_audio.get_single() {
+        background_audio_sink.set_volume(game_audio_volume.get_music_volume());
     }
 }
