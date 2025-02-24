@@ -40,7 +40,6 @@ fn main() {
                             ..default()
                         },
                         fit_canvas_to_parent: true,
-                        prevent_default_event_handling: false,
                         canvas: Some("#pico-td".into()),
                         window_theme: Some(WindowTheme::Dark),
                         visible: false,
