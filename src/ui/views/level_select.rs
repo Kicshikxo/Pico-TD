@@ -238,6 +238,7 @@ fn destroy_ui(mut commands: Commands, query: Query<Entity, With<RootUiComponent>
 
 fn update_ui(
     interaction_query: Query<(&Interaction, &ButtonAction), (Changed<Interaction>, With<UiButton>)>,
+    keyboard_input: Res<ButtonInput<KeyCode>>,
     levels_assets: Res<LevelsAssets>,
     levels_assets_loader: Res<Assets<Level>>,
     mut next_ui_state: ResMut<NextState<UiState>>,
@@ -278,6 +279,9 @@ fn update_ui(
                 }
             }
         }
+    }
+    if keyboard_input.just_pressed(KeyCode::Escape) {
+        next_ui_state.set(UiState::Menu);
     }
 }
 

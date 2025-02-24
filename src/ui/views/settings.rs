@@ -191,6 +191,7 @@ fn destroy_ui(mut commands: Commands, query: Query<Entity, With<RootUiComponent>
 
 fn update_ui(
     interaction_query: Query<(&Interaction, &ButtonAction), (Changed<Interaction>, With<UiButton>)>,
+    keyboard_input: Res<ButtonInput<KeyCode>>,
     mut settings_selectors: ParamSet<(
         Query<&mut UiSelector, With<LocaleSelector>>,
         Query<&mut UiSelector, With<SfxVolumeSelector>>,
@@ -242,5 +243,8 @@ fn update_ui(
                 }
             }
         }
+    }
+    if keyboard_input.just_pressed(KeyCode::Escape) {
+        next_ui_state.set(UiState::Menu);
     }
 }

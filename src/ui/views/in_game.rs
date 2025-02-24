@@ -216,6 +216,7 @@ fn destroy_ui(mut commands: Commands, query: Query<Entity, With<RootUiComponent>
 
 fn update_ui(
     interaction_query: Query<(&Interaction, &ButtonAction), (Changed<Interaction>, With<UiButton>)>,
+    keyboard_input: Res<ButtonInput<KeyCode>>,
     mut current_speed_text: Query<&mut I18nComponent, With<CurrentSpeedTextComponent>>,
     mut game_wave: ResMut<GameWave>,
     mut game_speed: ResMut<GameSpeed>,
@@ -242,6 +243,15 @@ fn update_ui(
                     }
                 }
             }
+        }
+    }
+    if keyboard_input.just_pressed(KeyCode::Escape) {
+        next_ui_state.set(UiState::Pause);
+        next_game_state.set(GameState::Pause);
+    }
+    if keyboard_input.just_pressed(KeyCode::Space) {
+        if game_wave.is_next_wave_allowed() == true {
+            game_wave.next_wave();
         }
     }
 }

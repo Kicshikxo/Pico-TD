@@ -339,6 +339,7 @@ fn destroy_ui(mut commands: Commands, query: Query<Entity, With<RootUiComponent>
 fn update_ui(
     mut commands: Commands,
     interaction_query: Query<(&Interaction, &ButtonAction), (Changed<Interaction>, With<UiButton>)>,
+    keyboard_input: Res<ButtonInput<KeyCode>>,
     mut soldiers: Query<(Entity, &mut Soldier, &TilePosition)>,
     mut player: ResMut<Player>,
     selected_soldier: Res<SelectedSoldier>,
@@ -396,5 +397,9 @@ fn update_ui(
                 }
             }
         }
+    }
+    if keyboard_input.just_pressed(KeyCode::Escape) {
+        next_ui_state.set(UiState::InGame);
+        next_game_state.set(GameState::InGame);
     }
 }

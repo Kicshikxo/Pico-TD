@@ -141,6 +141,7 @@ fn destroy_ui(mut commands: Commands, query: Query<Entity, With<RootUiComponent>
 
 fn update_ui(
     interaction_query: Query<(&Interaction, &ButtonAction), (Changed<Interaction>, With<UiButton>)>,
+    keyboard_input: Res<ButtonInput<KeyCode>>,
     mut pause_selectors: ParamSet<(
         Query<&mut UiSelector, With<SfxVolumeSelector>>,
         Query<&mut UiSelector, With<MusicVolumeSelector>>,
@@ -180,5 +181,9 @@ fn update_ui(
                 }
             }
         }
+    }
+    if keyboard_input.just_pressed(KeyCode::Escape) {
+        next_ui_state.set(UiState::InGame);
+        next_game_state.set(GameState::InGame);
     }
 }
