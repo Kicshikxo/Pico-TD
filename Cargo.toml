@@ -6,7 +6,7 @@ license = "WTFPL"
 build = "build/build.rs"
 
 [dependencies]
-bevy = { version = "0.15.2", default-features = false, features = [
+bevy = { version = "0.15.3", default-features = false, features = [
     "bevy_ui",
     "bevy_window",
     "multi_threaded",
