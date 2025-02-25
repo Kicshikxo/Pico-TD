@@ -1,7 +1,10 @@
 pub mod health;
 pub mod health_bar;
 
-use std::f32::consts::{FRAC_PI_2, PI, TAU};
+use std::{
+    f32::consts::{FRAC_PI_2, PI, TAU},
+    time::Duration,
+};
 
 use bevy::prelude::*;
 use health::EnemyHealth;
@@ -235,9 +238,7 @@ fn update_enemy_movement(
         let target_z = direction.x.atan2(direction.y) - FRAC_PI_2;
         let rotation_z = current_z
             + ((target_z - current_z + PI).rem_euclid(TAU) - PI)
-                * time.delta_secs()
-                * game_speed.as_f32()
-                * 10.0;
+                * (time.delta_secs() * game_speed.as_f32() * enemy_movement.get_speed() * PI);
         enemy_transform.rotation = Quat::from_rotation_z(rotation_z);
     }
 }
@@ -259,11 +260,24 @@ fn update_enemy_health(
             continue;
         }
 
-        enemy_sprite.color = LinearRgba::from_vec3(enemy_sprite.color.to_linear().to_vec3().lerp(
-            LinearRgba::WHITE.to_vec3(),
-            time.delta_secs() * game_speed.as_f32() * 4.0,
-        ))
-        .into();
+        let target_enemy_sprite_color = LinearRgba::WHITE.to_vec3();
+        let current_enemy_sprite_color = enemy_sprite.color.to_linear().to_vec3();
+
+        if current_enemy_sprite_color != target_enemy_sprite_color {
+            if (current_enemy_sprite_color - target_enemy_sprite_color).length() > 1e-3 {
+                enemy_sprite.color = LinearRgba::from_vec3(
+                    current_enemy_sprite_color.lerp(
+                        target_enemy_sprite_color,
+                        (time.delta_secs() * game_speed.as_f32()
+                            / Duration::from_millis(250).as_secs_f32())
+                        .clamp(0.0, 1.0),
+                    ),
+                )
+                .into();
+            } else {
+                enemy_sprite.color = LinearRgba::from_vec3(target_enemy_sprite_color).into();
+            }
+        }
 
         if enemy_health.get_update_required() == true {
             enemy_sprite.color = Color::srgb(1.0, 0.0, 0.0);

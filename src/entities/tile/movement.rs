@@ -15,6 +15,7 @@ pub struct TileMovement {
     previous_position: Vec2,
     duration: Duration,
     delay: Duration,
+    speed: f32,
     progress: f32,
     elapsed_time: Duration,
 }
@@ -29,6 +30,7 @@ impl Default for TileMovement {
             previous_position: Vec2::default(),
             duration: Duration::ZERO,
             delay: Duration::ZERO,
+            speed: 0.0,
             progress: 0.0,
             elapsed_time: Duration::ZERO,
         }
@@ -52,12 +54,15 @@ impl TileMovement {
             })
             .collect();
 
+        let total_length = path_segment_lengths.iter().sum::<f32>();
+
         let mut tile_movement = Self {
             path,
             path_segment_lengths,
             path_cumulative_lengths,
             duration,
             delay: delay.unwrap_or(Duration::ZERO),
+            speed: total_length / duration.as_secs_f32(),
             ..default()
         };
 
@@ -72,6 +77,9 @@ impl TileMovement {
     }
     pub fn get_duration(&self) -> Duration {
         self.duration
+    }
+    pub fn get_speed(&self) -> f32 {
+        self.speed
     }
     pub fn get_progress(&self) -> f32 {
         self.progress

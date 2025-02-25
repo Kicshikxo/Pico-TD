@@ -1,3 +1,5 @@
+use std::time::Duration;
+
 use bevy::{prelude::*, sprite::AlphaMode2d};
 
 use crate::{
@@ -146,14 +148,24 @@ fn update_fire_radius_opacity(
     time: Res<Time>,
 ) {
     for (fire_radius, fire_radius_mesh_material_2d, fire_radius_children) in fire_radii.iter() {
+        let fire_radius_visible = fire_radius.get_visible();
+
         if let Some(fire_radius_color_material) = materials.get_mut(&fire_radius_mesh_material_2d.0)
         {
-            let target_alpha = if fire_radius.get_visible() { 0.5 } else { 0.0 };
+            let target_alpha = if fire_radius_visible { 0.5 } else { 0.0 };
             let current_alpha = fire_radius_color_material.color.alpha();
 
-            if (current_alpha - target_alpha).abs() > f32::EPSILON {
-                let new_alpha = current_alpha.lerp(target_alpha, time.delta_secs() * 20.0);
+            if current_alpha == target_alpha {
+                continue;
+            }
+            if (current_alpha - target_alpha).abs() > 1e-3 {
+                let new_alpha = current_alpha.lerp(
+                    target_alpha,
+                    (time.delta_secs() / Duration::from_millis(50).as_secs_f32()).clamp(0.0, 1.0),
+                );
                 fire_radius_color_material.color.set_alpha(new_alpha);
+            } else {
+                fire_radius_color_material.color.set_alpha(target_alpha);
             }
         }
         for inner_fire_radius_entity in fire_radius_children {
@@ -163,12 +175,23 @@ fn update_fire_radius_opacity(
                 if let Some(inner_fire_radius_color_material) =
                     materials.get_mut(&inner_fire_radius_mesh_material_2d.0)
                 {
-                    let target_alpha = if fire_radius.get_visible() { 0.25 } else { 0.0 };
+                    let target_alpha = if fire_radius_visible { 0.25 } else { 0.0 };
                     let current_alpha = inner_fire_radius_color_material.color.alpha();
 
-                    if (current_alpha - target_alpha).abs() > f32::EPSILON {
-                        let new_alpha = current_alpha.lerp(target_alpha, time.delta_secs() * 20.0);
+                    if current_alpha == target_alpha {
+                        continue;
+                    }
+                    if (current_alpha - target_alpha).abs() > 1e-3 {
+                        let new_alpha = current_alpha.lerp(
+                            target_alpha,
+                            (time.delta_secs() / Duration::from_millis(50).as_secs_f32())
+                                .clamp(0.0, 1.0),
+                        );
                         inner_fire_radius_color_material.color.set_alpha(new_alpha);
+                    } else {
+                        inner_fire_radius_color_material
+                            .color
+                            .set_alpha(target_alpha);
                     }
                 }
             }
