@@ -12,6 +12,7 @@ use health_bar::{HealthBar, HealthBarPlugin};
 use serde::Deserialize;
 
 use crate::{
+    assets::sprites::entity::EnemySpriteVariant,
     game::{GameSpeed, GameState, GameTilemap},
     player::Player,
 };
@@ -26,6 +27,7 @@ pub struct EnemyVariantConfig {
     health: u32,
     damage: u32,
     kill_reward: u32,
+    sprite_variant: EnemySpriteVariant,
     sprite_scale: Vec3,
     z_position: f32,
 }
@@ -40,6 +42,9 @@ impl EnemyVariantConfig {
     pub fn get_kill_reward(&self) -> u32 {
         self.kill_reward
     }
+    pub fn get_sprite_variant(&self) -> EnemySpriteVariant {
+        self.sprite_variant
+    }
     pub fn get_sprite_scale(&self) -> Vec3 {
         self.sprite_scale
     }
@@ -49,65 +54,135 @@ impl EnemyVariantConfig {
 }
 
 #[derive(Clone, Copy, PartialEq, Deserialize)]
+pub enum EnemyLevel {
+    Mk1,
+    Mk2,
+    Mk3,
+    Mk4,
+    Mk5,
+}
+
+impl EnemyLevel {
+    pub fn as_index(&self) -> u32 {
+        match self {
+            EnemyLevel::Mk1 => 0,
+            EnemyLevel::Mk2 => 1,
+            EnemyLevel::Mk3 => 2,
+            EnemyLevel::Mk4 => 3,
+            EnemyLevel::Mk5 => 4,
+        }
+    }
+}
+
+#[derive(Clone, Copy, PartialEq, Deserialize)]
 pub enum EnemyVariant {
-    Dron,
-    Truck,
-    Tank,
-    Plane,
-    Helicopter,
-    Boat,
-    Submarine,
+    Dron(EnemyLevel),
+    Truck(EnemyLevel),
+    Tank(EnemyLevel),
+    Plane(EnemyLevel),
+    Helicopter(EnemyLevel),
+    Boat(EnemyLevel),
+    Submarine(EnemyLevel),
 }
 
 impl EnemyVariant {
     pub fn get_config(&self) -> EnemyVariantConfig {
         match self {
-            EnemyVariant::Dron => EnemyVariantConfig {
-                health: 25,
-                damage: 5,
-                kill_reward: 5,
+            EnemyVariant::Dron(level) => EnemyVariantConfig {
+                health: 100 + 100 * level.as_index(),
+                damage: 1 + 1 * level.as_index(),
+                kill_reward: 5 + 5 * level.as_index(),
+                sprite_variant: match level {
+                    EnemyLevel::Mk1 => EnemySpriteVariant::DronGray,
+                    EnemyLevel::Mk2 => EnemySpriteVariant::DronRed,
+                    EnemyLevel::Mk3 => EnemySpriteVariant::DronGreen,
+                    EnemyLevel::Mk4 => EnemySpriteVariant::DronBlue,
+                    EnemyLevel::Mk5 => EnemySpriteVariant::DronYellow,
+                },
                 sprite_scale: Vec3::new(0.67, 0.67, 1.0),
                 z_position: 0.03,
             },
-            EnemyVariant::Truck => EnemyVariantConfig {
-                health: 50,
-                damage: 5,
-                kill_reward: 10,
+            EnemyVariant::Truck(level) => EnemyVariantConfig {
+                health: 100 + 100 * level.as_index(),
+                damage: 5 + 2 * level.as_index(),
+                kill_reward: 5 + 5 * level.as_index(),
+                sprite_variant: match level {
+                    EnemyLevel::Mk1 => EnemySpriteVariant::TruckGray,
+                    EnemyLevel::Mk2 => EnemySpriteVariant::TruckRed,
+                    EnemyLevel::Mk3 => EnemySpriteVariant::TruckGreen,
+                    EnemyLevel::Mk4 => EnemySpriteVariant::TruckBlue,
+                    EnemyLevel::Mk5 => EnemySpriteVariant::TruckYellow,
+                },
                 sprite_scale: Vec3::new(0.75, 0.75, 1.0),
                 z_position: 0.01,
             },
-            EnemyVariant::Tank => EnemyVariantConfig {
-                health: 300,
-                damage: 5,
-                kill_reward: 60,
+            EnemyVariant::Tank(level) => EnemyVariantConfig {
+                health: 1000 + 200 * level.as_index(),
+                damage: 30 + 10 * level.as_index(),
+                kill_reward: 30 + 15 * level.as_index(),
+                sprite_variant: match level {
+                    EnemyLevel::Mk1 => EnemySpriteVariant::TankGray,
+                    EnemyLevel::Mk2 => EnemySpriteVariant::TankRed,
+                    EnemyLevel::Mk3 => EnemySpriteVariant::TankGreen,
+                    EnemyLevel::Mk4 => EnemySpriteVariant::TankBlue,
+                    EnemyLevel::Mk5 => EnemySpriteVariant::TankYellow,
+                },
                 sprite_scale: Vec3::new(0.9, 0.9, 1.0),
                 z_position: 0.02,
             },
-            EnemyVariant::Plane => EnemyVariantConfig {
-                health: 150,
-                damage: 5,
-                kill_reward: 30,
-                sprite_scale: Vec3::new(1.0, 1.0, 1.0),
-                z_position: 0.04,
-            },
-            EnemyVariant::Helicopter => EnemyVariantConfig {
-                health: 100,
-                damage: 5,
-                kill_reward: 20,
+            EnemyVariant::Plane(level) => EnemyVariantConfig {
+                health: 500 + 100 * level.as_index(),
+                damage: 15 + 5 * level.as_index(),
+                kill_reward: 15 + 10 * level.as_index(),
+                sprite_variant: match level {
+                    EnemyLevel::Mk1 => EnemySpriteVariant::PlaneGray,
+                    EnemyLevel::Mk2 => EnemySpriteVariant::PlaneRed,
+                    EnemyLevel::Mk3 => EnemySpriteVariant::PlaneGreen,
+                    EnemyLevel::Mk4 => EnemySpriteVariant::PlaneBlue,
+                    EnemyLevel::Mk5 => EnemySpriteVariant::PlaneYellow,
+                },
                 sprite_scale: Vec3::new(1.0, 1.0, 1.0),
                 z_position: 0.05,
             },
-            EnemyVariant::Boat => EnemyVariantConfig {
-                health: 50,
-                damage: 5,
-                kill_reward: 10,
+            EnemyVariant::Helicopter(level) => EnemyVariantConfig {
+                health: 300 + 100 * level.as_index(),
+                damage: 10 + 5 * level.as_index(),
+                kill_reward: 10 + 5 * level.as_index(),
+                sprite_variant: match level {
+                    EnemyLevel::Mk1 => EnemySpriteVariant::HelicopterGray,
+                    EnemyLevel::Mk2 => EnemySpriteVariant::HelicopterRed,
+                    EnemyLevel::Mk3 => EnemySpriteVariant::HelicopterGreen,
+                    EnemyLevel::Mk4 => EnemySpriteVariant::HelicopterBlue,
+                    EnemyLevel::Mk5 => EnemySpriteVariant::HelicopterYellow,
+                },
+                sprite_scale: Vec3::new(1.0, 1.0, 1.0),
+                z_position: 0.04,
+            },
+            EnemyVariant::Boat(level) => EnemyVariantConfig {
+                health: 200 + 100 * level.as_index(),
+                damage: 5 + 2 * level.as_index(),
+                kill_reward: 5 + 5 * level.as_index(),
+                sprite_variant: match level {
+                    EnemyLevel::Mk1 => EnemySpriteVariant::BoatGray,
+                    EnemyLevel::Mk2 => EnemySpriteVariant::BoatRed,
+                    EnemyLevel::Mk3 => EnemySpriteVariant::BoatGreen,
+                    EnemyLevel::Mk4 => EnemySpriteVariant::BoatBlue,
+                    EnemyLevel::Mk5 => EnemySpriteVariant::BoatYellow,
+                },
                 sprite_scale: Vec3::new(0.75, 0.75, 1.0),
                 z_position: 0.02,
             },
-            EnemyVariant::Submarine => EnemyVariantConfig {
-                health: 200,
-                damage: 5,
-                kill_reward: 40,
+            EnemyVariant::Submarine(level) => EnemyVariantConfig {
+                health: 500 + 100 * level.as_index(),
+                damage: 20 + 5 * level.as_index(),
+                kill_reward: 20 + 10 * level.as_index(),
+                sprite_variant: match level {
+                    EnemyLevel::Mk1 => EnemySpriteVariant::SubmarineGray,
+                    EnemyLevel::Mk2 => EnemySpriteVariant::SubmarineRed,
+                    EnemyLevel::Mk3 => EnemySpriteVariant::SubmarineGreen,
+                    EnemyLevel::Mk4 => EnemySpriteVariant::SubmarineBlue,
+                    EnemyLevel::Mk5 => EnemySpriteVariant::SubmarineYellow,
+                },
                 sprite_scale: Vec3::new(0.75, 0.75, 1.0),
                 z_position: 0.01,
             },

@@ -2,7 +2,7 @@ use bevy::prelude::*;
 
 use crate::{
     assets::sprites::{
-        entity::{EnemySpriteVariant, EntityAssets, ProjectileSpriteVariant, UtilSpriteVariant},
+        entity::{EntityAssets, ProjectileSpriteVariant, UtilSpriteVariant},
         tilemap::{TilemapTileAssets, TilemapTileSpriteVariant},
     },
     entities::{
@@ -65,15 +65,7 @@ impl TileSpriteVariant {
                 TilemapTileVariant::Water => TilemapTileSpriteVariant::Water as usize,
                 TilemapTileVariant::Unknown => TilemapTileSpriteVariant::Unknown as usize,
             },
-            TileSpriteVariant::Enemy(variant) => match variant {
-                EnemyVariant::Dron => EnemySpriteVariant::Dron as usize,
-                EnemyVariant::Truck => EnemySpriteVariant::Truck as usize,
-                EnemyVariant::Tank => EnemySpriteVariant::Tank as usize,
-                EnemyVariant::Plane => EnemySpriteVariant::Plane as usize,
-                EnemyVariant::Helicopter => EnemySpriteVariant::Helicopter as usize,
-                EnemyVariant::Boat => EnemySpriteVariant::Boat as usize,
-                EnemyVariant::Submarine => EnemySpriteVariant::Submarine as usize,
-            },
+            TileSpriteVariant::Enemy(variant) => variant.get_config().get_sprite_variant() as usize,
             TileSpriteVariant::Util(variant) => match variant {
                 UtilVariant::TileIndicator => UtilSpriteVariant::TileIndicator as usize,
             },

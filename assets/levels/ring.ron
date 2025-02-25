@@ -1,7 +1,7 @@
 LevelAsset(
     name: "ring",
     player_health: 100,
-    player_money: 50,
+    player_money: 150,
     size: (20, 20),
     map: [
         "#TT.###~TTTTT~F#.###",
@@ -63,7 +63,7 @@ LevelAsset(
             reward: 50,
             enemies: [
                 WaveEnemies (
-                    enemy_variant: Truck,
+                    enemy_variant: Truck(Mk1),
                     count: 5,
                     duration: 20.0,
                     spawn_interval: 0.5,
@@ -76,7 +76,7 @@ LevelAsset(
             reward: 100,
             enemies: [
                 WaveEnemies (
-                    enemy_variant: Truck,
+                    enemy_variant: Truck(Mk1),
                     count: 5,
                     duration: 20.0,
                     spawn_interval: 0.5,
@@ -84,7 +84,7 @@ LevelAsset(
                     path_index: 0
                 ),
                 WaveEnemies (
-                    enemy_variant: Plane,
+                    enemy_variant: Plane(Mk1),
                     count: 2,
                     duration: 15.0,
                     spawn_interval: 0.5,
@@ -97,7 +97,7 @@ LevelAsset(
             reward: 150,
             enemies: [
                 WaveEnemies (
-                    enemy_variant: Truck,
+                    enemy_variant: Truck(Mk1),
                     count: 5,
                     duration: 20.0,
                     spawn_interval: 0.5,
@@ -105,7 +105,7 @@ LevelAsset(
                     path_index: 0
                 ),
                 WaveEnemies (
-                    enemy_variant: Plane,
+                    enemy_variant: Plane(Mk1),
                     count: 5,
                     duration: 15.0,
                     spawn_interval: 0.5,
@@ -113,7 +113,7 @@ LevelAsset(
                     path_index: 0
                 ),
                 WaveEnemies (
-                    enemy_variant: Boat,
+                    enemy_variant: Boat(Mk1),
                     count: 3,
                     duration: 10.0,
                     spawn_interval: 1.0,
@@ -121,7 +121,7 @@ LevelAsset(
                     path_index: 1
                 ),
                 WaveEnemies (
-                    enemy_variant: Dron,
+                    enemy_variant: Dron(Mk1),
                     count: 5,
                     duration: 5.0,
                     spawn_interval: 0.25,
@@ -134,7 +134,7 @@ LevelAsset(
             reward: 200,
             enemies: [
                 WaveEnemies (
-                    enemy_variant: Truck,
+                    enemy_variant: Truck(Mk1),
                     count: 10,
                     duration: 20.0,
                     spawn_interval: 0.5,
@@ -142,7 +142,7 @@ LevelAsset(
                     path_index: 0
                 ),
                 WaveEnemies (
-                    enemy_variant: Plane,
+                    enemy_variant: Plane(Mk1),
                     count: 5,
                     duration: 15.0,
                     spawn_interval: 0.5,
@@ -150,7 +150,7 @@ LevelAsset(
                     path_index: 0
                 ),
                 WaveEnemies (
-                    enemy_variant: Tank,
+                    enemy_variant: Tank(Mk1),
                     count: 2,
                     duration: 30.0,
                     spawn_interval: 0.5,
@@ -158,7 +158,7 @@ LevelAsset(
                     path_index: 0
                 ),
                 WaveEnemies (
-                    enemy_variant: Boat,
+                    enemy_variant: Boat(Mk1),
                     count: 5,
                     duration: 10.0,
                     spawn_interval: 1.0,
@@ -166,7 +166,7 @@ LevelAsset(
                     path_index: 1
                 ),
                 WaveEnemies (
-                    enemy_variant: Dron,
+                    enemy_variant: Dron(Mk1),
                     count: 10,
                     duration: 5.0,
                     spawn_interval: 0.25,
@@ -174,7 +174,7 @@ LevelAsset(
                     path_index: 2
                 ),
                 WaveEnemies (
-                    enemy_variant: Plane,
+                    enemy_variant: Plane(Mk1),
                     count: 3,
                     duration: 10.0,
                     spawn_interval: 0.5,
@@ -187,7 +187,7 @@ LevelAsset(
             reward: 250,
             enemies: [
                 WaveEnemies (
-                    enemy_variant: Truck,
+                    enemy_variant: Truck(Mk1),
                     count: 10,
                     duration: 20.0,
                     spawn_interval: 0.5,
@@ -195,7 +195,7 @@ LevelAsset(
                     path_index: 0
                 ),
                 WaveEnemies (
-                    enemy_variant: Plane,
+                    enemy_variant: Plane(Mk1),
                     count: 10,
                     duration: 15.0,
                     spawn_interval: 0.5,
@@ -203,7 +203,7 @@ LevelAsset(
                     path_index: 0
                 ),
                 WaveEnemies (
-                    enemy_variant: Tank,
+                    enemy_variant: Tank(Mk1),
                     count: 5,
                     duration: 30.0,
                     spawn_interval: 0.5,
@@ -211,7 +211,7 @@ LevelAsset(
                     path_index: 0
                 ),
                 WaveEnemies (
-                    enemy_variant: Submarine,
+                    enemy_variant: Submarine(Mk1),
                     count: 10,
                     duration: 10.0,
                     spawn_interval: 1.0,
@@ -219,7 +219,7 @@ LevelAsset(
                     path_index: 1
                 ),
                 WaveEnemies (
-                    enemy_variant: Dron,
+                    enemy_variant: Dron(Mk1),
                     count: 10,
                     duration: 5.0,
                     spawn_interval: 0.25,
@@ -227,7 +227,7 @@ LevelAsset(
                     path_index: 2
                 ),
                 WaveEnemies (
-                    enemy_variant: Plane,
+                    enemy_variant: Plane(Mk1),
                     count: 5,
                     duration: 10.0,
                     spawn_interval: 0.5,

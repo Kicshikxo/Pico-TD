@@ -1,7 +1,7 @@
 LevelAsset(
     name: "highway",
     player_health: 100,
-    player_money: 50,
+    player_money: 150,
     size: (20, 20),
     map: [
         "TTT###.~~~~~~=~T####",
@@ -44,7 +44,7 @@ LevelAsset(
             reward: 50,
             enemies: [
                 WaveEnemies (
-                    enemy_variant: Truck,
+                    enemy_variant: Truck(Mk1),
                     count: 5,
                     duration: 5.5,
                     spawn_interval: 0.5,
@@ -57,7 +57,7 @@ LevelAsset(
             reward: 100,
             enemies: [
                 WaveEnemies (
-                    enemy_variant: Truck,
+                    enemy_variant: Truck(Mk1),
                     count: 5,
                     duration: 5.5,
                     spawn_interval: 0.5,
@@ -65,7 +65,7 @@ LevelAsset(
                     path_index: 0
                 ),
                 WaveEnemies (
-                    enemy_variant: Truck,
+                    enemy_variant: Truck(Mk1),
                     count: 5,
                     duration: 5.5,
                     spawn_interval: 0.5,
@@ -78,7 +78,7 @@ LevelAsset(
             reward: 150,
             enemies: [
                 WaveEnemies (
-                    enemy_variant: Truck,
+                    enemy_variant: Truck(Mk1),
                     count: 5,
                     duration: 5.5,
                     spawn_interval: 0.5,
@@ -86,7 +86,7 @@ LevelAsset(
                     path_index: 0
                 ),
                 WaveEnemies (
-                    enemy_variant: Truck,
+                    enemy_variant: Truck(Mk1),
                     count: 5,
                     duration: 5.5,
                     spawn_interval: 0.5,
@@ -94,7 +94,7 @@ LevelAsset(
                     path_index: 1
                 ),
                 WaveEnemies (
-                    enemy_variant: Truck,
+                    enemy_variant: Truck(Mk1),
                     count: 5,
                     duration: 7.7,
                     spawn_interval: 0.5,
