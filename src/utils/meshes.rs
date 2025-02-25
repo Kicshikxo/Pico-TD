@@ -14,7 +14,7 @@ impl AnnularSegment {
             PrimitiveTopology::TriangleList,
             RenderAssetUsages::default(),
         );
-        Self::update_with_progress(&mut mesh, inner_radius, outer_radius, 0.0);
+        Self::update(&mut mesh, inner_radius, outer_radius, 0.0, TAU);
         mesh
     }
 

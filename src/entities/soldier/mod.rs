@@ -301,13 +301,24 @@ fn update_soldier(
     game_audio_assets: Res<GameAudioAssets>,
     game_audio_volume: Res<Persistent<GameAudioVolume>>,
 ) {
-    let mut sorted_enemies = enemies.iter().collect::<Vec<_>>();
-    sorted_enemies.sort_by(|(_, _, enemy_a_movement, _), (_, _, enemy_b_movement, _)| {
-        enemy_b_movement
-            .get_progress()
-            .partial_cmp(&enemy_a_movement.get_progress())
-            .unwrap_or(std::cmp::Ordering::Equal)
-    });
+    let mut sorted_enemies = enemies
+        .iter()
+        .filter(
+            |(_enemy_entity, _enemy_health, enemy_movement, _enemy_tile_position)| {
+                enemy_movement.get_progress() > 0.0
+            },
+        )
+        .collect::<Vec<_>>();
+
+    sorted_enemies.sort_by(
+        |(_enemy_a_entity, _enemy_a_health, enemy_a_movement, _enemy_a_tile_position),
+         (_enemy_b_entity, _enemy_b_health, enemy_b_movement, _enemy_b_tile_position)| {
+            enemy_b_movement
+                .get_progress()
+                .partial_cmp(&enemy_a_movement.get_progress())
+                .unwrap_or(std::cmp::Ordering::Equal)
+        },
+    );
 
     let mut projectiles = projectiles.iter().cloned().collect::<Vec<Projectile>>();
 
@@ -324,7 +335,9 @@ fn update_soldier(
             continue;
         }
 
-        for (enemy_entity, enemy_health, enemy_movement, enemy_tile_position) in &sorted_enemies {
+        for (enemy_entity, enemy_health, enemy_movement, enemy_tile_position) in
+            sorted_enemies.iter()
+        {
             if soldier_tile_position
                 .as_vec2()
                 .distance(enemy_tile_position.as_vec2())
