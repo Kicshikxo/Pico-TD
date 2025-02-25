@@ -106,10 +106,10 @@ fn update_wave(
     mut next_ui_state: ResMut<NextState<UiState>>,
     mut next_game_state: ResMut<NextState<GameState>>,
 ) {
-    if selected_level.error.is_some() {
+    if selected_level.get_error().is_some() {
         return;
     }
-    if selected_level.waves.is_empty() {
+    if selected_level.get_waves().is_empty() {
         return;
     }
     if game_wave.get_state() != WaveState::Setup {
@@ -119,7 +119,7 @@ fn update_wave(
             completed_levels
                 .update(|levels| {
                     levels.add(
-                        &selected_level.name,
+                        &selected_level.get_name(),
                         LevelCompletionStars::from_player_health(player.get_health()),
                     )
                 })
@@ -130,16 +130,20 @@ fn update_wave(
     let Ok(tilemap_entity) = game_tilemap.get_single() else {
         return;
     };
+    let Some(wave) = selected_level.get_wave(game_wave.get_current()) else {
+        return;
+    };
 
-    for wave in selected_level.waves[game_wave.get_current()].iter() {
-        for index in 0..wave.count {
+    for wave_enemies in wave.get_enemies().iter() {
+        for index in 0..wave_enemies.get_count() {
             commands.entity(tilemap_entity).with_child((
-                Enemy::new(wave.enemy_variant),
+                Enemy::new(wave_enemies.get_enemy_variant()),
                 TileMovement::new(
-                    selected_level.paths[wave.path_index].clone(),
-                    Duration::from_secs_f32(wave.duration),
+                    selected_level.get_path(wave_enemies.get_path_index()),
+                    Duration::from_secs_f32(wave_enemies.get_duration()),
                     Some(Duration::from_secs_f32(
-                        wave.spawn_interval * index as f32 + wave.spawn_delay,
+                        wave_enemies.get_spawn_interval() * index as f32
+                            + wave_enemies.get_spawn_delay(),
                     )),
                 ),
                 Transform::from_scale(Vec3::ZERO),
@@ -149,8 +153,16 @@ fn update_wave(
     game_wave.set_state(WaveState::InProgress);
 }
 
-fn update_wave_state(enemies: Query<&Enemy>, mut game_wave: ResMut<GameWave>) {
+fn update_wave_state(
+    enemies: Query<&Enemy>,
+    selected_level: Res<Level>,
+    mut game_wave: ResMut<GameWave>,
+    mut player: ResMut<Player>,
+) {
     if enemies.is_empty() && game_wave.get_state() == WaveState::InProgress {
         game_wave.set_state(WaveState::Completed);
+        if let Some(wave) = selected_level.get_wave(game_wave.get_current()) {
+            player.get_money_mut().increase(wave.get_reward());
+        }
     }
 }

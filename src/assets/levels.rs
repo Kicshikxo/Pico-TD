@@ -143,20 +143,106 @@ impl Plugin for LevelsPlugin {
     }
 }
 
+#[derive(Clone, Deserialize)]
+pub struct Wave {
+    reward: u32,
+    enemies: Vec<WaveEnemies>,
+}
+
+impl Wave {
+    pub fn get_reward(&self) -> u32 {
+        self.reward
+    }
+    pub fn get_enemies(&self) -> &Vec<WaveEnemies> {
+        &self.enemies
+    }
+}
+
+#[derive(Clone, Deserialize)]
+pub struct WaveEnemies {
+    enemy_variant: EnemyVariant,
+    count: u32,
+    duration: f32,
+    spawn_interval: f32,
+    spawn_delay: f32,
+    path_index: usize,
+}
+
+impl WaveEnemies {
+    pub fn get_enemy_variant(&self) -> EnemyVariant {
+        self.enemy_variant.clone()
+    }
+    pub fn get_count(&self) -> u32 {
+        self.count
+    }
+    pub fn get_duration(&self) -> f32 {
+        self.duration
+    }
+    pub fn get_spawn_interval(&self) -> f32 {
+        self.spawn_interval
+    }
+    pub fn get_spawn_delay(&self) -> f32 {
+        self.spawn_delay
+    }
+    pub fn get_path_index(&self) -> usize {
+        self.path_index
+    }
+}
+
 #[derive(Resource, Asset, TypePath, Clone)]
 pub struct Level {
-    pub name: String,
-    pub player_health: u32,
-    pub player_money: u32,
-    pub size: UVec2,
-    pub map: Vec<Vec<TilemapTile>>,
-    pub paths: Vec<Vec<Vec2>>,
-    pub waves: Vec<Vec<Wave>>,
-    pub error: Option<String>,
+    name: String,
+    player_health: u32,
+    player_money: u32,
+    size: UVec2,
+    map: Vec<Vec<TilemapTile>>,
+    paths: Vec<Vec<Vec2>>,
+    waves: Vec<Wave>,
+    error: Option<String>,
 }
 
 impl Level {
-    fn get_preview_color(variant: TilemapTileVariant) -> Color {
+    pub fn get_name(&self) -> &str {
+        &self.name
+    }
+    pub fn get_player_health(&self) -> u32 {
+        self.player_health
+    }
+    pub fn get_player_money(&self) -> u32 {
+        self.player_money
+    }
+    pub fn get_size(&self) -> UVec2 {
+        self.size
+    }
+    pub fn get_map(&self) -> &Vec<Vec<TilemapTile>> {
+        &self.map
+    }
+    pub fn get_tile(&self, x: u32, y: u32) -> TilemapTile {
+        self.get_map()
+            .get(y as usize)
+            .and_then(|row| row.get(x as usize))
+            .cloned()
+            .unwrap_or_default()
+    }
+    pub fn get_paths(&self) -> &Vec<Vec<Vec2>> {
+        &self.paths
+    }
+    pub fn get_path(&self, path_index: usize) -> Vec<Vec2> {
+        self.get_paths()
+            .get(path_index)
+            .cloned()
+            .unwrap_or_default()
+    }
+    pub fn get_waves(&self) -> &Vec<Wave> {
+        &self.waves
+    }
+    pub fn get_wave(&self, wave_index: usize) -> Option<&Wave> {
+        self.waves.get(wave_index)
+    }
+    pub fn get_error(&self) -> Option<String> {
+        self.error.clone()
+    }
+    fn get_tile_preview_color(variant: TilemapTileVariant) -> Color {
         match variant {
             TilemapTileVariant::Ground => Color::srgb(132.0 / 255.0, 198.0 / 255.0, 105.0 / 255.0),
             TilemapTileVariant::Flower => Color::srgb(179.0 / 255.0, 195.0 / 255.0, 104.0 / 255.0),
@@ -180,8 +266,8 @@ impl Level {
             RenderAssetUsages::default(),
         );
 
-        for x in 0..self.size.x {
-            for y in 0..self.size.y {
+        for x in 0..self.get_size().x {
+            for y in 0..self.get_size().y {
                 // if (x == 0 || x == self.size.x - 1) && (y == 0 || y == self.size.y - 1) {
                 //     continue;
                 // }
@@ -189,7 +275,7 @@ impl Level {
                     .set_color_at(
                         x,
                         y,
-                        Self::get_preview_color(self.map[y as usize][x as usize].get_variant()),
+                        Self::get_tile_preview_color(self.get_tile(x, y).get_variant()),
                     )
                     .unwrap();
             }
@@ -197,16 +283,6 @@ impl Level {
 
         image
     }
-}
-
-#[derive(Clone, Deserialize)]
-pub struct Wave {
-    pub enemy_variant: EnemyVariant,
-    pub count: u32,
-    pub duration: f32,
-    pub spawn_interval: f32,
-    pub spawn_delay: f32,
-    pub path_index: usize,
 }
 
 impl Default for Level {
@@ -240,7 +316,7 @@ impl Default for TileSymbols {
             ground: '#',
             flower: 'F',
             tree: 'T',
-            bridge: 'B',
+            bridge: '=',
             road: '.',
             water: '~',
         }
@@ -276,7 +352,7 @@ pub struct LevelAsset {
     pub map: Vec<String>,
     pub tile_symbols: Option<TileSymbols>,
     pub paths: Option<Vec<Vec<Vec2>>>,
-    pub waves: Option<Vec<Vec<Wave>>>,
+    pub waves: Option<Vec<Wave>>,
     pub error: Option<String>,
 }
 

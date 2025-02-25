@@ -80,13 +80,13 @@ fn init_tilemap(
     selected_level: Res<Level>,
 ) {
     for (tilemap_entity, mut tilemap) in tilemaps.iter_mut() {
-        if selected_level.error.is_some() {
+        if selected_level.get_error().is_some() {
             return;
         }
 
-        for x in 0..selected_level.size.x {
-            for y in 0..selected_level.size.y {
-                let tilemap_tile = selected_level.map[y as usize][x as usize];
+        for x in 0..selected_level.get_size().x {
+            for y in 0..selected_level.get_size().y {
+                let tilemap_tile = selected_level.get_tile(x, y);
                 let tilemap_tile_entity = commands
                     .spawn((
                         TileSprite::new(tilemap_tile.get_variant().into()),

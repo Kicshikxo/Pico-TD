@@ -114,7 +114,7 @@ fn start_game(
     mut next_ui_state: ResMut<NextState<UiState>>,
     mut next_game_state: ResMut<NextState<GameState>>,
 ) {
-    if selected_level.error.is_some() {
+    if selected_level.get_error().is_some() {
         next_ui_state.set(UiState::LevelSelect);
         next_game_state.set(GameState::Pause);
         return;
@@ -127,7 +127,7 @@ fn start_game(
     commands
         .spawn((
             GameTilemap,
-            Tilemap::new(selected_level.size, UVec2::new(16, 16)),
+            Tilemap::new(selected_level.get_size(), UVec2::new(16, 16)),
         ))
         .with_child((
             GameBackgroundAudio,
@@ -140,8 +140,11 @@ fn start_game(
         ))
         .with_child(TileIndicator);
 
-    player.restart(selected_level.player_health, selected_level.player_money);
-    game_wave.restart(selected_level.waves.len());
+    player.restart(
+        selected_level.get_player_health(),
+        selected_level.get_player_money(),
+    );
+    game_wave.restart(selected_level.get_waves().len());
     game_speed.set_default();
 
     next_ui_state.set(UiState::InGame);

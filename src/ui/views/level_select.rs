@@ -137,7 +137,8 @@ fn init_ui(
                             {
                                 let level = levels_assets_loader.get(level_handle).unwrap();
 
-                                let level_completion = completed_levels.get_completion(&level.name);
+                                let level_completion =
+                                    completed_levels.get_completion(&level.get_name());
                                 let level_stars = if level_completion.is_some() {
                                     level_completion.unwrap().get_stars()
                                 } else {
@@ -151,7 +152,7 @@ fn init_ui(
                                             .spawn((
                                                 ButtonAction::SelectLevel { level_index },
                                                 UiButton::new()
-                                                    .with_variant(if level.error.is_some() {
+                                                    .with_variant(if level.get_error().is_some() {
                                                         UiButtonVariant::Danger
                                                     } else {
                                                         if level_completion.is_some() {
@@ -164,7 +165,7 @@ fn init_ui(
                                                     .with_aspect_ratio(1.0),
                                             ))
                                             .with_children(|parent| {
-                                                if level.error.is_some() {
+                                                if level.get_error().is_some() {
                                                     return;
                                                 }
 
@@ -214,7 +215,10 @@ fn init_ui(
                                                 ));
                                             });
 
-                                        parent.spawn(UiText::new(&format!("level.{}", level.name)));
+                                        parent.spawn(UiText::new(&format!(
+                                            "level.{}",
+                                            level.get_name()
+                                        )));
                                     });
                             }
                         });
@@ -257,7 +261,7 @@ fn update_ui(
                     let level: &Level = levels_assets_loader
                         .get(&levels_assets.compain[*level_index])
                         .unwrap();
-                    if level.error.is_some() {
+                    if level.get_error().is_some() {
                         return;
                     }
 
@@ -296,12 +300,12 @@ fn uploaded_level_update(
         match asset_server.get_load_state(uploaded_level_handle).unwrap() {
             bevy::asset::LoadState::Loaded => {
                 if let Some(level) = levels_assets_loader.get(uploaded_level_handle) {
-                    if level.error.is_some() {
+                    if level.get_error().is_some() {
                         #[cfg(not(target_arch = "wasm32"))]
                         MessageDialog::new()
                             .set_type(MessageType::Error)
                             .set_title(&rust_i18n::t!("level_select.file_reading_error.title"))
-                            .set_text(&level.error.as_ref().unwrap())
+                            .set_text(&level.get_error().as_ref().unwrap())
                             .show_alert()
                             .unwrap();
                     } else {

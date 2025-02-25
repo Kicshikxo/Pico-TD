@@ -4,20 +4,20 @@ LevelAsset(
     player_money: 50,
     size: (20, 20),
     map: [
-        "TTT###.~~~~~~B~T####",
-        "TTT###.~~~~~~B~~~~~~",
-        "###T##.~~~~~~B~~~~~~",
-        "#T####.~~~~~~B~##TT#",
+        "TTT###.~~~~~~=~T####",
+        "TTT###.~~~~~~=~~~~~~",
+        "###T##.~~~~~~=~~~~~~",
+        "#T####.~~~~~~=~##TT#",
         "#TT###.~~~~~~.####T#",
         "#T####.~~~##~.######",
-        "######.BBB..B.##T###",
+        "######.===..=.##T###",
         "######.~~~#F~.##TT##",
         "#TTT##.~##T#~.######",
         "#TTT##.~#TT#~.######",
         "######.~TTT#~.######",
         "######.~##TT~.#TTTT#",
         "######.~~~~~~.######",
-        "TTTT##.BBBBBB.###T##",
+        "TTTT##.======.###T##",
         "######.~~~~~~.##TT##",
         "######.~~~~~~.###T##",
         "##TT##.~~~~~~.###T##",
@@ -25,14 +25,6 @@ LevelAsset(
         "T#####.~~~~~~.######",
         "TT####.~~~~~~.######",
     ],
-    tile_symbols: Some(TileSymbols (
-        ground: '#',
-        flower: 'F',
-        tree: 'T',
-        road: '.',
-        bridge: 'B',
-        water: '~',
-    )),
     paths: Some([
         [
             (6, -1),
@@ -48,57 +40,68 @@ LevelAsset(
         ]
     ]),
     waves: Some([
-        [
-            Wave (
-                enemy_variant: Truck,
-                count: 5,
-                duration: 10.0,
-                spawn_interval: 0.5,
-                spawn_delay: 0.0,
-                path_index: 0
-            ),
-        ], [
-            Wave (
-                enemy_variant: Truck,
-                count: 5,
-                duration: 10.0,
-                spawn_interval: 0.5,
-                spawn_delay: 0.0,
-                path_index: 0
-            ),
-            Wave (
-                enemy_variant: Truck,
-                count: 5,
-                duration: 10.0,
-                spawn_interval: 0.5,
-                spawn_delay: 0.0,
-                path_index: 1
-            ),
-        ], [
-            Wave (
-                enemy_variant: Truck,
-                count: 5,
-                duration: 10.0,
-                spawn_interval: 0.5,
-                spawn_delay: 0.0,
-                path_index: 0
-            ),
-            Wave (
-                enemy_variant: Truck,
-                count: 5,
-                duration: 10.0,
-                spawn_interval: 0.5,
-                spawn_delay: 0.0,
-                path_index: 1
-            ),
-            Wave (
-                enemy_variant: Truck,
-                count: 5,
-                duration: 10.0,
-                spawn_interval: 0.5,
-                spawn_delay: 0.0,
-                path_index: 2
-            ),
-        ],
+        Wave (
+            reward: 50,
+            enemies: [
+                WaveEnemies (
+                    enemy_variant: Truck,
+                    count: 5,
+                    duration: 5.5,
+                    spawn_interval: 0.5,
+                    spawn_delay: 0.0,
+                    path_index: 0
+                )
+            ]
+        ),
+        Wave (
+            reward: 100,
+            enemies: [
+                WaveEnemies (
+                    enemy_variant: Truck,
+                    count: 5,
+                    duration: 5.5,
+                    spawn_interval: 0.5,
+                    spawn_delay: 0.0,
+                    path_index: 0
+                ),
+                WaveEnemies (
+                    enemy_variant: Truck,
+                    count: 5,
+                    duration: 5.5,
+                    spawn_interval: 0.5,
+                    spawn_delay: 0.0,
+                    path_index: 1
+                )
+            ]
+        ),
+        Wave (
+            reward: 150,
+            enemies: [
+                WaveEnemies (
+                    enemy_variant: Truck,
+                    count: 5,
+                    duration: 5.5,
+                    spawn_interval: 0.5,
+                    spawn_delay: 0.0,
+                    path_index: 0
+                ),
+                WaveEnemies (
+                    enemy_variant: Truck,
+                    count: 5,
+                    duration: 5.5,
+                    spawn_interval: 0.5,
+                    spawn_delay: 0.0,
+                    path_index: 1
+                ),
+                WaveEnemies (
+                    enemy_variant: Truck,
+                    count: 5,
+                    duration: 7.7,
+                    spawn_interval: 0.5,
+                    spawn_delay: 0.0,
+                    path_index: 2
+                )
+            ]
+        )
     ])
 )
