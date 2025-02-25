@@ -91,7 +91,7 @@ impl EnemyVariant {
             EnemyVariant::Dron(level) => EnemyVariantConfig {
                 health: 100 + 100 * level.as_index(),
                 damage: 1 + 1 * level.as_index(),
-                kill_reward: 5 + 5 * level.as_index(),
+                kill_reward: 1 + 1 * level.as_index(),
                 sprite_variant: match level {
                     EnemyLevel::Mk1 => EnemySpriteVariant::DronGray,
                     EnemyLevel::Mk2 => EnemySpriteVariant::DronRed,
@@ -104,8 +104,8 @@ impl EnemyVariant {
             },
             EnemyVariant::Truck(level) => EnemyVariantConfig {
                 health: 100 + 100 * level.as_index(),
-                damage: 5 + 2 * level.as_index(),
-                kill_reward: 5 + 5 * level.as_index(),
+                damage: 5 + 1 * level.as_index(),
+                kill_reward: 1 + 1 * level.as_index(),
                 sprite_variant: match level {
                     EnemyLevel::Mk1 => EnemySpriteVariant::TruckGray,
                     EnemyLevel::Mk2 => EnemySpriteVariant::TruckRed,
@@ -118,8 +118,8 @@ impl EnemyVariant {
             },
             EnemyVariant::Tank(level) => EnemyVariantConfig {
                 health: 1000 + 200 * level.as_index(),
-                damage: 30 + 10 * level.as_index(),
-                kill_reward: 30 + 15 * level.as_index(),
+                damage: 10 + 2 * level.as_index(),
+                kill_reward: 10 + 10 * level.as_index(),
                 sprite_variant: match level {
                     EnemyLevel::Mk1 => EnemySpriteVariant::TankGray,
                     EnemyLevel::Mk2 => EnemySpriteVariant::TankRed,
@@ -132,8 +132,8 @@ impl EnemyVariant {
             },
             EnemyVariant::Plane(level) => EnemyVariantConfig {
                 health: 500 + 100 * level.as_index(),
-                damage: 15 + 5 * level.as_index(),
-                kill_reward: 15 + 10 * level.as_index(),
+                damage: 5 + 1 * level.as_index(),
+                kill_reward: 5 + 5 * level.as_index(),
                 sprite_variant: match level {
                     EnemyLevel::Mk1 => EnemySpriteVariant::PlaneGray,
                     EnemyLevel::Mk2 => EnemySpriteVariant::PlaneRed,
@@ -146,8 +146,8 @@ impl EnemyVariant {
             },
             EnemyVariant::Helicopter(level) => EnemyVariantConfig {
                 health: 300 + 100 * level.as_index(),
-                damage: 10 + 5 * level.as_index(),
-                kill_reward: 10 + 5 * level.as_index(),
+                damage: 3 + 1 * level.as_index(),
+                kill_reward: 3 + 3 * level.as_index(),
                 sprite_variant: match level {
                     EnemyLevel::Mk1 => EnemySpriteVariant::HelicopterGray,
                     EnemyLevel::Mk2 => EnemySpriteVariant::HelicopterRed,
@@ -160,7 +160,7 @@ impl EnemyVariant {
             },
             EnemyVariant::Boat(level) => EnemyVariantConfig {
                 health: 200 + 100 * level.as_index(),
-                damage: 5 + 2 * level.as_index(),
+                damage: 2 + 1 * level.as_index(),
                 kill_reward: 5 + 5 * level.as_index(),
                 sprite_variant: match level {
                     EnemyLevel::Mk1 => EnemySpriteVariant::BoatGray,
@@ -174,8 +174,8 @@ impl EnemyVariant {
             },
             EnemyVariant::Submarine(level) => EnemyVariantConfig {
                 health: 500 + 100 * level.as_index(),
-                damage: 20 + 5 * level.as_index(),
-                kill_reward: 20 + 10 * level.as_index(),
+                damage: 5 + 1 * level.as_index(),
+                kill_reward: 5 + 5 * level.as_index(),
                 sprite_variant: match level {
                     EnemyLevel::Mk1 => EnemySpriteVariant::SubmarineGray,
                     EnemyLevel::Mk2 => EnemySpriteVariant::SubmarineRed,

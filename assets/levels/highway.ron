@@ -41,7 +41,7 @@ LevelAsset(
     ]),
     waves: Some([
         Wave (
-            reward: 50,
+            reward: 100,
             enemies: [
                 WaveEnemies (
                     enemy_variant: Truck(Mk1),
@@ -75,7 +75,7 @@ LevelAsset(
             ]
         ),
         Wave (
-            reward: 150,
+            reward: 100,
             enemies: [
                 WaveEnemies (
                     enemy_variant: Truck(Mk1),
