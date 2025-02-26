@@ -93,7 +93,7 @@ pub enum GameState {
 
 fn setup(
     mut commands: Commands,
-    mut window: Query<&mut Window>,
+    mut window: Single<&mut Window>,
     mut next_ui_state: ResMut<NextState<UiState>>,
     mut next_game_state: ResMut<NextState<GameState>>,
 ) {
@@ -106,9 +106,7 @@ fn setup(
     next_ui_state.set(UiState::Menu);
     next_game_state.set(GameState::Pause);
 
-    if let Ok(mut window) = window.get_single_mut() {
-        window.visible = true;
-    };
+    window.visible = true;
 }
 
 fn start_game(
