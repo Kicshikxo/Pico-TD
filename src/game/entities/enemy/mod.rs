@@ -107,7 +107,7 @@ impl EnemyVariant {
             },
             EnemyVariant::Truck(level) => EnemyVariantConfig {
                 health: 100 + 100 * level.as_index(),
-                damage: 5 + 1 * level.as_index(),
+                damage: 1 + 1 * level.as_index(),
                 kill_reward: 1 + 1 * level.as_index(),
                 sprite_variant: match level {
                     EnemyLevel::Mk1 => EnemySpriteVariant::TruckGray,
