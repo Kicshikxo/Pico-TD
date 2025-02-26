@@ -378,7 +378,7 @@ fn update_soldier(
                 projectiles.push(projectile);
 
                 commands.entity(game_audio.single()).with_child((
-                    AudioPlayer::new(game_audio_assets.get_random_shoot().clone()),
+                    AudioPlayer::new(game_audio_assets.get_random_shoot()),
                     PlaybackSettings {
                         mode: PlaybackMode::Remove,
                         volume: Volume::new(game_audio_volume.get_sfx_volume()),
