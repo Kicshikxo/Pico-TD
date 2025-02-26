@@ -1,22 +1,13 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
-mod assets;
-mod audio;
-mod entities;
 mod game;
-mod input;
-mod player;
-mod ui;
-mod utils;
-mod waves;
 
 use bevy::{
     prelude::*,
     window::{EnabledButtons, PresentMode, WindowResolution, WindowTheme},
 };
-
 use game::GamePlugin;
 
-rust_i18n::i18n!("src/locales", fallback = "en");
+rust_i18n::i18n!("src/game/locales", fallback = "en");
 
 fn main() {
     App::new()
