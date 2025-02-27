@@ -152,7 +152,7 @@ fn init_ui(
                 ));
 
             parent
-                .spawn((
+                .spawn(
                     UiContainer::new()
                         .with_right(Val::Px(8.0))
                         .with_bottom(Val::Px(8.0))
@@ -160,9 +160,7 @@ fn init_ui(
                         .with_row_gap(Val::Px(8.0))
                         .grid()
                         .absolute(),
-                    BorderRadius::all(Val::Px(8.0)),
-                    BackgroundColor(Color::BLACK.with_alpha(0.75)),
-                ))
+                )
                 .with_children(|parent| {
                     parent
                         .spawn((

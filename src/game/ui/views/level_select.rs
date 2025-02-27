@@ -173,7 +173,6 @@ fn init_ui(
                                                     .spawn((
                                                         UiContainer::new()
                                                             .with_bottom(Val::Px(-4.0))
-                                                            .with_column_gap(Val::Px(4.0))
                                                             .absolute()
                                                             .center(),
                                                         ZIndex(1),

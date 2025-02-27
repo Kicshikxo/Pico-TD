@@ -76,13 +76,13 @@ fn init_ui(mut commands: Commands, ui_assets: Res<UiAssets>, player: Res<Player>
                         )
                         .with_children(|parent| {
                             parent
-                                .spawn(UiContainer::new().with_column_gap(Val::Px(4.0)).center())
+                                .spawn(UiContainer::new().center())
                                 .with_children(|parent| {
                                     for star_index in 1..=3 {
                                         parent.spawn((
                                             UiContainer::new()
                                                 .with_bottom(if star_index == 2 {
-                                                    Val::Px(4.0)
+                                                    Val::Px(8.0)
                                                 } else {
                                                     Val::Px(0.0)
                                                 })
