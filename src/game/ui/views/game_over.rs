@@ -70,20 +70,11 @@ fn init_ui(mut commands: Commands, ui_assets: Res<UiAssets>, player: Res<Player>
                                 } else {
                                     UiContainerVariant::Danger
                                 })
-                                .with_padding(UiRect::all(Val::Px(12.0)).with_bottom(Val::Px(20.0)))
+                                .with_padding(UiRect::all(Val::Px(12.0)).with_top(Val::Px(24.0)))
                                 .column()
                                 .center(),
                         )
                         .with_children(|parent| {
-                            parent.spawn(
-                                UiText::new(if player.get_health().is_alive() {
-                                    "ui.game_over.player_win"
-                                } else {
-                                    "ui.game_over.player_lose"
-                                })
-                                .with_size(UiTextSize::Large),
-                            );
-
                             parent
                                 .spawn(UiContainer::new().with_column_gap(Val::Px(4.0)).center())
                                 .with_children(|parent| {
@@ -118,6 +109,14 @@ fn init_ui(mut commands: Commands, ui_assets: Res<UiAssets>, player: Res<Player>
                                         ));
                                     }
                                 });
+                            parent.spawn(
+                                UiText::new(if player.get_health().is_alive() {
+                                    "ui.game_over.player_win"
+                                } else {
+                                    "ui.game_over.player_lose"
+                                })
+                                .with_size(UiTextSize::Large),
+                            );
                         });
 
                     parent
