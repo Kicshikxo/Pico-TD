@@ -338,24 +338,24 @@ impl TilemapTileAssets {
         &self,
         tiles_around: [[TilemapTileVariant; 3]; 3],
     ) -> TilemapTileSpriteVariant {
-        let plant_top = matches!(
+        let nature_top = matches!(
             tiles_around[0][1],
-            TilemapTileVariant::Flower | TilemapTileVariant::Tree
+            TilemapTileVariant::Flower | TilemapTileVariant::Tree | TilemapTileVariant::Water
         );
-        let plant_right = matches!(
+        let nature_right = matches!(
             tiles_around[1][2],
-            TilemapTileVariant::Flower | TilemapTileVariant::Tree
+            TilemapTileVariant::Flower | TilemapTileVariant::Tree | TilemapTileVariant::Water
         );
-        let plant_bottom = matches!(
+        let nature_bottom = matches!(
             tiles_around[2][1],
-            TilemapTileVariant::Flower | TilemapTileVariant::Tree
+            TilemapTileVariant::Flower | TilemapTileVariant::Tree | TilemapTileVariant::Water
         );
-        let plant_left = matches!(
+        let nature_left = matches!(
             tiles_around[1][0],
-            TilemapTileVariant::Flower | TilemapTileVariant::Tree
+            TilemapTileVariant::Flower | TilemapTileVariant::Tree | TilemapTileVariant::Water
         );
 
-        if plant_top || plant_right || plant_bottom || plant_left {
+        if nature_top || nature_right || nature_bottom || nature_left {
             TilemapTileSpriteVariant::GroundWithGrass
         } else {
             TilemapTileSpriteVariant::Ground
@@ -375,7 +375,7 @@ impl TilemapTileAssets {
             .filter(|&&side| side)
             .count();
 
-        if flower_count >= 3 {
+        if flower_count >= 2 {
             TilemapTileSpriteVariant::GroundWithDoubleFlower
         } else {
             TilemapTileSpriteVariant::GroundWithFlower

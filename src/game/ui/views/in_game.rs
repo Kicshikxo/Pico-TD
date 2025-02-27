@@ -152,7 +152,7 @@ fn init_ui(
                 ));
 
             parent
-                .spawn(
+                .spawn((
                     UiContainer::new()
                         .with_right(Val::Px(8.0))
                         .with_bottom(Val::Px(8.0))
@@ -160,58 +160,52 @@ fn init_ui(
                         .with_row_gap(Val::Px(8.0))
                         .grid()
                         .absolute(),
-                )
+                    BorderRadius::all(Val::Px(8.0)),
+                    BackgroundColor(Color::BLACK.with_alpha(0.75)),
+                ))
                 .with_children(|parent| {
-                    parent
-                        .spawn(UiContainer::new().with_column_gap(Val::Px(8.0)))
-                        .with_children(|parent| {
-                            parent.spawn((
-                                SpeedSelector,
-                                UiSelector::new()
-                                    .with_size(UiSelectorSize::Small)
-                                    .with_options(
-                                        (1..=5)
-                                            .map(|index| {
-                                                let game_speed = GameSpeed::from_f32(index as f32);
-
-                                                UiSelectorItem::new(
-                                                    "ui.in_game.game_speed".to_string(),
-                                                )
-                                                .with_i18n_arg(
-                                                    "speed",
-                                                    game_speed.as_f32().to_string(),
-                                                )
-                                                .with_value(UiSelectorItemValue::Number(
-                                                    game_speed.as_f32(),
-                                                ))
-                                            })
-                                            .collect::<Vec<_>>(),
-                                    )
-                                    .with_default_index(game_speed.as_index()),
-                            ));
-
-                            parent
-                                .spawn((
-                                    ButtonAction::Pause,
-                                    UiButton::new()
-                                        .with_variant(UiButtonVariant::Danger)
-                                        .with_height(Val::Px(32.0))
-                                        .with_padding(UiRect::horizontal(Val::Px(16.0))),
-                                ))
-                                .with_child(
-                                    UiText::new("ui.in_game.pause").with_size(UiTextSize::Small),
-                                );
-                        });
-
                     parent
                         .spawn((
                             ButtonAction::NextWave,
                             UiButton::new()
                                 .with_variant(UiButtonVariant::Success)
                                 .with_disabled(game_wave.is_next_wave_allowed() == false)
-                                .with_padding(UiRect::axes(Val::Px(16.0), Val::Px(8.0))),
+                                .with_height(Val::Px(32.0))
+                                .with_padding(UiRect::horizontal(Val::Px(16.0))),
                         ))
-                        .with_child(UiText::new("ui.in_game.next_wave"));
+                        .with_child(
+                            UiText::new("ui.in_game.next_wave").with_size(UiTextSize::Small),
+                        );
+
+                    parent.spawn((
+                        SpeedSelector,
+                        UiSelector::new()
+                            .with_size(UiSelectorSize::Small)
+                            .with_options(
+                                (1..=5)
+                                    .map(|index| {
+                                        let game_speed = GameSpeed::from_f32(index as f32);
+
+                                        UiSelectorItem::new("ui.in_game.game_speed".to_string())
+                                            .with_i18n_arg("speed", game_speed.as_f32().to_string())
+                                            .with_value(UiSelectorItemValue::Number(
+                                                game_speed.as_f32(),
+                                            ))
+                                    })
+                                    .collect::<Vec<_>>(),
+                            )
+                            .with_default_index(game_speed.as_index()),
+                    ));
+
+                    parent
+                        .spawn((
+                            ButtonAction::Pause,
+                            UiButton::new()
+                                .with_variant(UiButtonVariant::Danger)
+                                .with_height(Val::Px(32.0))
+                                .with_padding(UiRect::horizontal(Val::Px(16.0))),
+                        ))
+                        .with_child(UiText::new("ui.in_game.pause").with_size(UiTextSize::Small));
                 });
         });
 }

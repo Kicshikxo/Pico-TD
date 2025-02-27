@@ -90,6 +90,11 @@ fn init_ui(mut commands: Commands, ui_assets: Res<UiAssets>, player: Res<Player>
                                     for star_index in 1..=3 {
                                         parent.spawn((
                                             UiContainer::new()
+                                                .with_bottom(if star_index == 2 {
+                                                    Val::Px(4.0)
+                                                } else {
+                                                    Val::Px(0.0)
+                                                })
                                                 .with_width(Val::Px(32.0))
                                                 .with_height(Val::Px(32.0)),
                                             ImageNode {

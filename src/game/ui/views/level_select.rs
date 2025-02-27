@@ -161,7 +161,7 @@ fn init_ui(
                                                             UiButtonVariant::Secondary
                                                         }
                                                     })
-                                                    .with_padding(UiRect::all(Val::Px(10.0)))
+                                                    .with_padding(UiRect::all(Val::Px(8.0)))
                                                     .with_aspect_ratio(1.0),
                                             ))
                                             .with_children(|parent| {
@@ -181,28 +181,39 @@ fn init_ui(
                                                     .with_children(|parent| {
                                                         for star_index in 1..=3 {
                                                             parent.spawn((
-                                                            UiContainer::new()
-                                                                .with_width(Val::Px(16.0))
-                                                                .with_height(Val::Px(16.0)),
-                                                            ImageNode {
-                                                                color: if star_index
-                                                                    <= level_stars.as_index()
-                                                                {
-                                                                    Color::srgb(1.0, 1.0, 0.0)
-                                                                } else {
-                                                                    Color::WHITE
-                                                                },
-                                                                image: ui_assets.ui_misc.clone(),
-                                                                texture_atlas: Some(TextureAtlas {
-                                                                    layout: ui_assets
-                                                                        .ui_misc_layout
+                                                                UiContainer::new()
+                                                                    .with_bottom(
+                                                                        if star_index == 2 {
+                                                                            Val::Px(4.0)
+                                                                        } else {
+                                                                            Val::Px(0.0)
+                                                                        },
+                                                                    )
+                                                                    .with_width(Val::Px(16.0))
+                                                                    .with_height(Val::Px(16.0)),
+                                                                ImageNode {
+                                                                    color: if star_index
+                                                                        <= level_stars.as_index()
+                                                                    {
+                                                                        Color::srgb(1.0, 1.0, 0.0)
+                                                                    } else {
+                                                                        Color::WHITE
+                                                                    },
+                                                                    image: ui_assets
+                                                                        .ui_misc
                                                                         .clone(),
-                                                                    index: UiMiscSpriteVariant::Star
-                                                                        as usize,
-                                                                }),
-                                                                ..default()
-                                                            },
-                                                        ));
+                                                                    texture_atlas: Some(
+                                                                        TextureAtlas {
+                                                                            layout: ui_assets
+                                                                                .ui_misc_layout
+                                                                                .clone(),
+                                                                            index: UiMiscSpriteVariant::Star
+                                                                                as usize,
+                                                                        },
+                                                                    ),
+                                                                    ..default()
+                                                                },
+                                                            ));
                                                         }
                                                     });
 
