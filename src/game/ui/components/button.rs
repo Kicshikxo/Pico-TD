@@ -144,7 +144,7 @@ fn init_ui_button(
                     }),
                     image_mode: NodeImageMode::Sliced(TextureSlicer {
                         border: BorderRect::square(6.0),
-                        max_corner_scale: 2.5,
+                        max_corner_scale: 4.0,
                         ..default()
                     }),
                     ..default()

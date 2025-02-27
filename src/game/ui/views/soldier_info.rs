@@ -90,7 +90,7 @@ fn init_ui(
                                     parent.spawn(
                                         UiText::new("ui.in_game.health")
                                             .with_justify(JustifyText::Left)
-                                            .with_arg(
+                                            .with_i18n_arg(
                                                 "health",
                                                 player.get_health().get_current().to_string(),
                                             ),
@@ -117,7 +117,7 @@ fn init_ui(
                                         MoneyTextComponent,
                                         UiText::new("ui.in_game.money")
                                             .with_justify(JustifyText::Left)
-                                            .with_arg(
+                                            .with_i18n_arg(
                                                 "money",
                                                 player.get_money().get_current().to_string(),
                                             ),
@@ -223,7 +223,7 @@ fn init_ui(
                                             });
                                         parent.spawn(
                                             UiText::new("ui.soldier_info.soldier_level")
-                                                .with_arg(
+                                                .with_i18n_arg(
                                                     "level",
                                                     soldier
                                                         .get_variant()
@@ -231,7 +231,7 @@ fn init_ui(
                                                         .saturating_add(1)
                                                         .to_string(),
                                                 )
-                                                .with_arg(
+                                                .with_i18n_arg(
                                                     "max_level",
                                                     soldier
                                                         .get_variant()
@@ -244,7 +244,7 @@ fn init_ui(
                                         );
                                         parent.spawn(
                                             UiText::new("ui.soldier_info.soldier_damage")
-                                                .with_arg(
+                                                .with_i18n_arg(
                                                     "damage",
                                                     soldier.get_damage().to_string(),
                                                 )
@@ -253,7 +253,7 @@ fn init_ui(
                                         );
                                         parent.spawn(
                                             UiText::new("ui.soldier_info.soldier_fire_radius")
-                                                .with_arg(
+                                                .with_i18n_arg(
                                                     "fire_radius",
                                                     soldier.get_fire_radius().to_string(),
                                                 )
@@ -262,7 +262,7 @@ fn init_ui(
                                         );
                                         parent.spawn(
                                             UiText::new("ui.soldier_info.soldier_fire_rate")
-                                                .with_arg(
+                                                .with_i18n_arg(
                                                     "fire_rate",
                                                     ((1.0 / soldier.get_fire_rate().as_secs_f32()
                                                         * 100.0)
@@ -296,7 +296,7 @@ fn init_ui(
                                         ))
                                         .with_child(
                                             UiText::new("ui.soldier_info.upgrade_soldier")
-                                                .with_arg(
+                                                .with_i18n_arg(
                                                     "price",
                                                     soldier
                                                         .get_variant()
@@ -315,7 +315,7 @@ fn init_ui(
                                             .with_padding(UiRect::all(Val::Px(8.0))),
                                     ))
                                     .with_child(
-                                        UiText::new("ui.soldier_info.sell_soldier").with_arg(
+                                        UiText::new("ui.soldier_info.sell_soldier").with_i18n_arg(
                                             "sell_price",
                                             soldier
                                                 .get_variant()

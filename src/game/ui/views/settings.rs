@@ -214,7 +214,7 @@ fn update_ui(
         if let Some(changed_item) = sfx_volume_selector.get_changed_item() {
             game_audio_volume
                 .update(|volume| {
-                    volume.set_sfx_volume(changed_item.value.as_number());
+                    volume.set_sfx_volume(changed_item.value.as_f32());
                 })
                 .unwrap();
         }
@@ -223,7 +223,7 @@ fn update_ui(
         if let Some(changed_item) = music_volume_selector.get_changed_item() {
             game_audio_volume
                 .update(|volume| {
-                    volume.set_music_volume(changed_item.value.as_number());
+                    volume.set_music_volume(changed_item.value.as_f32());
                 })
                 .unwrap();
         }

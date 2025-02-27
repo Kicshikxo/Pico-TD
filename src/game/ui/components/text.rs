@@ -2,7 +2,7 @@ use bevy::prelude::*;
 
 use crate::game::{assets::sprites::ui::UiAssets, ui::i18n::I18nComponent};
 
-#[derive(Default)]
+#[derive(Clone, Copy, Default)]
 pub enum UiTextSize {
     Small,
     #[default]
@@ -79,8 +79,12 @@ impl UiText {
     pub fn no_wrap(self) -> Self {
         self.with_linebreak(LineBreak::NoWrap)
     }
-    pub fn with_arg(mut self, key: &str, value: String) -> Self {
+    pub fn with_i18n_arg(mut self, key: &str, value: String) -> Self {
         self.i18n_args.push((key.to_string(), value));
+        self
+    }
+    pub fn with_i18n_args(mut self, args: Vec<(String, String)>) -> Self {
+        self.i18n_args = args;
         self
     }
     pub fn without_i18n(mut self) -> Self {
@@ -130,8 +134,8 @@ fn init_ui_text(
         ));
 
         if ui_text.enable_i18n {
-            let i18n_component =
-                I18nComponent::new(ui_text.i18n_key.clone()).with_args(ui_text.i18n_args.clone());
+            let i18n_component = I18nComponent::new(ui_text.i18n_key.clone())
+                .with_i18n_args(ui_text.i18n_args.clone());
             commands
                 .entity(ui_text_entity)
                 .insert((Text::new(i18n_component.translate()), i18n_component));

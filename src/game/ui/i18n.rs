@@ -72,11 +72,11 @@ impl I18nComponent {
     pub fn new(key: String) -> Self {
         Self { key, ..default() }
     }
-    pub fn with_args(mut self, args: Vec<(String, String)>) -> Self {
+    pub fn with_i18n_args(mut self, args: Vec<(String, String)>) -> Self {
         self.args = args;
         self
     }
-    pub fn change_arg(&mut self, key: &str, new_value: String) {
+    pub fn change_i18n_arg(&mut self, key: &str, new_value: String) {
         if let Some((_arg_key, arg_value)) = self
             .args
             .iter_mut()
@@ -85,6 +85,10 @@ impl I18nComponent {
             *arg_value = new_value;
             self.update_required = true;
         }
+    }
+    pub fn change_i18n_args(&mut self, args: Vec<(String, String)>) {
+        self.args = args;
+        self.update_required = true;
     }
     pub fn change_i18n_key(&mut self, key: String) {
         self.key = key;
@@ -149,9 +153,12 @@ fn update_i18n(mut i18n_components: Query<(&mut Text, &mut I18nComponent)>) {
     }
 }
 
-fn update_locale(mut components: Query<(&mut Text, &I18nComponent)>, i18n: Res<Persistent<I18n>>) {
+fn update_locale(
+    mut i18n_components: Query<(&mut Text, &I18nComponent)>,
+    i18n: Res<Persistent<I18n>>,
+) {
     rust_i18n::set_locale(&i18n.get_current().to_string());
-    for (mut text, component) in components.iter_mut() {
-        text.0 = component.translate();
+    for (mut i18n_text, i18n_component) in i18n_components.iter_mut() {
+        i18n_text.0 = i18n_component.translate();
     }
 }

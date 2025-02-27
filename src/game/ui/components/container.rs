@@ -201,8 +201,8 @@ fn init_ui_container(
                     layout: ui_assets.ui_containers_layout.clone(),
                 }),
                 image_mode: NodeImageMode::Sliced(TextureSlicer {
-                    border: BorderRect::square(10.0),
-                    max_corner_scale: 2.5,
+                    border: BorderRect::square(8.0),
+                    max_corner_scale: 4.0,
                     ..default()
                 }),
                 ..default()

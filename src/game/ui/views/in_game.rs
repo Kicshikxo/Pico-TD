@@ -7,13 +7,14 @@ use crate::game::{
         components::{
             button::{UiButton, UiButtonVariant},
             container::UiContainer,
+            selector::{UiSelector, UiSelectorItem, UiSelectorItemValue, UiSelectorSize},
             text::{UiText, UiTextSize},
         },
         i18n::I18nComponent,
         UiState,
     },
     waves::GameWave,
-    {GameSpeed, GameState},
+    GameSpeed, GameState,
 };
 
 pub struct InGameViewUiPlugin;
@@ -45,12 +46,12 @@ struct HealthTextComponent;
 struct MoneyTextComponent;
 #[derive(Component)]
 struct WaveTextComponent;
+
 #[derive(Component)]
-struct CurrentSpeedTextComponent;
+struct SpeedSelector;
 
 #[derive(Component, PartialEq)]
 enum ButtonAction {
-    ChangeSpeed,
     Pause,
     NextWave,
 }
@@ -96,7 +97,7 @@ fn init_ui(
                                         HealthTextComponent,
                                         UiText::new("ui.in_game.health")
                                             .with_justify(JustifyText::Left)
-                                            .with_arg(
+                                            .with_i18n_arg(
                                                 "health",
                                                 player.get_health().get_current().to_string(),
                                             ),
@@ -123,7 +124,7 @@ fn init_ui(
                                         MoneyTextComponent,
                                         UiText::new("ui.in_game.money")
                                             .with_justify(JustifyText::Left)
-                                            .with_arg(
+                                            .with_i18n_arg(
                                                 "money",
                                                 player.get_money().get_current().to_string(),
                                             ),
@@ -143,11 +144,11 @@ fn init_ui(
                 .with_child((
                     WaveTextComponent,
                     UiText::new("ui.in_game.wave")
-                        .with_arg(
+                        .with_i18n_arg(
                             "current",
                             game_wave.get_current().saturating_add(1).to_string(),
                         )
-                        .with_arg("total", game_wave.get_total().to_string()),
+                        .with_i18n_arg("total", game_wave.get_total().to_string()),
                 ));
 
             parent
@@ -164,29 +165,38 @@ fn init_ui(
                     parent
                         .spawn(UiContainer::new().with_column_gap(Val::Px(8.0)))
                         .with_children(|parent| {
-                            parent
-                                .spawn((
-                                    ButtonAction::ChangeSpeed,
-                                    UiButton::new()
-                                        .with_variant(UiButtonVariant::Primary)
-                                        .with_padding(UiRect::axes(Val::Px(16.0), Val::Px(8.0))),
-                                ))
-                                .with_children(|parent| {
-                                    parent.spawn((
-                                        CurrentSpeedTextComponent,
-                                        UiText::new("ui.in_game.game_speed")
-                                            .with_arg("speed", game_speed.as_f32().to_string())
-                                            .with_size(UiTextSize::Small)
-                                            .no_wrap(),
-                                    ));
-                                });
+                            parent.spawn((
+                                SpeedSelector,
+                                UiSelector::new()
+                                    .with_size(UiSelectorSize::Small)
+                                    .with_options(
+                                        (1..=5)
+                                            .map(|index| {
+                                                let game_speed = GameSpeed::from_f32(index as f32);
+
+                                                UiSelectorItem::new(
+                                                    "ui.in_game.game_speed".to_string(),
+                                                )
+                                                .with_i18n_arg(
+                                                    "speed",
+                                                    game_speed.as_f32().to_string(),
+                                                )
+                                                .with_value(UiSelectorItemValue::Number(
+                                                    game_speed.as_f32(),
+                                                ))
+                                            })
+                                            .collect::<Vec<_>>(),
+                                    )
+                                    .with_default_index(game_speed.as_index()),
+                            ));
 
                             parent
                                 .spawn((
                                     ButtonAction::Pause,
                                     UiButton::new()
                                         .with_variant(UiButtonVariant::Danger)
-                                        .with_padding(UiRect::axes(Val::Px(16.0), Val::Px(8.0))),
+                                        .with_height(Val::Px(32.0))
+                                        .with_padding(UiRect::horizontal(Val::Px(16.0))),
                                 ))
                                 .with_child(
                                     UiText::new("ui.in_game.pause").with_size(UiTextSize::Small),
@@ -201,9 +211,7 @@ fn init_ui(
                                 .with_disabled(game_wave.is_next_wave_allowed() == false)
                                 .with_padding(UiRect::axes(Val::Px(16.0), Val::Px(8.0))),
                         ))
-                        .with_child(
-                            UiText::new("ui.in_game.next_wave").with_size(UiTextSize::Small),
-                        );
+                        .with_child(UiText::new("ui.in_game.next_wave"));
                 });
         });
 }
@@ -217,22 +225,20 @@ fn destroy_ui(mut commands: Commands, query: Query<Entity, With<RootUiComponent>
 fn update_ui(
     interaction_query: Query<(&Interaction, &ButtonAction), (Changed<Interaction>, With<UiButton>)>,
     keyboard_input: Res<ButtonInput<KeyCode>>,
-    mut current_speed_text: Query<&mut I18nComponent, With<CurrentSpeedTextComponent>>,
+    mut speed_selector: Query<&mut UiSelector, With<SpeedSelector>>,
     mut game_wave: ResMut<GameWave>,
     mut game_speed: ResMut<GameSpeed>,
     mut next_ui_state: ResMut<NextState<UiState>>,
     mut next_game_state: ResMut<NextState<GameState>>,
 ) {
+    if let Ok(mut speed_selector) = speed_selector.get_single_mut() {
+        if let Some(changed_item) = speed_selector.get_changed_item() {
+            game_speed.set(GameSpeed::from_f32(changed_item.value.as_f32()));
+        }
+    }
     for (interaction, button_action) in &interaction_query {
         if *interaction == Interaction::Pressed {
             match button_action {
-                ButtonAction::ChangeSpeed => {
-                    game_speed.toggle();
-                    if let Ok(mut current_speed_text_i18n) = current_speed_text.get_single_mut() {
-                        current_speed_text_i18n
-                            .change_arg("speed", game_speed.as_f32().to_string());
-                    }
-                }
                 ButtonAction::Pause => {
                     next_ui_state.set(UiState::Pause);
                     next_game_state.set(GameState::Pause);
@@ -268,10 +274,10 @@ fn update_ui_after_player_change(
     >,
 ) {
     for mut health_text_i18n in health_text.iter_mut() {
-        health_text_i18n.change_arg("health", player.get_health().get_current().to_string());
+        health_text_i18n.change_i18n_arg("health", player.get_health().get_current().to_string());
     }
     for mut money_text_i18n in money_text.iter_mut() {
-        money_text_i18n.change_arg("money", player.get_money().get_current().to_string());
+        money_text_i18n.change_i18n_arg("money", player.get_money().get_current().to_string());
     }
 }
 
@@ -281,11 +287,11 @@ fn update_ui_after_wave_change(
     mut wave_text: Query<&mut I18nComponent, With<WaveTextComponent>>,
 ) {
     for mut wave_text_i18n in wave_text.iter_mut() {
-        wave_text_i18n.change_arg(
+        wave_text_i18n.change_i18n_arg(
             "current",
             game_wave.get_current().saturating_add(1).to_string(),
         );
-        wave_text_i18n.change_arg("total", game_wave.get_total().to_string())
+        wave_text_i18n.change_i18n_arg("total", game_wave.get_total().to_string())
     }
     for (mut ui_button, button_action) in next_wave_button.iter_mut() {
         ui_button.set_disabled(

@@ -84,7 +84,7 @@ fn init_ui(
                                     parent.spawn(
                                         UiText::new("ui.in_game.health")
                                             .with_justify(JustifyText::Left)
-                                            .with_arg(
+                                            .with_i18n_arg(
                                                 "health",
                                                 player.get_health().get_current().to_string(),
                                             ),
@@ -110,7 +110,7 @@ fn init_ui(
                                     parent.spawn(
                                         UiText::new("ui.in_game.money")
                                             .with_justify(JustifyText::Left)
-                                            .with_arg(
+                                            .with_i18n_arg(
                                                 "money",
                                                 player.get_money().get_current().to_string(),
                                             ),
@@ -209,7 +209,7 @@ fn init_ui(
 
                                         parent.spawn(
                                             UiText::new("ui.soldier_select.price")
-                                                .with_arg(
+                                                .with_i18n_arg(
                                                     "price",
                                                     soldier_variant
                                                         .get_config()

@@ -3,7 +3,7 @@ use bevy::prelude::*;
 use crate::game::ui::{
     components::{
         button::{UiButton, UiButtonVariant},
-        text::UiText,
+        text::{UiText, UiTextSize},
     },
     i18n::I18nComponent,
 };
@@ -16,11 +16,6 @@ pub struct UiSelectorText;
 
 #[derive(Component)]
 pub struct UiSelectorIncreaseButton;
-
-pub struct UiSelectorItem {
-    pub text: String,
-    pub value: UiSelectorItemValue,
-}
 
 #[derive(Default)]
 pub enum UiSelectorItemValue {
@@ -38,7 +33,7 @@ impl UiSelectorItemValue {
             UiSelectorItemValue::Number(value) => value.to_string(),
         }
     }
-    pub fn as_number(&self) -> f32 {
+    pub fn as_f32(&self) -> f32 {
         match self {
             UiSelectorItemValue::None => 0.0,
             UiSelectorItemValue::String(value) => value.parse::<f32>().unwrap_or(0.0),
@@ -47,10 +42,17 @@ impl UiSelectorItemValue {
     }
 }
 
+pub struct UiSelectorItem {
+    pub text: String,
+    pub i18n_args: Vec<(String, String)>,
+    pub value: UiSelectorItemValue,
+}
+
 impl Default for UiSelectorItem {
     fn default() -> Self {
         Self {
             text: String::new(),
+            i18n_args: Vec::new(),
             value: UiSelectorItemValue::default(),
         }
     }
@@ -60,9 +62,32 @@ impl UiSelectorItem {
     pub fn new(text: String) -> Self {
         Self { text, ..default() }
     }
+    pub fn with_i18n_arg(mut self, key: &str, value: String) -> Self {
+        self.i18n_args.push((key.to_string(), value));
+        self
+    }
     pub fn with_value(mut self, value: UiSelectorItemValue) -> Self {
         self.value = value;
         self
+    }
+}
+
+#[allow(unused)]
+#[derive(Clone, Copy, Default)]
+pub enum UiSelectorSize {
+    Small,
+    #[default]
+    Medium,
+    Large,
+}
+
+impl UiSelectorSize {
+    pub fn as_f32(&self) -> f32 {
+        match self {
+            UiSelectorSize::Small => 32.0,
+            UiSelectorSize::Medium => 48.0,
+            UiSelectorSize::Large => 64.0,
+        }
     }
 }
 
@@ -70,6 +95,7 @@ impl UiSelectorItem {
 #[require(Node)]
 
 pub struct UiSelector {
+    size: UiSelectorSize,
     current_index: usize,
     options: Vec<UiSelectorItem>,
     cycle: bool,
@@ -80,6 +106,7 @@ pub struct UiSelector {
 impl Default for UiSelector {
     fn default() -> Self {
         Self {
+            size: UiSelectorSize::default(),
             current_index: 0,
             options: Vec::new(),
             cycle: false,
@@ -93,6 +120,10 @@ impl Default for UiSelector {
 impl UiSelector {
     pub fn new() -> UiSelector {
         Self { ..default() }
+    }
+    pub fn with_size(mut self, size: UiSelectorSize) -> Self {
+        self.size = size;
+        self
     }
     pub fn with_options(mut self, options: Vec<UiSelectorItem>) -> Self {
         self.options = options;
@@ -182,43 +213,57 @@ fn init_ui_selector(
     ui_selectors: Query<(Entity, &UiSelector), Added<UiSelector>>,
 ) {
     for (ui_selector_entity, ui_selector) in ui_selectors.iter() {
+        let ui_selector_size = ui_selector.size.as_f32();
+
         commands
             .entity(ui_selector_entity)
             .insert(Node {
                 width: Val::Percent(100.0),
-                height: Val::Px(48.0),
+                height: Val::Px(ui_selector_size),
                 align_items: AlignItems::Center,
                 justify_content: JustifyContent::SpaceBetween,
+                column_gap: Val::Px(8.0),
                 ..default()
             })
             .with_children(|parent| {
+                let current_item = ui_selector.get_current_item().unwrap();
+
+                let text_size = match ui_selector.size {
+                    UiSelectorSize::Small => UiTextSize::Small,
+                    UiSelectorSize::Medium => UiTextSize::Medium,
+                    UiSelectorSize::Large => UiTextSize::Large,
+                };
+
                 parent
                     .spawn((
                         UiSelectorDecreaseButton,
                         UiButton::new()
                             .with_variant(UiButtonVariant::Primary)
-                            .with_width(Val::Px(48.0))
-                            .with_height(Val::Px(48.0))
+                            .with_width(Val::Px(ui_selector_size))
+                            .with_height(Val::Px(ui_selector_size))
                             .with_padding(UiRect::ZERO)
                             .with_aspect_ratio(1.0),
                     ))
-                    .with_child(UiText::new("<").without_i18n());
+                    .with_child(UiText::new("<").with_size(text_size.clone()).without_i18n());
                 parent.spawn((
                     UiSelectorText,
-                    UiText::new(&ui_selector.get_current_item().unwrap().text)
-                        .with_width(Val::Auto),
+                    UiText::new(&current_item.text)
+                        .with_size(text_size.clone())
+                        .with_i18n_args(current_item.i18n_args.clone())
+                        .with_width(Val::Auto)
+                        .no_wrap(),
                 ));
                 parent
                     .spawn((
                         UiSelectorIncreaseButton,
                         UiButton::new()
                             .with_variant(UiButtonVariant::Primary)
-                            .with_width(Val::Px(48.0))
-                            .with_height(Val::Px(48.0))
+                            .with_width(Val::Px(ui_selector_size))
+                            .with_height(Val::Px(ui_selector_size))
                             .with_padding(UiRect::ZERO)
                             .with_aspect_ratio(1.0),
                     ))
-                    .with_child(UiText::new(">").without_i18n());
+                    .with_child(UiText::new(">").with_size(text_size.clone()).without_i18n());
             });
     }
 }
@@ -278,13 +323,10 @@ fn update_ui_selector(
                 }
             }
             if let Ok(mut ui_selector_text_i18n) = ui_selector_texts.get_mut(*child) {
-                ui_selector_text_i18n.change_i18n_key(
-                    ui_selector
-                        .get_current_item()
-                        .unwrap_or(&UiSelectorItem::default())
-                        .text
-                        .clone(),
-                );
+                let current_item = ui_selector.get_current_item().unwrap();
+
+                ui_selector_text_i18n.change_i18n_key(current_item.text.clone());
+                ui_selector_text_i18n.change_i18n_args(current_item.i18n_args.clone());
             }
         }
         ui_selector.set_update_required(false);

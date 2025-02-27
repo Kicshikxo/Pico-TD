@@ -281,7 +281,7 @@ LevelAsset(
                     count: 10,
                     duration: 30.0,
                     spawn_interval: 0.5,
-                    spawn_delay: 20.0,
+                    spawn_delay: 9.5,
                     path_index: 0
                 ),
                 WaveEnemies (
