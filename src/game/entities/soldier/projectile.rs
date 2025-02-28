@@ -1,4 +1,4 @@
-use std::{f32::consts::FRAC_PI_2, time::Duration};
+use std::{f32::consts::FRAC_PI_2, ops::Deref, time::Duration};
 
 use bevy::prelude::*;
 
@@ -70,6 +70,14 @@ impl Projectile {
     }
     pub fn get_damage(&self) -> u32 {
         self.damage
+    }
+}
+
+impl Deref for Projectile {
+    type Target = ProjectileVariant;
+
+    fn deref(&self) -> &Self::Target {
+        &self.variant
     }
 }
 
@@ -149,6 +157,6 @@ fn update_projectile(
 
         projectile_transform.rotation =
             Quat::from_rotation_z(direction.x.atan2(direction.y) - FRAC_PI_2);
-        projectile_transform.scale = projectile.get_variant().get_config().get_sprite_scale();
+        projectile_transform.scale = projectile.get_config().get_sprite_scale();
     }
 }

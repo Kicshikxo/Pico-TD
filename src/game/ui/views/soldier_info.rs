@@ -215,7 +215,7 @@ fn init_ui(
                                                         .with_justify(JustifyText::Left),
                                                 );
                                                 parent.spawn(
-                                                    UiText::new(&soldier.get_variant().to_string())
+                                                    UiText::new(soldier.get_variant().to_str())
                                                         .with_width(Val::Auto)
                                                         .with_size(UiTextSize::Small)
                                                         .with_justify(JustifyText::Left),
@@ -317,11 +317,7 @@ fn init_ui(
                                     .with_child(
                                         UiText::new("ui.soldier_info.sell_soldier").with_i18n_arg(
                                             "sell_price",
-                                            soldier
-                                                .get_variant()
-                                                .get_config()
-                                                .get_sell_price()
-                                                .to_string(),
+                                            soldier.get_config().get_sell_price().to_string(),
                                         ),
                                     );
                             });
@@ -367,7 +363,7 @@ fn update_ui(
                                 break;
                             }
 
-                            soldier.get_variant_mut().next_level();
+                            soldier.get_variant_mut().set_next_level();
                             player.get_money_mut().decrease(next_level_price);
 
                             selected_tile
@@ -388,7 +384,7 @@ fn update_ui(
                             commands.entity(soldier_entity).despawn_recursive();
                             player
                                 .get_money_mut()
-                                .increase(soldier.get_variant().get_config().get_sell_price());
+                                .increase(soldier.get_config().get_sell_price());
                             break;
                         }
                     }

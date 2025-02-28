@@ -9,6 +9,8 @@ pub struct EntityAssets {
     pub tilemap_layout: Handle<TextureAtlasLayout>,
 }
 
+#[derive(Clone, Copy)]
+#[repr(usize)]
 pub enum ProjectileSpriteVariant {
     Bullet = 10,
     Rocket = 11,
@@ -16,6 +18,7 @@ pub enum ProjectileSpriteVariant {
 
 #[allow(unused)]
 #[derive(Clone, Copy)]
+#[repr(usize)]
 pub enum SoldierSpriteVariant {
     SoldierGray = 0,
     SoldierRed = 1,
@@ -32,6 +35,7 @@ pub enum SoldierSpriteVariant {
 
 #[allow(unused)]
 #[derive(Clone, Copy)]
+#[repr(usize)]
 pub enum EnemySpriteVariant {
     DronGray = 19 + 12 * 0,
     DronRed = 19 + 12 * 1,
@@ -76,6 +80,8 @@ pub enum EnemySpriteVariant {
     SubmarineYellow = 23 + 12 * 4,
 }
 
+#[derive(Clone, Copy)]
+#[repr(usize)]
 pub enum UtilSpriteVariant {
     TileIndicator = 72,
     Glow = 73,

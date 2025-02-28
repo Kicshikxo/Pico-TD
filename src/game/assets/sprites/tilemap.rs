@@ -11,6 +11,8 @@ pub struct TilemapTileAssets {
     pub tilemap_layout: Handle<TextureAtlasLayout>,
 }
 
+#[derive(Clone, Copy)]
+#[repr(usize)]
 pub enum TilemapTileSpriteVariant {
     Unknown = 79,
 

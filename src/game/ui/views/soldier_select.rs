@@ -228,7 +228,7 @@ fn init_ui(
                                                 ),
                                         );
                                         parent.spawn(
-                                            UiText::new(&soldier_variant.to_string())
+                                            UiText::new(soldier_variant.to_str())
                                                 .with_size(UiTextSize::Small),
                                         );
                                     });

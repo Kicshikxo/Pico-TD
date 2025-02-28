@@ -22,6 +22,8 @@ pub struct UiAssets {
     pub ui_misc_layout: Handle<TextureAtlasLayout>,
 }
 
+#[derive(Clone, Copy)]
+#[repr(usize)]
 pub enum UiContainerSpriteVariant {
     Primary = 1,
     Secondary = 0,
@@ -29,6 +31,8 @@ pub enum UiContainerSpriteVariant {
     Danger = 3,
 }
 
+#[derive(Clone, Copy)]
+#[repr(usize)]
 pub enum UiButtonSpriteVariant {
     Primary = 1,
     Secondary = 0,
@@ -38,6 +42,7 @@ pub enum UiButtonSpriteVariant {
 }
 
 #[derive(Copy, Clone)]
+#[repr(usize)]
 pub enum UiMiscSpriteVariant {
     Background = 0,
     Health = 1,

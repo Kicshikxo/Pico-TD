@@ -32,7 +32,7 @@ pub struct LevelsAssets {
     pub compain: Vec<Handle<Level>>,
 }
 
-#[derive(Serialize, Deserialize, Default, Clone)]
+#[derive(Default, Clone, Serialize, Deserialize)]
 pub enum LevelCompletionStars {
     #[default]
     Zero,

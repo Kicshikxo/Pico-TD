@@ -1,8 +1,10 @@
+pub mod config;
 pub mod health;
 pub mod health_bar;
 
 use std::{
     f32::consts::{FRAC_PI_2, PI, TAU},
+    ops::Deref,
     time::Duration,
 };
 
@@ -10,9 +12,12 @@ use bevy::prelude::*;
 use serde::Deserialize;
 
 use crate::game::{
-    assets::sprites::entity::EnemySpriteVariant,
     entities::{
         enemy::{
+            config::{
+                EnemyConfig, BOAT_LEVELS, DRON_LEVELS, HELICOPTER_LEVELS, PLANE_LEVELS,
+                SUBMARINE_LEVELS, TANK_LEVELS, TRUCK_LEVELS,
+            },
             health::EnemyHealth,
             health_bar::{HealthBar, HealthBarPlugin},
         },
@@ -26,36 +31,6 @@ use crate::game::{
     {GameSpeed, GameState, GameTilemap},
 };
 
-pub struct EnemyVariantConfig {
-    health: u32,
-    damage: u32,
-    kill_reward: u32,
-    sprite_variant: EnemySpriteVariant,
-    sprite_scale: Vec3,
-    z_position: f32,
-}
-
-impl EnemyVariantConfig {
-    pub fn get_health(&self) -> u32 {
-        self.health
-    }
-    pub fn get_damage(&self) -> u32 {
-        self.damage
-    }
-    pub fn get_kill_reward(&self) -> u32 {
-        self.kill_reward
-    }
-    pub fn get_sprite_variant(&self) -> EnemySpriteVariant {
-        self.sprite_variant
-    }
-    pub fn get_sprite_scale(&self) -> Vec3 {
-        self.sprite_scale
-    }
-    pub fn get_z_position(&self) -> f32 {
-        self.z_position
-    }
-}
-
 #[derive(Clone, Copy, PartialEq, Deserialize)]
 pub enum EnemyLevel {
     Mk1,
@@ -66,7 +41,7 @@ pub enum EnemyLevel {
 }
 
 impl EnemyLevel {
-    pub fn as_index(&self) -> u32 {
+    pub fn as_index(&self) -> usize {
         match self {
             EnemyLevel::Mk1 => 0,
             EnemyLevel::Mk2 => 1,
@@ -89,106 +64,15 @@ pub enum EnemyVariant {
 }
 
 impl EnemyVariant {
-    pub fn get_config(&self) -> EnemyVariantConfig {
+    pub fn get_config(&self) -> &EnemyConfig {
         match self {
-            EnemyVariant::Dron(level) => EnemyVariantConfig {
-                health: 100 + 100 * level.as_index(),
-                damage: 1 + 1 * level.as_index(),
-                kill_reward: 1 + 1 * level.as_index(),
-                sprite_variant: match level {
-                    EnemyLevel::Mk1 => EnemySpriteVariant::DronGray,
-                    EnemyLevel::Mk2 => EnemySpriteVariant::DronRed,
-                    EnemyLevel::Mk3 => EnemySpriteVariant::DronGreen,
-                    EnemyLevel::Mk4 => EnemySpriteVariant::DronBlue,
-                    EnemyLevel::Mk5 => EnemySpriteVariant::DronYellow,
-                },
-                sprite_scale: Vec3::new(0.67, 0.67, 1.0),
-                z_position: 0.03,
-            },
-            EnemyVariant::Truck(level) => EnemyVariantConfig {
-                health: 100 + 100 * level.as_index(),
-                damage: 1 + 1 * level.as_index(),
-                kill_reward: 1 + 1 * level.as_index(),
-                sprite_variant: match level {
-                    EnemyLevel::Mk1 => EnemySpriteVariant::TruckGray,
-                    EnemyLevel::Mk2 => EnemySpriteVariant::TruckRed,
-                    EnemyLevel::Mk3 => EnemySpriteVariant::TruckGreen,
-                    EnemyLevel::Mk4 => EnemySpriteVariant::TruckBlue,
-                    EnemyLevel::Mk5 => EnemySpriteVariant::TruckYellow,
-                },
-                sprite_scale: Vec3::new(0.75, 0.75, 1.0),
-                z_position: 0.01,
-            },
-            EnemyVariant::Tank(level) => EnemyVariantConfig {
-                health: 1000 + 200 * level.as_index(),
-                damage: 10 + 2 * level.as_index(),
-                kill_reward: 10 + 10 * level.as_index(),
-                sprite_variant: match level {
-                    EnemyLevel::Mk1 => EnemySpriteVariant::TankGray,
-                    EnemyLevel::Mk2 => EnemySpriteVariant::TankRed,
-                    EnemyLevel::Mk3 => EnemySpriteVariant::TankGreen,
-                    EnemyLevel::Mk4 => EnemySpriteVariant::TankBlue,
-                    EnemyLevel::Mk5 => EnemySpriteVariant::TankYellow,
-                },
-                sprite_scale: Vec3::new(0.9, 0.9, 1.0),
-                z_position: 0.02,
-            },
-            EnemyVariant::Plane(level) => EnemyVariantConfig {
-                health: 500 + 100 * level.as_index(),
-                damage: 5 + 1 * level.as_index(),
-                kill_reward: 5 + 5 * level.as_index(),
-                sprite_variant: match level {
-                    EnemyLevel::Mk1 => EnemySpriteVariant::PlaneGray,
-                    EnemyLevel::Mk2 => EnemySpriteVariant::PlaneRed,
-                    EnemyLevel::Mk3 => EnemySpriteVariant::PlaneGreen,
-                    EnemyLevel::Mk4 => EnemySpriteVariant::PlaneBlue,
-                    EnemyLevel::Mk5 => EnemySpriteVariant::PlaneYellow,
-                },
-                sprite_scale: Vec3::new(1.0, 1.0, 1.0),
-                z_position: 0.05,
-            },
-            EnemyVariant::Helicopter(level) => EnemyVariantConfig {
-                health: 300 + 100 * level.as_index(),
-                damage: 3 + 1 * level.as_index(),
-                kill_reward: 3 + 3 * level.as_index(),
-                sprite_variant: match level {
-                    EnemyLevel::Mk1 => EnemySpriteVariant::HelicopterGray,
-                    EnemyLevel::Mk2 => EnemySpriteVariant::HelicopterRed,
-                    EnemyLevel::Mk3 => EnemySpriteVariant::HelicopterGreen,
-                    EnemyLevel::Mk4 => EnemySpriteVariant::HelicopterBlue,
-                    EnemyLevel::Mk5 => EnemySpriteVariant::HelicopterYellow,
-                },
-                sprite_scale: Vec3::new(1.0, 1.0, 1.0),
-                z_position: 0.04,
-            },
-            EnemyVariant::Boat(level) => EnemyVariantConfig {
-                health: 200 + 100 * level.as_index(),
-                damage: 2 + 1 * level.as_index(),
-                kill_reward: 5 + 5 * level.as_index(),
-                sprite_variant: match level {
-                    EnemyLevel::Mk1 => EnemySpriteVariant::BoatGray,
-                    EnemyLevel::Mk2 => EnemySpriteVariant::BoatRed,
-                    EnemyLevel::Mk3 => EnemySpriteVariant::BoatGreen,
-                    EnemyLevel::Mk4 => EnemySpriteVariant::BoatBlue,
-                    EnemyLevel::Mk5 => EnemySpriteVariant::BoatYellow,
-                },
-                sprite_scale: Vec3::new(0.75, 0.75, 1.0),
-                z_position: 0.02,
-            },
-            EnemyVariant::Submarine(level) => EnemyVariantConfig {
-                health: 500 + 100 * level.as_index(),
-                damage: 5 + 1 * level.as_index(),
-                kill_reward: 5 + 5 * level.as_index(),
-                sprite_variant: match level {
-                    EnemyLevel::Mk1 => EnemySpriteVariant::SubmarineGray,
-                    EnemyLevel::Mk2 => EnemySpriteVariant::SubmarineRed,
-                    EnemyLevel::Mk3 => EnemySpriteVariant::SubmarineGreen,
-                    EnemyLevel::Mk4 => EnemySpriteVariant::SubmarineBlue,
-                    EnemyLevel::Mk5 => EnemySpriteVariant::SubmarineYellow,
-                },
-                sprite_scale: Vec3::new(0.75, 0.75, 1.0),
-                z_position: 0.01,
-            },
+            EnemyVariant::Dron(level) => DRON_LEVELS.get(level.as_index()).unwrap(),
+            EnemyVariant::Truck(level) => TRUCK_LEVELS.get(level.as_index()).unwrap(),
+            EnemyVariant::Tank(level) => TANK_LEVELS.get(level.as_index()).unwrap(),
+            EnemyVariant::Plane(level) => PLANE_LEVELS.get(level.as_index()).unwrap(),
+            EnemyVariant::Helicopter(level) => HELICOPTER_LEVELS.get(level.as_index()).unwrap(),
+            EnemyVariant::Boat(level) => BOAT_LEVELS.get(level.as_index()).unwrap(),
+            EnemyVariant::Submarine(level) => SUBMARINE_LEVELS.get(level.as_index()).unwrap(),
         }
     }
 }
@@ -216,16 +100,24 @@ impl Enemy {
         self.update_required = true;
     }
     pub fn get_damage(&self) -> u32 {
-        self.get_variant().get_config().get_damage()
+        self.get_config().get_damage()
     }
     pub fn get_kill_reward(&self) -> u32 {
-        self.get_variant().get_config().get_kill_reward()
+        self.get_config().get_kill_reward()
     }
     pub fn get_update_required(&self) -> bool {
         self.update_required
     }
     pub fn set_update_required(&mut self, value: bool) {
         self.update_required = value;
+    }
+}
+
+impl Deref for Enemy {
+    type Target = EnemyVariant;
+
+    fn deref(&self) -> &Self::Target {
+        &self.variant
     }
 }
 
@@ -255,7 +147,7 @@ fn init_enemy(
 ) {
     for (enemy_entity, enemy) in enemies.iter() {
         commands.entity(enemy_entity).insert((
-            EnemyHealth::new(enemy.get_variant().get_config().get_health()),
+            EnemyHealth::new(enemy.get_config().get_health()),
             TileSprite::new(enemy.get_variant().into()),
         ));
 
@@ -300,10 +192,10 @@ fn update_enemy_movement(
         }
         if enemy.get_update_required() == true {
             enemy_tile_sprite.set_variant(TileSpriteVariant::Enemy(enemy.get_variant().into()));
-            let config = enemy.get_variant().get_config();
+            let config = enemy.get_config();
             enemy_health.set_max(config.get_health());
             enemy_health.heal(config.get_health());
-            enemy_tile_position.set_z(config.get_z_position());
+            enemy_tile_position.set_z((1.0 / enemy_movement.get_speed()).clamp(0.0, 1.0));
             enemy_transform.scale = config.get_sprite_scale();
             enemy.set_update_required(false);
         }
