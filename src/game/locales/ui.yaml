@@ -111,15 +111,15 @@ ui.pause.back_to_menu:
     en: "Back to menu"
     ru: "Вернуться в меню"
 
-ui.game_over.title:
-    en: "Game over"
-    ru: "Игра окончена"
 ui.game_over.player_win:
     en: "You win!"
     ru: "Вы победили!"
 ui.game_over.player_lose:
     en: "You lose!"
     ru: "Вы проиграли!"
+ui.game_over.restart_level:
+    en: "Restart level"
+    ru: "Повторить уровень"
 ui.game_over.back_to_menu:
     en: "Back to menu"
     ru: "Вернуться в меню"
