@@ -1,7 +1,7 @@
 LevelAsset(
     name: "example",
     player_health: 100,
-    player_money: 50,
+    player_money: 150,
     size: (20, 20),
     map: [
         "....................",
@@ -30,6 +30,7 @@ LevelAsset(
         flower: 'F',
         tree: 'T',
         road: '.',
+        bridge: '=',
         water: '~',
     )),
     paths: Some([
@@ -44,7 +45,7 @@ LevelAsset(
             reward: 50,
             enemies: [
                 WaveEnemies (
-                    enemy_variant: Truck,
+                    enemy_variant: Truck(Mk1),
                     count: 5,
                     duration: 20.0,
                     spawn_interval: 0.5,
@@ -57,7 +58,7 @@ LevelAsset(
             reward: 100,
             enemies: [
                 WaveEnemies (
-                    enemy_variant: Truck,
+                    enemy_variant: Truck(Mk1),
                     count: 5,
                     duration: 20.0,
                     spawn_interval: 0.5,
