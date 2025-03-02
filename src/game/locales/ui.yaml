@@ -107,6 +107,9 @@ ui.soldier.rocket_launcher:
 ui.pause.title:
     en: "Pause"
     ru: "Пауза"
+ui.pause.resume_game:
+    en: "Resume game"
+    ru: "Продолжить игру"
 ui.pause.back_to_menu:
     en: "Back to menu"
     ru: "Вернуться в меню"

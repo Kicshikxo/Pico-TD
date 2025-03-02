@@ -129,7 +129,7 @@ fn init_ui(mut commands: Commands, ui_assets: Res<UiAssets>, player: Res<Player>
                     parent
                         .spawn((
                             ButtonAction::BackToMenu,
-                            UiButton::new().with_variant(UiButtonVariant::Primary),
+                            UiButton::new().with_variant(UiButtonVariant::Danger),
                         ))
                         .with_child(UiText::new("ui.game_over.back_to_menu"));
                 });

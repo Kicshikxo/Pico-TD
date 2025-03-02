@@ -123,10 +123,18 @@ fn init_ui(
                                 (game_audio_volume.get_music_volume() * 20.0) as usize,
                             ),
                     ));
+
+                    parent
+                        .spawn((
+                            ButtonAction::Close,
+                            UiButton::new().with_variant(UiButtonVariant::Success),
+                        ))
+                        .with_child(UiText::new("ui.pause.resume_game"));
+
                     parent
                         .spawn((
                             ButtonAction::BackToMenu,
-                            UiButton::new().with_variant(UiButtonVariant::Primary),
+                            UiButton::new().with_variant(UiButtonVariant::Danger),
                         ))
                         .with_child(UiText::new("ui.pause.back_to_menu"));
                 });
