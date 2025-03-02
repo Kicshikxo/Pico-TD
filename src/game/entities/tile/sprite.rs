@@ -51,7 +51,7 @@ impl TileSpriteVariant {
         match self {
             TileSpriteVariant::Projectile(variant) => match variant {
                 ProjectileVariant::Bullet => ProjectileSpriteVariant::Bullet as usize,
-                ProjectileVariant::Rocket => ProjectileSpriteVariant::Rocket as usize,
+                ProjectileVariant::Rocket { .. } => ProjectileSpriteVariant::Rocket as usize,
             },
             TileSpriteVariant::Soldier(variant) => {
                 variant.get_config().get_sprite_variant() as usize

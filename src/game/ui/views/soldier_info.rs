@@ -260,6 +260,21 @@ fn init_ui(
                                                 .with_size(UiTextSize::Small)
                                                 .with_justify(JustifyText::Left),
                                         );
+                                        if let Some(blast_radius) = soldier
+                                            .get_config()
+                                            .get_projectile_variant()
+                                            .get_blast_radius()
+                                        {
+                                            parent.spawn(
+                                                UiText::new("ui.soldier_info.soldier_blast_radius")
+                                                    .with_i18n_arg(
+                                                        "blast_radius",
+                                                        blast_radius.to_string(),
+                                                    )
+                                                    .with_size(UiTextSize::Small)
+                                                    .with_justify(JustifyText::Left),
+                                            );
+                                        }
                                         parent.spawn(
                                             UiText::new("ui.soldier_info.soldier_fire_rate")
                                                 .with_i18n_arg(

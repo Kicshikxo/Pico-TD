@@ -195,7 +195,7 @@ fn update_enemy_movement(
             let config = enemy.get_config();
             enemy_health.set_max(config.get_health());
             enemy_health.heal(config.get_health());
-            enemy_tile_position.set_z((1.0 / enemy_movement.get_speed()).clamp(0.0, 1.0));
+            enemy_tile_position.set_z((enemy_movement.get_speed() / 100.0).clamp(0.0, 1.0));
             enemy_transform.scale = config.get_sprite_scale();
             enemy.set_update_required(false);
         }

@@ -2,6 +2,7 @@ pub mod config;
 pub mod cooldown_indicator;
 pub mod fire_radius;
 pub mod projectile;
+pub mod projectile_blast;
 
 use std::{ops::Deref, time::Duration};
 
@@ -21,6 +22,7 @@ use crate::game::{
             cooldown_indicator::{CooldownIndicator, CooldownIndicatorPlugin},
             fire_radius::{FireRadius, FireRadiusPlugin},
             projectile::{Projectile, ProjectilePlugin},
+            projectile_blast::ProjectileBlastPlugin,
         },
         tile::{
             movement::TileMovement,
@@ -156,7 +158,12 @@ pub struct SoldierPlugin;
 
 impl Plugin for SoldierPlugin {
     fn build(&self, app: &mut App) {
-        app.add_plugins((CooldownIndicatorPlugin, FireRadiusPlugin, ProjectilePlugin));
+        app.add_plugins((
+            CooldownIndicatorPlugin,
+            FireRadiusPlugin,
+            ProjectilePlugin,
+            ProjectileBlastPlugin,
+        ));
 
         app.add_systems(PreUpdate, init_soldier);
 

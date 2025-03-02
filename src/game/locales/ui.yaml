@@ -84,6 +84,9 @@ ui.soldier_info.soldier_damage:
 ui.soldier_info.soldier_fire_radius:
     en: "Fire radius: %{fire_radius}"
     ru: "Радиус стрельбы: %{fire_radius}"
+ui.soldier_info.soldier_blast_radius:
+    en: "Blast radius: %{blast_radius}"
+    ru: "Радиус взрыва: %{blast_radius}"
 ui.soldier_info.soldier_fire_rate:
     en: "Fire rate: %{fire_rate}/s"
     ru: "Скорострельность: %{fire_rate}/с"

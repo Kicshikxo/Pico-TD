@@ -6,9 +6,10 @@ use crate::game::{
     assets::sprites::entity::{EntityAssets, UtilSpriteVariant},
     entities::{
         enemy::{health::EnemyHealth, Enemy},
+        soldier::projectile_blast::ProjectileBlast,
         tile::{movement::TileMovement, position::TilePosition, sprite::TileSprite},
     },
-    GameState,
+    GameState, GameTilemap,
 };
 
 pub struct ProjectileVariantConfig {
@@ -28,7 +29,16 @@ impl ProjectileVariantConfig {
 #[derive(Clone, Copy, PartialEq)]
 pub enum ProjectileVariant {
     Bullet,
-    Rocket,
+    Rocket { blast_radius: f32 },
+}
+
+impl ProjectileVariant {
+    pub fn get_blast_radius(&self) -> Option<f32> {
+        match self {
+            ProjectileVariant::Rocket { blast_radius } => Some(*blast_radius),
+            _ => None,
+        }
+    }
 }
 
 #[derive(Component, Clone, Copy)]
@@ -46,7 +56,7 @@ impl ProjectileVariant {
                 duration: Duration::from_secs_f32(0.1),
                 sprite_scale: Vec3::new(0.5, 0.5, 1.0),
             },
-            ProjectileVariant::Rocket => ProjectileVariantConfig {
+            ProjectileVariant::Rocket { .. } => ProjectileVariantConfig {
                 duration: Duration::from_secs_f32(0.2),
                 sprite_scale: Vec3::new(0.75, 0.75, 1.0),
             },
@@ -122,6 +132,7 @@ fn init_projectile(
 
 fn update_projectile(
     mut commands: Commands,
+    game_tilemap: Query<Entity, With<GameTilemap>>,
     mut projectiles: Query<
         (
             &Projectile,
@@ -132,7 +143,7 @@ fn update_projectile(
         ),
         With<Projectile>,
     >,
-    mut enemies: Query<&mut EnemyHealth, With<Enemy>>,
+    mut enemies: Query<(&mut EnemyHealth, &TilePosition), (With<Enemy>, Without<Projectile>)>,
 ) {
     for (
         projectile,
@@ -144,8 +155,24 @@ fn update_projectile(
     {
         if projectile_movement.get_progress() >= 1.0 {
             commands.entity(projectile_entity).despawn_recursive();
-            if let Ok(mut enemy_health) = enemies.get_mut(projectile.target) {
-                enemy_health.damage(projectile.damage);
+            if let Some(radius) = projectile.get_blast_radius() {
+                for (mut enemy_health, enemy_tile_position) in enemies.iter_mut() {
+                    if enemy_tile_position
+                        .as_vec2()
+                        .distance(projectile_tile_position.as_vec2())
+                        <= radius
+                    {
+                        enemy_health.damage(projectile.get_damage());
+                    }
+                }
+                commands.entity(game_tilemap.single()).with_child((
+                    ProjectileBlast::new(radius),
+                    TilePosition::from_vec2(projectile_tile_position.as_vec2()),
+                ));
+            } else if let Ok((mut enemy_health, _enemy_tile_position)) =
+                enemies.get_mut(projectile.get_target())
+            {
+                enemy_health.damage(projectile.get_damage());
             }
             continue;
         }
