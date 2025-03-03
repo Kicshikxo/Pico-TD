@@ -112,18 +112,14 @@ fn init_ui(
                                 LocaleSelector,
                                 UiSelector::new()
                                     .with_options(vec![
-                                        UiSelectorItem::new(
-                                            "ui.settings.english_language".to_string(),
-                                        )
-                                        .with_value(
-                                            UiSelectorItemValue::String(Locale::En.to_string()),
-                                        ),
-                                        UiSelectorItem::new(
-                                            "ui.settings.russian_language".to_string(),
-                                        )
-                                        .with_value(
-                                            UiSelectorItemValue::String(Locale::Ru.to_string()),
-                                        ),
+                                        UiSelectorItem::new("ui.settings.english_language")
+                                            .with_value(UiSelectorItemValue::String(
+                                                Locale::En.to_string(),
+                                            )),
+                                        UiSelectorItem::new("ui.settings.russian_language")
+                                            .with_value(UiSelectorItemValue::String(
+                                                Locale::Ru.to_string(),
+                                            )),
                                     ])
                                     .with_default_index(i18n.get_current() as usize)
                                     .cycle(),
@@ -135,7 +131,7 @@ fn init_ui(
                                     .with_options(
                                         (0..=20)
                                             .map(|index| {
-                                                UiSelectorItem::new(format!("{}%", index * 5))
+                                                UiSelectorItem::new(&format!("{}%", index * 5))
                                                     .with_value(UiSelectorItemValue::Number(
                                                         index as f32 / 20.0,
                                                     ))
@@ -153,7 +149,7 @@ fn init_ui(
                                     .with_options(
                                         (0..=20)
                                             .map(|index| {
-                                                UiSelectorItem::new(format!("{}%", index * 5))
+                                                UiSelectorItem::new(&format!("{}%", index * 5))
                                                     .with_value(UiSelectorItemValue::Number(
                                                         index as f32 / 20.0,
                                                     ))

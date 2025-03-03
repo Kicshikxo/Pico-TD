@@ -59,8 +59,11 @@ impl Default for UiSelectorItem {
 }
 
 impl UiSelectorItem {
-    pub fn new(text: String) -> Self {
-        Self { text, ..default() }
+    pub fn new(text: &str) -> Self {
+        Self {
+            text: text.into(),
+            ..default()
+        }
     }
     pub fn with_i18n_arg(mut self, key: &str, value: String) -> Self {
         self.i18n_args.push((key.to_string(), value));

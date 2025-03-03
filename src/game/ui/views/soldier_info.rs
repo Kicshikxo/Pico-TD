@@ -6,7 +6,7 @@ use crate::game::{
         ui::{UiAssets, UiButtonSpriteVariant, UiMiscSpriteVariant},
     },
     entities::{
-        soldier::Soldier,
+        soldier::{Soldier, SoldierTargetPriority},
         tile::{position::TilePosition, sprite::TileSprite},
     },
     input::{SelectedSoldier, SelectedTile},
@@ -15,6 +15,7 @@ use crate::game::{
         components::{
             button::UiButton,
             container::UiContainer,
+            selector::{UiSelector, UiSelectorItem, UiSelectorItemValue, UiSelectorSize},
             text::{UiText, UiTextSize},
         },
         i18n::I18nComponent,
@@ -47,6 +48,9 @@ enum SoldierInfoComponent {
     BlastRadius,
     FireRate,
 }
+
+#[derive(Component)]
+struct SoldierTargetPrioritySelector;
 
 #[derive(Component, PartialEq)]
 enum ButtonAction {
@@ -302,6 +306,43 @@ fn init_ui(
                         parent
                             .spawn(UiContainer::new().with_row_gap(Val::Px(8.0)).column())
                             .with_children(|parent| {
+                                parent
+                                    .spawn(UiContainer::new().column().center())
+                                    .with_children(|parent| {
+                                        parent.spawn(
+                                            UiText::new("ui.soldier_info.target_priority")
+                                                .with_size(UiTextSize::Small),
+                                        );
+
+                                        parent.spawn((
+                                            SoldierTargetPrioritySelector,
+                                            UiSelector::new()
+                                                .with_size(UiSelectorSize::Small)
+                                                .with_options(
+                                                    [
+                                                        SoldierTargetPriority::First,
+                                                        SoldierTargetPriority::Last,
+                                                        SoldierTargetPriority::Nearest,
+                                                        SoldierTargetPriority::Strongest,
+                                                    ]
+                                                    .iter()
+                                                    .map(|priority| {
+                                                        UiSelectorItem::new(priority.to_str())
+                                                            .with_value(
+                                                                UiSelectorItemValue::Number(
+                                                                    priority.as_index() as f32,
+                                                                ),
+                                                            )
+                                                    })
+                                                    .collect(),
+                                                )
+                                                .with_default_index(
+                                                    soldier.get_target_priority().as_index(),
+                                                )
+                                                .cycle(),
+                                        ));
+                                    });
+
                                 if soldier.is_next_level_allowed() == true {
                                     parent
                                         .spawn((
@@ -356,6 +397,10 @@ fn update_ui(
     mut commands: Commands,
     interaction_query: Query<(&Interaction, &ButtonAction), (Changed<Interaction>, With<UiButton>)>,
     keyboard_input: Res<ButtonInput<KeyCode>>,
+    mut soldier_target_priority_selector: Query<
+        &mut UiSelector,
+        With<SoldierTargetPrioritySelector>,
+    >,
     mut soldiers: Query<(Entity, &mut Soldier, &TilePosition)>,
     mut player: ResMut<Player>,
     selected_soldier: Res<SelectedSoldier>,
@@ -363,6 +408,23 @@ fn update_ui(
     mut next_ui_state: ResMut<NextState<UiState>>,
     mut next_game_state: ResMut<NextState<GameState>>,
 ) {
+    if let Ok(mut soldier_target_priority_selector) =
+        soldier_target_priority_selector.get_single_mut()
+    {
+        if let Some(changed_item) = soldier_target_priority_selector.get_changed_item() {
+            for (_soldier_entity, mut soldier, soldier_tile_position) in soldiers.iter_mut() {
+                if soldier_tile_position.as_vec2() != selected_soldier.tile_position.as_vec2() {
+                    continue;
+                }
+
+                soldier.set_target_priority(SoldierTargetPriority::from_index(
+                    changed_item.value.as_f32() as usize,
+                ));
+
+                break;
+            }
+        }
+    }
     for (interaction, button_action) in interaction_query.iter() {
         if *interaction != Interaction::Pressed {
             continue;
@@ -510,7 +572,7 @@ fn update_soldier_info(
 
                 soldier_info_i18n_component.change_i18n_arg(key, value);
                 soldier_info_component_text_color.0 = if show_next_level && changed {
-                    Color::srgb(0.5, 1.0, 0.5)
+                    Color::srgb(0.25, 1.0, 0.25)
                 } else {
                     Color::WHITE
                 };

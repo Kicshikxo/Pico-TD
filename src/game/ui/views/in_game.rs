@@ -184,7 +184,7 @@ fn init_ui(
                                     .map(|index| {
                                         let game_speed = GameSpeed::from_f32(index as f32);
 
-                                        UiSelectorItem::new("ui.in_game.game_speed".to_string())
+                                        UiSelectorItem::new("ui.in_game.game_speed")
                                             .with_i18n_arg("speed", game_speed.as_f32().to_string())
                                             .with_value(UiSelectorItemValue::Number(
                                                 game_speed.as_f32(),

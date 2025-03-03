@@ -91,7 +91,7 @@ fn init_ui(
                             .with_options(
                                 (0..=20)
                                     .map(|index| {
-                                        UiSelectorItem::new(format!("{}%", index * 5)).with_value(
+                                        UiSelectorItem::new(&format!("{}%", index * 5)).with_value(
                                             UiSelectorItemValue::Number(index as f32 / 20.0),
                                         )
                                     })
@@ -108,7 +108,7 @@ fn init_ui(
                             .with_options(
                                 (0..=20)
                                     .map(|index| {
-                                        UiSelectorItem::new(format!("{}%", index * 5)).with_value(
+                                        UiSelectorItem::new(&format!("{}%", index * 5)).with_value(
                                             UiSelectorItemValue::Number(index as f32 / 20.0),
                                         )
                                     })

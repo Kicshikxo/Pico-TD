@@ -90,6 +90,9 @@ ui.soldier_info.soldier_blast_radius:
 ui.soldier_info.soldier_fire_rate:
     en: "Fire rate: %{fire_rate}/s"
     ru: "Скорострельность: %{fire_rate}/с"
+ui.soldier_info.target_priority:
+    en: "Target priority"
+    ru: "Приоритет выбора цели"
 ui.soldier_info.upgrade_soldier:
     en: "Upgrade %{price}$"
     ru: "Улучшить %{price}$"
@@ -106,6 +109,18 @@ ui.soldier.sniper:
 ui.soldier.rocket_launcher:
     en: "Rocket launcher"
     ru: "Ракетница"
+ui.soldier.target_priority.first:
+    en: "First"
+    ru: "Первая"
+ui.soldier.target_priority.last:
+    en: "Last"
+    ru: "Последняя"
+ui.soldier.target_priority.nearest:
+    en: "Nearest"
+    ru: "Ближайшая"
+ui.soldier.target_priority.strongest:
+    en: "Strongest"
+    ru: "Сильнейшая"
 
 ui.pause.title:
     en: "Pause"

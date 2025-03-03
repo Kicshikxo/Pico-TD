@@ -89,11 +89,49 @@ impl SoldierVariant {
     }
 }
 
+#[derive(Clone, Copy, Default)]
+pub enum SoldierTargetPriority {
+    #[default]
+    First,
+    Last,
+    Nearest,
+    Strongest,
+}
+
+impl SoldierTargetPriority {
+    pub fn to_str(&self) -> &'static str {
+        match self {
+            SoldierTargetPriority::First => "ui.soldier.target_priority.first",
+            SoldierTargetPriority::Last => "ui.soldier.target_priority.last",
+            SoldierTargetPriority::Nearest => "ui.soldier.target_priority.nearest",
+            SoldierTargetPriority::Strongest => "ui.soldier.target_priority.strongest",
+        }
+    }
+    pub fn as_index(&self) -> usize {
+        match self {
+            SoldierTargetPriority::First => 0,
+            SoldierTargetPriority::Last => 1,
+            SoldierTargetPriority::Nearest => 2,
+            SoldierTargetPriority::Strongest => 3,
+        }
+    }
+    pub fn from_index(index: usize) -> Self {
+        match index {
+            0 => SoldierTargetPriority::First,
+            1 => SoldierTargetPriority::Last,
+            2 => SoldierTargetPriority::Nearest,
+            3 => SoldierTargetPriority::Strongest,
+            _ => SoldierTargetPriority::default(),
+        }
+    }
+}
+
 #[derive(Component, Clone)]
 #[require(TilePosition)]
 pub struct Soldier {
     variant: SoldierVariant,
     cooldown: Duration,
+    target_priority: SoldierTargetPriority,
     update_required: bool,
 }
 
@@ -103,6 +141,7 @@ impl Soldier {
         Self {
             variant,
             cooldown: Duration::ZERO,
+            target_priority: SoldierTargetPriority::default(),
             update_required: false,
         }
     }
@@ -137,6 +176,12 @@ impl Soldier {
     }
     pub fn update_cooldown(&mut self) {
         self.cooldown = self.get_fire_rate();
+    }
+    pub fn get_target_priority(&self) -> SoldierTargetPriority {
+        self.target_priority
+    }
+    pub fn set_target_priority(&mut self, priority: SoldierTargetPriority) {
+        self.target_priority = priority;
     }
     pub fn get_update_required(&self) -> bool {
         self.update_required
@@ -206,25 +251,6 @@ fn update_soldier(
     game_audio_assets: Res<GameAudioAssets>,
     game_audio_volume: Res<Persistent<GameAudioVolume>>,
 ) {
-    let mut sorted_enemies = enemies
-        .iter()
-        .filter(
-            |(_enemy_entity, _enemy_health, enemy_movement, _enemy_tile_position)| {
-                enemy_movement.get_progress() > 0.0
-            },
-        )
-        .collect::<Vec<_>>();
-
-    sorted_enemies.sort_unstable_by(
-        |(_enemy_a_entity, _enemy_a_health, enemy_a_movement, _enemy_a_tile_position),
-         (_enemy_b_entity, _enemy_b_health, enemy_b_movement, _enemy_b_tile_position)| {
-            enemy_b_movement
-                .get_progress()
-                .partial_cmp(&enemy_a_movement.get_progress())
-                .unwrap_or(std::cmp::Ordering::Equal)
-        },
-    );
-
     let mut projectiles = projectiles.iter().cloned().collect::<Vec<Projectile>>();
 
     for (mut soldier, soldier_tile_position, mut soldier_tile_sprite, mut soldier_transform) in
@@ -240,64 +266,104 @@ fn update_soldier(
             continue;
         }
 
+        let mut sorted_enemies = enemies
+            .iter()
+            .filter(|(_, _, enemy_movement, _)| enemy_movement.get_progress() > 0.0)
+            .collect::<Vec<_>>();
+
+        sorted_enemies.sort_unstable_by(
+            |(_, enemy_a_health, enemy_a_movement, enemy_a_tile_position),
+             (_, enemy_b_health, enemy_b_movement, enemy_b_tile_position)| {
+                match soldier.get_target_priority() {
+                    SoldierTargetPriority::First => enemy_b_movement
+                        .get_progress()
+                        .total_cmp(&enemy_a_movement.get_progress()),
+                    SoldierTargetPriority::Last => enemy_a_movement
+                        .get_progress()
+                        .total_cmp(&enemy_b_movement.get_progress()),
+                    SoldierTargetPriority::Nearest => enemy_a_tile_position
+                        .as_vec2()
+                        .distance(soldier_tile_position.as_vec2())
+                        .total_cmp(
+                            &enemy_b_tile_position
+                                .as_vec2()
+                                .distance(soldier_tile_position.as_vec2()),
+                        )
+                        .then_with(|| {
+                            enemy_b_movement
+                                .get_progress()
+                                .total_cmp(&enemy_a_movement.get_progress())
+                        }),
+                    SoldierTargetPriority::Strongest => enemy_b_health
+                        .get_current()
+                        .cmp(&enemy_a_health.get_current())
+                        .then_with(|| {
+                            enemy_b_movement
+                                .get_progress()
+                                .total_cmp(&enemy_a_movement.get_progress())
+                        }),
+                }
+            },
+        );
+
         for (enemy_entity, enemy_health, enemy_movement, enemy_tile_position) in
             sorted_enemies.iter()
         {
             if soldier_tile_position
                 .as_vec2()
                 .distance(enemy_tile_position.as_vec2())
-                <= soldier.get_fire_radius()
+                > soldier.get_fire_radius()
             {
-                if enemy_health.get_current()
-                    <= projectiles
-                        .iter()
-                        .filter(|projectile| projectile.get_target() == *enemy_entity)
-                        .map(|projectile| projectile.get_damage())
-                        .sum()
-                {
-                    continue;
-                }
-
-                let projectile_variant = soldier.get_config().get_projectile_variant();
-                let projectile_duration = projectile_variant.get_config().get_duration();
-
-                let enemy_progress_on_hit = enemy_movement.get_progress()
-                    + projectile_duration.as_secs_f32()
-                        / enemy_movement.get_duration().as_secs_f32();
-
-                let projectile =
-                    Projectile::new(projectile_variant, *enemy_entity, soldier.get_damage());
-                commands.entity(game_tilemap.single()).with_child((
-                    projectile,
-                    TileMovement::new(
-                        vec![
-                            soldier_tile_position.as_vec2(),
-                            enemy_movement.position_at_progress(enemy_progress_on_hit),
-                        ],
-                        projectile_duration,
-                        None,
-                    ),
-                ));
-                projectiles.push(projectile);
-
-                commands.entity(game_audio.single()).with_child((
-                    AudioPlayer::new(game_audio_assets.get_random_shoot()),
-                    PlaybackSettings {
-                        mode: PlaybackMode::Remove,
-                        volume: Volume::new(game_audio_volume.get_sfx_volume()),
-                        ..default()
-                    },
-                ));
-
-                soldier.update_cooldown();
-
-                let enemy_direction = soldier_tile_position.as_vec2()
-                    - enemy_movement.position_at_progress(enemy_progress_on_hit);
-                let scale_x = if enemy_direction.x < 0.0 { 1.0 } else { -1.0 };
-                soldier_transform.scale.x = scale_x;
-
-                break;
+                continue;
             }
+            if enemy_health.get_current()
+                <= projectiles
+                    .iter()
+                    .filter(|projectile| projectile.get_target() == *enemy_entity)
+                    .map(|projectile| projectile.get_damage())
+                    .sum()
+            {
+                continue;
+            }
+
+            let projectile_variant = soldier.get_config().get_projectile_variant();
+            let projectile_duration = projectile_variant.get_config().get_duration();
+
+            let enemy_progress_on_hit = enemy_movement.get_progress()
+                + projectile_duration.as_secs_f32() / enemy_movement.get_duration().as_secs_f32();
+
+            let projectile =
+                Projectile::new(projectile_variant, *enemy_entity, soldier.get_damage());
+            commands.entity(game_tilemap.single()).with_child((
+                projectile,
+                TileMovement::new(
+                    vec![
+                        soldier_tile_position.as_vec2(),
+                        enemy_movement.position_at_progress(enemy_progress_on_hit),
+                    ],
+                    projectile_duration,
+                    None,
+                ),
+            ));
+            projectiles.push(projectile);
+
+            commands.entity(game_audio.single()).with_child((
+                AudioPlayer::new(game_audio_assets.get_random_shoot()),
+                PlaybackSettings {
+                    mode: PlaybackMode::Remove,
+                    volume: Volume::new(game_audio_volume.get_sfx_volume()),
+                    ..default()
+                },
+            ));
+
+            soldier.update_cooldown();
+
+            let enemy_direction = soldier_tile_position.as_vec2()
+                - enemy_movement.position_at_progress(enemy_progress_on_hit);
+            let scale_x = if enemy_direction.x < 0.0 { 1.0 } else { -1.0 };
+            soldier_transform.scale.x = scale_x;
+
+            break;
         }
     }
 }
@@ -309,16 +375,18 @@ fn update_soldier_cooldown(
     time: Res<Time>,
 ) {
     for (soldier_entity, mut soldier) in soldiers.iter_mut() {
-        if soldier.get_cooldown() > Duration::ZERO {
-            soldier.decrease_cooldown(Duration::from_secs_f32(
-                time.delta_secs() * game_speed.as_f32(),
-            ));
+        if soldier.get_cooldown() == Duration::ZERO {
+            continue;
+        }
 
-            for mut cooldown_indicator in cooldown_indicators.iter_mut() {
-                if cooldown_indicator.get_soldier_entity() == soldier_entity {
-                    cooldown_indicator.set_update_required(true);
-                    break;
-                }
+        soldier.decrease_cooldown(Duration::from_secs_f32(
+            time.delta_secs() * game_speed.as_f32(),
+        ));
+
+        for mut cooldown_indicator in cooldown_indicators.iter_mut() {
+            if cooldown_indicator.get_soldier_entity() == soldier_entity {
+                cooldown_indicator.set_update_required(true);
+                break;
             }
         }
     }
