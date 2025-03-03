@@ -4,8 +4,8 @@ use crate::game::{
     assets::sprites::ui::{UiAssets, UiMiscSpriteVariant},
     ui::{
         components::{
-            button::{UiButton, UiButtonVariant},
-            container::{UiContainer, UiContainerVariant},
+            button::UiButton,
+            container::UiContainer,
             text::{UiText, UiTextSize},
         },
         UiState,
@@ -54,8 +54,7 @@ fn init_ui(mut commands: Commands, ui_assets: Res<UiAssets>) {
         .with_children(|parent| {
             parent
                 .spawn(
-                    UiContainer::new()
-                        .with_variant(UiContainerVariant::Primary)
+                    UiContainer::primary()
                         .with_width(Val::Px(320.0))
                         .with_padding(UiRect::all(Val::Px(24.0)))
                         .with_row_gap(Val::Px(12.0))
@@ -64,35 +63,22 @@ fn init_ui(mut commands: Commands, ui_assets: Res<UiAssets>) {
                 )
                 .with_children(|parent| {
                     parent
-                        .spawn(
-                            UiContainer::new()
-                                .with_variant(UiContainerVariant::Secondary)
-                                .with_padding(UiRect::all(Val::Px(8.0))),
-                        )
+                        .spawn(UiContainer::secondary().with_padding(UiRect::all(Val::Px(8.0))))
                         .with_child(
                             UiText::new("ui.menu.game_title").with_size(UiTextSize::ExtraLarge),
                         );
 
                     parent
-                        .spawn((
-                            ButtonAction::Start,
-                            UiButton::new().with_variant(UiButtonVariant::Success),
-                        ))
+                        .spawn((ButtonAction::Start, UiButton::success()))
                         .with_child(UiText::new("ui.menu.start_game").with_size(UiTextSize::Large));
 
                     parent
-                        .spawn((
-                            ButtonAction::Settings,
-                            UiButton::new().with_variant(UiButtonVariant::Primary),
-                        ))
+                        .spawn((ButtonAction::Settings, UiButton::primary()))
                         .with_child(UiText::new("ui.menu.settings").with_size(UiTextSize::Large));
 
                     #[cfg(not(target_arch = "wasm32"))]
                     parent
-                        .spawn((
-                            ButtonAction::Exit,
-                            UiButton::new().with_variant(UiButtonVariant::Danger),
-                        ))
+                        .spawn((ButtonAction::Exit, UiButton::danger()))
                         .with_child(UiText::new("ui.menu.exit_game").with_size(UiTextSize::Large));
                 });
         });
@@ -109,18 +95,19 @@ fn update_ui(
     mut next_ui_state: ResMut<NextState<UiState>>,
     mut app_exit_events: EventWriter<AppExit>,
 ) {
-    for (interaction, button_action) in &interaction_query {
-        if *interaction == Interaction::Pressed {
-            match button_action {
-                ButtonAction::Start => {
-                    next_ui_state.set(UiState::LevelSelect);
-                }
-                ButtonAction::Settings => {
-                    next_ui_state.set(UiState::Settings);
-                }
-                ButtonAction::Exit => {
-                    app_exit_events.send(AppExit::Success);
-                }
+    for (interaction, button_action) in interaction_query.iter() {
+        if *interaction != Interaction::Pressed {
+            continue;
+        }
+        match button_action {
+            ButtonAction::Start => {
+                next_ui_state.set(UiState::LevelSelect);
+            }
+            ButtonAction::Settings => {
+                next_ui_state.set(UiState::Settings);
+            }
+            ButtonAction::Exit => {
+                app_exit_events.send(AppExit::Success);
             }
         }
     }

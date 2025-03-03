@@ -5,7 +5,7 @@ use crate::game::{
     player::Player,
     ui::{
         components::{
-            button::{UiButton, UiButtonVariant},
+            button::UiButton,
             container::UiContainer,
             selector::{UiSelector, UiSelectorItem, UiSelectorItemValue, UiSelectorSize},
             text::{UiText, UiTextSize},
@@ -166,8 +166,7 @@ fn init_ui(
                     parent
                         .spawn((
                             ButtonAction::NextWave,
-                            UiButton::new()
-                                .with_variant(UiButtonVariant::Success)
+                            UiButton::success()
                                 .with_disabled(game_wave.is_next_wave_allowed() == false)
                                 .with_height(Val::Px(32.0))
                                 .with_padding(UiRect::horizontal(Val::Px(16.0))),
@@ -199,8 +198,7 @@ fn init_ui(
                     parent
                         .spawn((
                             ButtonAction::Pause,
-                            UiButton::new()
-                                .with_variant(UiButtonVariant::Danger)
+                            UiButton::danger()
                                 .with_height(Val::Px(32.0))
                                 .with_padding(UiRect::horizontal(Val::Px(16.0))),
                         ))
@@ -229,17 +227,18 @@ fn update_ui(
             game_speed.set(GameSpeed::from_f32(changed_item.value.as_f32()));
         }
     }
-    for (interaction, button_action) in &interaction_query {
-        if *interaction == Interaction::Pressed {
-            match button_action {
-                ButtonAction::Pause => {
-                    next_ui_state.set(UiState::Pause);
-                    next_game_state.set(GameState::Pause);
-                }
-                ButtonAction::NextWave => {
-                    if game_wave.is_next_wave_allowed() == true {
-                        game_wave.next_wave();
-                    }
+    for (interaction, button_action) in interaction_query.iter() {
+        if *interaction != Interaction::Pressed {
+            continue;
+        }
+        match button_action {
+            ButtonAction::Pause => {
+                next_ui_state.set(UiState::Pause);
+                next_game_state.set(GameState::Pause);
+            }
+            ButtonAction::NextWave => {
+                if game_wave.is_next_wave_allowed() == true {
+                    game_wave.next_wave();
                 }
             }
         }

@@ -63,7 +63,7 @@ fn init_fire_radius(
             .insert((
                 Mesh2d(meshes.add(Annulus::new(0.0, 0.0))),
                 MeshMaterial2d(materials.add(ColorMaterial {
-                    color: Color::srgb(0.0, 0.0, 0.5).with_alpha(0.0),
+                    color: Color::srgb(0.25, 0.25, 0.5).with_alpha(0.0),
                     alpha_mode: AlphaMode2d::Blend,
                     ..default()
                 })),
@@ -71,7 +71,7 @@ fn init_fire_radius(
             .with_child((
                 Mesh2d(meshes.add(Circle::new(0.0))),
                 MeshMaterial2d(materials.add(ColorMaterial {
-                    color: Color::srgb(0.0, 0.0, 0.5).with_alpha(0.0),
+                    color: Color::srgb(0.25, 0.25, 0.5).with_alpha(0.0),
                     alpha_mode: AlphaMode2d::Blend,
                     ..default()
                 })),

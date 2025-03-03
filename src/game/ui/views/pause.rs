@@ -6,8 +6,8 @@ use crate::game::{
     audio::GameAudioVolume,
     ui::{
         components::{
-            button::{UiButton, UiButtonVariant},
-            container::{UiContainer, UiContainerVariant},
+            button::UiButton,
+            container::UiContainer,
             selector::{UiSelector, UiSelectorItem, UiSelectorItemValue},
             text::{UiText, UiTextSize},
         },
@@ -55,8 +55,7 @@ fn init_ui(
         .with_children(|parent| {
             parent
                 .spawn(
-                    UiContainer::new()
-                        .with_variant(UiContainerVariant::Primary)
+                    UiContainer::primary()
                         .with_width(Val::Px(320.0))
                         .with_padding(UiRect::all(Val::Px(24.0)))
                         .with_row_gap(Val::Px(12.0))
@@ -82,11 +81,7 @@ fn init_ui(
                         },
                     ));
                     parent
-                        .spawn(
-                            UiContainer::new()
-                                .with_variant(UiContainerVariant::Secondary)
-                                .with_padding(UiRect::all(Val::Px(8.0))),
-                        )
+                        .spawn(UiContainer::secondary().with_padding(UiRect::all(Val::Px(8.0))))
                         .with_child(UiText::new("ui.pause.title").with_size(UiTextSize::Large));
 
                     parent.spawn(UiText::new("ui.settings.sfx_volume"));
@@ -125,17 +120,11 @@ fn init_ui(
                     ));
 
                     parent
-                        .spawn((
-                            ButtonAction::Close,
-                            UiButton::new().with_variant(UiButtonVariant::Success),
-                        ))
+                        .spawn((ButtonAction::Close, UiButton::success()))
                         .with_child(UiText::new("ui.pause.resume_game"));
 
                     parent
-                        .spawn((
-                            ButtonAction::BackToMenu,
-                            UiButton::new().with_variant(UiButtonVariant::Danger),
-                        ))
+                        .spawn((ButtonAction::BackToMenu, UiButton::danger()))
                         .with_child(UiText::new("ui.pause.back_to_menu"));
                 });
         });
@@ -176,17 +165,18 @@ fn update_ui(
                 .unwrap();
         }
     }
-    for (interaction, button_action) in &interaction_query {
-        if *interaction == Interaction::Pressed {
-            match button_action {
-                ButtonAction::Close => {
-                    next_ui_state.set(UiState::InGame);
-                    next_game_state.set(GameState::InGame);
-                }
-                ButtonAction::BackToMenu => {
-                    next_ui_state.set(UiState::Menu);
-                    next_game_state.set(GameState::Pause);
-                }
+    for (interaction, button_action) in interaction_query.iter() {
+        if *interaction != Interaction::Pressed {
+            continue;
+        }
+        match button_action {
+            ButtonAction::Close => {
+                next_ui_state.set(UiState::InGame);
+                next_game_state.set(GameState::InGame);
+            }
+            ButtonAction::BackToMenu => {
+                next_ui_state.set(UiState::Menu);
+                next_game_state.set(GameState::Pause);
             }
         }
     }

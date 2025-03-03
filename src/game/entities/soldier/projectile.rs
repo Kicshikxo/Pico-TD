@@ -122,7 +122,7 @@ fn init_projectile(
                     layout: entity_assets.tilemap_layout.clone(),
                     index: UtilSpriteVariant::Glow as usize,
                 }),
-                color: Color::srgba(1.0, 1.0, 0.5, 1.0),
+                color: Color::srgb(1.0, 1.0, 0.5),
                 custom_size: Some(Vec2::new(32.0, 32.0)),
                 ..default()
             });

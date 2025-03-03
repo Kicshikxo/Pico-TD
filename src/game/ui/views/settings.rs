@@ -9,8 +9,8 @@ use crate::game::{
     audio::GameAudioVolume,
     ui::{
         components::{
-            button::{UiButton, UiButtonVariant},
-            container::{UiContainer, UiContainerVariant},
+            button::UiButton,
+            container::UiContainer,
             selector::{UiSelector, UiSelectorItem, UiSelectorItemValue},
             text::{UiText, UiTextSize},
         },
@@ -75,8 +75,7 @@ fn init_ui(
         .with_children(|parent| {
             parent
                 .spawn(
-                    UiContainer::new()
-                        .with_variant(UiContainerVariant::Primary)
+                    UiContainer::primary()
                         .with_width(Val::Px(320.0))
                         .with_padding(UiRect::all(Val::Px(24.0)))
                         .with_row_gap(Val::Px(12.0))
@@ -102,11 +101,7 @@ fn init_ui(
                         },
                     ));
                     parent
-                        .spawn(
-                            UiContainer::new()
-                                .with_variant(UiContainerVariant::Secondary)
-                                .with_padding(UiRect::all(Val::Px(8.0))),
-                        )
+                        .spawn(UiContainer::secondary().with_padding(UiRect::all(Val::Px(8.0))))
                         .with_child(UiText::new("ui.settings.title").with_size(UiTextSize::Large));
 
                     parent
@@ -174,9 +169,7 @@ fn init_ui(
                     parent
                         .spawn((
                             ButtonAction::ResetProgress,
-                            UiButton::new()
-                                .with_variant(UiButtonVariant::Danger)
-                                .with_disabled(completed_levels.is_empty()),
+                            UiButton::danger().with_disabled(completed_levels.is_empty()),
                         ))
                         .with_child(UiText::new("ui.settings.reset_progress"));
                 });
@@ -229,18 +222,19 @@ fn update_ui(
         }
     }
     for (interaction, button_action) in interaction_query.iter() {
-        if *interaction == Interaction::Pressed {
-            match button_action {
-                ButtonAction::BackToMenu => {
-                    next_ui_state.set(UiState::Menu);
+        if *interaction != Interaction::Pressed {
+            continue;
+        }
+        match button_action {
+            ButtonAction::BackToMenu => {
+                next_ui_state.set(UiState::Menu);
+            }
+            ButtonAction::ResetProgress => {
+                if completed_levels.is_empty() {
+                    continue;
                 }
-                ButtonAction::ResetProgress => {
-                    if completed_levels.is_empty() {
-                        continue;
-                    }
-                    completed_levels.update(|levels| levels.reset()).unwrap();
-                    next_ui_state.set(UiState::Menu);
-                }
+                completed_levels.update(|levels| levels.reset()).unwrap();
+                next_ui_state.set(UiState::Menu);
             }
         }
     }

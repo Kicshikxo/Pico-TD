@@ -8,7 +8,7 @@ use crate::game::{
     player::Player,
     ui::{
         components::{
-            button::{UiButton, UiButtonVariant},
+            button::UiButton,
             container::{UiContainer, UiContainerVariant},
             text::{UiText, UiTextSize},
         },
@@ -102,8 +102,7 @@ fn init_ui(mut commands: Commands, ui_assets: Res<UiAssets>, player: Res<Player>
 
                     parent
                         .spawn(
-                            UiContainer::new()
-                                .with_variant(UiContainerVariant::Secondary)
+                            UiContainer::secondary()
                                 .with_padding(UiRect::all(Val::Px(12.0)))
                                 .column()
                                 .center(),
@@ -120,17 +119,11 @@ fn init_ui(mut commands: Commands, ui_assets: Res<UiAssets>, player: Res<Player>
                         });
 
                     parent
-                        .spawn((
-                            ButtonAction::RestartLevel,
-                            UiButton::new().with_variant(UiButtonVariant::Success),
-                        ))
+                        .spawn((ButtonAction::RestartLevel, UiButton::success()))
                         .with_child(UiText::new("ui.game_over.restart_level"));
 
                     parent
-                        .spawn((
-                            ButtonAction::BackToMenu,
-                            UiButton::new().with_variant(UiButtonVariant::Danger),
-                        ))
+                        .spawn((ButtonAction::BackToMenu, UiButton::danger()))
                         .with_child(UiText::new("ui.game_over.back_to_menu"));
                 });
         });
@@ -147,16 +140,17 @@ fn update_ui(
     mut next_ui_state: ResMut<NextState<UiState>>,
     mut next_game_state: ResMut<NextState<GameState>>,
 ) {
-    for (interaction, button_action) in &interaction_query {
-        if *interaction == Interaction::Pressed {
-            match button_action {
-                ButtonAction::RestartLevel => {
-                    next_game_state.set(GameState::Start);
-                }
-                ButtonAction::BackToMenu => {
-                    next_ui_state.set(UiState::Menu);
-                    next_game_state.set(GameState::Pause);
-                }
+    for (interaction, button_action) in interaction_query.iter() {
+        if *interaction != Interaction::Pressed {
+            continue;
+        }
+        match button_action {
+            ButtonAction::RestartLevel => {
+                next_game_state.set(GameState::Start);
+            }
+            ButtonAction::BackToMenu => {
+                next_ui_state.set(UiState::Menu);
+                next_game_state.set(GameState::Pause);
             }
         }
     }

@@ -66,6 +66,18 @@ impl UiContainer {
     pub fn new() -> Self {
         Self { ..default() }
     }
+    pub fn primary() -> Self {
+        Self::new().with_variant(UiContainerVariant::Primary)
+    }
+    pub fn secondary() -> Self {
+        Self::new().with_variant(UiContainerVariant::Secondary)
+    }
+    pub fn success() -> Self {
+        Self::new().with_variant(UiContainerVariant::Success)
+    }
+    pub fn danger() -> Self {
+        Self::new().with_variant(UiContainerVariant::Danger)
+    }
     pub fn with_variant(mut self, variant: UiContainerVariant) -> Self {
         self.variant = variant;
         self

@@ -61,9 +61,22 @@ impl Default for UiButton {
     }
 }
 
+#[allow(unused)]
 impl UiButton {
     pub fn new() -> Self {
         Self { ..default() }
+    }
+    pub fn primary() -> Self {
+        Self::new().with_variant(UiButtonVariant::Primary)
+    }
+    pub fn secondary() -> Self {
+        Self::new().with_variant(UiButtonVariant::Secondary)
+    }
+    pub fn danger() -> Self {
+        Self::new().with_variant(UiButtonVariant::Danger)
+    }
+    pub fn success() -> Self {
+        Self::new().with_variant(UiButtonVariant::Success)
     }
     pub fn with_variant(mut self, variant: UiButtonVariant) -> Self {
         self.variant = variant;
@@ -178,23 +191,24 @@ fn update_ui_button(
         if ui_button.get_disabled() == true {
             continue;
         }
-
         image_node.color = match *interaction {
             Interaction::Pressed => Color::srgb(0.9, 0.9, 0.9),
             Interaction::Hovered => Color::srgb(0.95, 0.95, 0.95),
             Interaction::None => Color::WHITE,
         };
-        if *interaction == Interaction::Pressed {
-            if let Some(ui_audio_assets) = &ui_audio_assets {
-                commands.entity(game_audio.single()).with_child((
-                    AudioPlayer::new(ui_audio_assets.button_click.clone()),
-                    PlaybackSettings {
-                        mode: PlaybackMode::Remove,
-                        volume: Volume::new(game_audio_volume.get_sfx_volume()),
-                        ..default()
-                    },
-                ));
-            }
+
+        if *interaction != Interaction::Pressed {
+            continue;
+        }
+        if let Some(ui_audio_assets) = &ui_audio_assets {
+            commands.entity(game_audio.single()).with_child((
+                AudioPlayer::new(ui_audio_assets.button_click.clone()),
+                PlaybackSettings {
+                    mode: PlaybackMode::Remove,
+                    volume: Volume::new(game_audio_volume.get_sfx_volume()),
+                    ..default()
+                },
+            ));
         }
     }
 }

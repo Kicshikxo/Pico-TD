@@ -76,7 +76,7 @@ fn update_tile_indicator(
                 }
             }
         } else {
-            tile_indicator_sprite.color = Color::srgba(0.0, 0.0, 0.0, 0.0);
+            tile_indicator_sprite.color = Color::NONE;
         }
     }
 }

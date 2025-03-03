@@ -14,12 +14,12 @@ use crate::game::{
     ui::{
         components::{
             button::UiButton,
-            container::{UiContainer, UiContainerVariant},
+            container::UiContainer,
             text::{UiText, UiTextSize},
         },
         UiState,
     },
-    {GameState, GameTilemap},
+    GameState, GameTilemap,
 };
 
 pub struct SoldierSelectViewUiPlugin;
@@ -121,8 +121,7 @@ fn init_ui(
 
             parent
                 .spawn(
-                    UiContainer::new()
-                        .with_variant(UiContainerVariant::Primary)
+                    UiContainer::primary()
                         .with_width(Val::Px(320.0))
                         .with_padding(UiRect::all(Val::Px(24.0)))
                         .with_row_gap(Val::Px(12.0))
@@ -148,11 +147,7 @@ fn init_ui(
                         },
                     ));
                     parent
-                        .spawn(
-                            UiContainer::new()
-                                .with_variant(UiContainerVariant::Secondary)
-                                .with_padding(UiRect::all(Val::Px(8.0))),
-                        )
+                        .spawn(UiContainer::secondary().with_padding(UiRect::all(Val::Px(8.0))))
                         .with_child(UiText::new("ui.soldier_select.title"));
 
                     parent
@@ -182,8 +177,7 @@ fn init_ui(
                                             .spawn((
                                                 ButtonAction::Select(soldier_variant),
                                                 UiButton::new(),
-                                                UiContainer::new()
-                                                    .with_variant(UiContainerVariant::Secondary)
+                                                UiContainer::secondary()
                                                     .with_aspect_ratio(1.0)
                                                     .center(),
                                             ))
@@ -255,34 +249,35 @@ fn update_ui(
     mut next_ui_state: ResMut<NextState<UiState>>,
     mut next_game_state: ResMut<NextState<GameState>>,
 ) {
-    for (interaction, button_action) in &interaction_query {
-        if *interaction == Interaction::Pressed {
-            match button_action {
-                ButtonAction::Close => {
-                    next_ui_state.set(UiState::InGame);
-                    next_game_state.set(GameState::InGame);
+    for (interaction, button_action) in interaction_query.iter() {
+        if *interaction != Interaction::Pressed {
+            continue;
+        }
+        match button_action {
+            ButtonAction::Close => {
+                next_ui_state.set(UiState::InGame);
+                next_game_state.set(GameState::InGame);
+            }
+            ButtonAction::Select(variant) => {
+                if player.get_money().get_current() < variant.get_config().get_price() {
+                    continue;
                 }
-                ButtonAction::Select(variant) => {
-                    if player.get_money().get_current() < variant.get_config().get_price() {
-                        continue;
-                    }
 
-                    commands.entity(game_tilemap.single()).with_child((
-                        Soldier::new(variant.clone()),
-                        selected_soldier.tile_position.clone(),
-                    ));
+                commands.entity(game_tilemap.single()).with_child((
+                    Soldier::new(variant.clone()),
+                    selected_soldier.tile_position.clone(),
+                ));
 
-                    player
-                        .get_money_mut()
-                        .decrease(variant.get_config().get_price());
+                player
+                    .get_money_mut()
+                    .decrease(variant.get_config().get_price());
 
-                    selected_tile
-                        .tile_position
-                        .set_from_vec2(selected_soldier.tile_position.as_vec2());
+                selected_tile
+                    .tile_position
+                    .set_from_vec2(selected_soldier.tile_position.as_vec2());
 
-                    next_ui_state.set(UiState::InGame);
-                    next_game_state.set(GameState::InGame);
-                }
+                next_ui_state.set(UiState::InGame);
+                next_game_state.set(GameState::InGame);
             }
         }
     }

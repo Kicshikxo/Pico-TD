@@ -2,7 +2,7 @@ use bevy::prelude::*;
 
 use crate::game::ui::{
     components::{
-        button::{UiButton, UiButtonVariant},
+        button::UiButton,
         text::{UiText, UiTextSize},
     },
     i18n::I18nComponent,
@@ -237,8 +237,7 @@ fn init_ui_selector(
                 parent
                     .spawn((
                         UiSelectorDecreaseButton,
-                        UiButton::new()
-                            .with_variant(UiButtonVariant::Primary)
+                        UiButton::primary()
                             .with_width(Val::Px(ui_selector_size))
                             .with_height(Val::Px(ui_selector_size))
                             .with_padding(UiRect::ZERO)
@@ -256,8 +255,7 @@ fn init_ui_selector(
                 parent
                     .spawn((
                         UiSelectorIncreaseButton,
-                        UiButton::new()
-                            .with_variant(UiButtonVariant::Primary)
+                        UiButton::primary()
                             .with_width(Val::Px(ui_selector_size))
                             .with_height(Val::Px(ui_selector_size))
                             .with_padding(UiRect::ZERO)

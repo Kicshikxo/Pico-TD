@@ -74,7 +74,6 @@ pub struct LevelCompletion {
     stars: LevelCompletionStars,
 }
 
-#[allow(unused)]
 impl LevelCompletion {
     pub fn get_name(&self) -> &str {
         &self.name
@@ -101,10 +100,10 @@ impl CompletedLevels {
         }
     }
     pub fn get_completion(&self, name: &str) -> Option<&LevelCompletion> {
-        self.0.iter().find(|level| level.name == name)
+        self.0.iter().find(|level| level.get_name() == name)
     }
     fn get_completion_mut(&mut self, name: &str) -> Option<&mut LevelCompletion> {
-        self.0.iter_mut().find(|level| level.name == name)
+        self.0.iter_mut().find(|level| level.get_name() == name)
     }
     pub fn is_empty(&self) -> bool {
         self.0.is_empty()
@@ -250,7 +249,7 @@ impl Level {
             TilemapTileVariant::Road => Color::srgb(82.0 / 255.0, 96.0 / 255.0, 124.0 / 255.0),
             TilemapTileVariant::Bridge => Color::srgb(82.0 / 255.0, 96.0 / 255.0, 124.0 / 255.0),
             TilemapTileVariant::Water => Color::srgb(117.0 / 255.0, 227.0 / 255.0, 255.0 / 255.0),
-            _ => Color::srgba(0.0, 0.0, 0.0, 0.0),
+            _ => Color::NONE,
         }
     }
     pub fn get_preview(&self) -> Image {

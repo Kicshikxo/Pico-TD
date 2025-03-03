@@ -11,7 +11,7 @@ use crate::game::{
     ui::{
         components::{
             button::{UiButton, UiButtonVariant},
-            container::{UiContainer, UiContainerVariant},
+            container::UiContainer,
             text::{UiText, UiTextSize},
         },
         UiState,
@@ -87,8 +87,7 @@ fn init_ui(
         .with_children(|parent| {
             parent
                 .spawn(
-                    UiContainer::new()
-                        .with_variant(UiContainerVariant::Primary)
+                    UiContainer::primary()
                         .with_width(Val::Px(320.0))
                         .with_padding(UiRect::all(Val::Px(24.0)))
                         .with_row_gap(Val::Px(12.0))
@@ -115,8 +114,7 @@ fn init_ui(
                     ));
                     parent
                         .spawn(
-                            UiContainer::new()
-                                .with_variant(UiContainerVariant::Secondary)
+                            UiContainer::secondary()
                                 .with_padding(UiRect::all(Val::Px(8.0))),
                         )
                         .with_child(
@@ -237,7 +235,7 @@ fn init_ui(
                     parent
                         .spawn((
                             ButtonAction::UploadLevel,
-                            UiButton::new().with_variant(UiButtonVariant::Primary),
+                            UiButton::primary(),
                         ))
                         .with_child(UiText::new("ui.level_select.upload_level"));
                 });
@@ -261,35 +259,36 @@ fn update_ui(
     mut uploaded_level: ResMut<UploadedLevel>,
     mut selected_level: ResMut<Level>,
 ) {
-    for (interaction, button_action) in &interaction_query {
-        if *interaction == Interaction::Pressed {
-            match button_action {
-                ButtonAction::BackToMenu => {
-                    next_ui_state.set(UiState::Menu);
+    for (interaction, button_action) in interaction_query.iter() {
+        if *interaction != Interaction::Pressed {
+            continue;
+        }
+        match button_action {
+            ButtonAction::BackToMenu => {
+                next_ui_state.set(UiState::Menu);
+            }
+            ButtonAction::SelectLevel { level_index } => {
+                let level: &Level = levels_assets_loader
+                    .get(&levels_assets.compain[*level_index])
+                    .unwrap();
+                if level.get_error().is_some() {
+                    return;
                 }
-                ButtonAction::SelectLevel { level_index } => {
-                    let level: &Level = levels_assets_loader
-                        .get(&levels_assets.compain[*level_index])
-                        .unwrap();
-                    if level.get_error().is_some() {
-                        return;
-                    }
 
-                    *selected_level = level.clone();
-                    next_game_state.set(GameState::Start);
-                }
-                ButtonAction::UploadLevel => {
-                    #[cfg(not(target_arch = "wasm32"))]
-                    if let Some(path) = FileDialog::new()
-                        .add_filter("RON Files", &["ron"])
-                        .show_open_single_file()
-                        .unwrap()
-                    {
-                        let level_handle =
-                            asset_server.load::<Level>(path.to_string_lossy().to_string());
+                *selected_level = level.clone();
+                next_game_state.set(GameState::Start);
+            }
+            ButtonAction::UploadLevel => {
+                #[cfg(not(target_arch = "wasm32"))]
+                if let Some(path) = FileDialog::new()
+                    .add_filter("RON Files", &["ron"])
+                    .show_open_single_file()
+                    .unwrap()
+                {
+                    let level_handle =
+                        asset_server.load::<Level>(path.to_string_lossy().to_string());
 
-                        uploaded_level.handle = Some(level_handle.clone());
-                    }
+                    uploaded_level.handle = Some(level_handle.clone());
                 }
             }
         }

@@ -57,7 +57,7 @@ fn init_projectile_blast(
                     layout: entity_assets.tilemap_layout.clone(),
                     index: UtilSpriteVariant::Glow as usize,
                 }),
-                color: Color::srgba(1.0, 1.0, 0.0, 1.0),
+                color: Color::srgb(1.0, 1.0, 0.0),
                 custom_size: Some(
                     Vec2::splat(projectile_blast.get_radius() * 2.0)
                         * game_tilemap.single().get_tile_size().max_element() as f32,
