@@ -489,7 +489,6 @@ fn update_soldier_info(
     interaction_query: Query<(&Interaction, &ButtonAction), (Changed<Interaction>, With<UiButton>)>,
     mut soldier_info_components: Query<(&mut TextColor, &mut I18nComponent, &SoldierInfoComponent)>,
     soldiers: Query<(&Soldier, &TilePosition)>,
-    player: Res<Player>,
     selected_soldier: Res<SelectedSoldier>,
 ) {
     for (interaction, button_action) in interaction_query.iter() {
@@ -505,9 +504,7 @@ fn update_soldier_info(
             let current_config = soldier.get_config();
             let next_level_config = soldier.get_next_level_config();
 
-            if soldier.is_next_level_allowed() == false
-                || player.get_money().get_current() < next_level_config.get_price()
-            {
+            if soldier.is_next_level_allowed() == false {
                 break;
             }
 
