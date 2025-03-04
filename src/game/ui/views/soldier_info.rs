@@ -572,7 +572,7 @@ fn update_soldier_info(
 
                 soldier_info_i18n_component.change_i18n_arg(key, value);
                 soldier_info_component_text_color.0 = if show_next_level && changed {
-                    Color::srgb(0.25, 1.0, 0.25)
+                    Color::srgb(0.5, 1.0, 0.0)
                 } else {
                     Color::WHITE
                 };

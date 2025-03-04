@@ -8,18 +8,16 @@ use crate::game::{
 #[derive(Component, Clone, Copy)]
 #[require(Transform)]
 pub struct TilePosition {
-    x: f32,
-    y: f32,
-    z: f32,
+    position: Vec2,
+    position_z: f32,
     update_required: bool,
 }
 
 impl Default for TilePosition {
     fn default() -> Self {
         Self {
-            x: 0.0,
-            y: 0.0,
-            z: 0.0,
+            position: Vec2::default(),
+            position_z: 0.0,
             update_required: true,
         }
     }
@@ -28,82 +26,76 @@ impl Default for TilePosition {
 #[allow(unused)]
 impl TilePosition {
     pub fn new(x: f32, y: f32) -> Self {
-        Self { x, y, ..default() }
+        Self {
+            position: Vec2::new(x, y),
+            ..default()
+        }
     }
     pub fn with_z(mut self, z: f32) -> Self {
-        self.z = z;
+        self.position_z = z;
         self
     }
     pub fn from_vec2(vec: Vec2) -> Self {
-        Self {
-            x: vec.x,
-            y: vec.y,
-            ..default()
-        }
+        Self::new(vec.x, vec.y)
     }
     pub fn from_ivec2(ivec: IVec2) -> Self {
-        Self {
-            x: ivec.x as f32,
-            y: ivec.y as f32,
-            ..default()
-        }
+        Self::new(ivec.x as f32, ivec.y as f32)
     }
     pub fn from_tilemap_position(tilemap: &Tilemap, position: Vec2) -> Self {
         let tile_size_x = tilemap.get_tile_size().x as f32;
         let tile_size_y = tilemap.get_tile_size().y as f32;
         let tilemap_size_y = tilemap.get_size().y as f32;
 
-        Self {
-            x: (position.x / tile_size_x).ceil(),
-            y: ((tilemap_size_y * tile_size_y - position.y - tile_size_y) / tile_size_y).floor(),
-            ..default()
-        }
+        Self::new(
+            (position.x / tile_size_x).ceil(),
+            ((tilemap_size_y * tile_size_y - position.y - tile_size_y) / tile_size_y).floor(),
+        )
     }
     pub fn as_vec2(&self) -> Vec2 {
-        Vec2::new(self.x, self.y)
+        self.position
     }
     pub fn as_ivec2(&self) -> IVec2 {
-        IVec2::new(self.x as i32, self.y as i32)
+        self.position.as_ivec2()
     }
     pub fn set(&mut self, x: f32, y: f32) {
-        self.x = x;
-        self.y = y;
+        self.position.x = x;
+        self.position.y = y;
         self.update_required = true;
     }
     pub fn set_from_vec2(&mut self, vec: Vec2) {
-        self.x = vec.x;
-        self.y = vec.y;
+        self.position.x = vec.x;
+        self.position.y = vec.y;
         self.update_required = true;
     }
     pub fn set_x(&mut self, x: f32) {
-        self.x = x;
+        self.position.x = x;
         self.update_required = true;
     }
     pub fn get_x(&self) -> f32 {
-        self.x
+        self.position.x
     }
     pub fn set_y(&mut self, y: f32) {
-        self.y = y;
+        self.position.y = y;
         self.update_required = true;
     }
     pub fn get_y(&self) -> f32 {
-        self.y
+        self.position.y
     }
     pub fn set_z(&mut self, z: f32) {
-        self.z = z;
+        self.position_z = z;
         self.update_required = true;
     }
     pub fn get_z(&self) -> f32 {
-        self.z
+        self.position_z
     }
     pub fn get_tilemap_x(&self, tilemap: &Tilemap) -> f32 {
-        self.x * tilemap.get_tile_size().x as f32
+        self.position.x * tilemap.get_tile_size().x as f32
     }
     pub fn get_tilemap_y(&self, tilemap: &Tilemap) -> f32 {
         let tile_size_y = tilemap.get_tile_size().y as f32;
         let tilemap_size_y = tilemap.get_size().y as f32;
 
-        (tilemap_size_y - self.y) * tile_size_y - tile_size_y
+        (tilemap_size_y - self.position.y) * tile_size_y - tile_size_y
     }
     pub fn get_tilemap_position(&self, tilemap: &Tilemap) -> Vec2 {
         Vec2::new(self.get_tilemap_x(tilemap), self.get_tilemap_y(tilemap))

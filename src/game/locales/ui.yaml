@@ -110,17 +110,17 @@ ui.soldier.rocket_launcher:
     en: "Rocket launcher"
     ru: "Ракетница"
 ui.soldier.target_priority.first:
-    en: "First"
-    ru: "Первая"
+    en: "Attack the first"
+    ru: "Атаковать лидирующую"
 ui.soldier.target_priority.last:
-    en: "Last"
-    ru: "Последняя"
+    en: "Attack the last"
+    ru: "Атаковать последнюю"
 ui.soldier.target_priority.nearest:
-    en: "Nearest"
-    ru: "Ближайшая"
+    en: "Attack the nearest"
+    ru: "Атаковать ближайшую"
 ui.soldier.target_priority.strongest:
-    en: "Strongest"
-    ru: "Сильнейшая"
+    en: "Attack the strongest"
+    ru: "Атаковать самую стойкую"
 
 ui.pause.title:
     en: "Pause"

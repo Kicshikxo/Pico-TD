@@ -21,7 +21,7 @@ use crate::game::{
             config::{SoldierConfig, ROCKET_LAUNCHER_LEVELS, SNIPER_LEVELS, SOLDIER_LEVELS},
             cooldown_indicator::{CooldownIndicator, CooldownIndicatorPlugin},
             fire_radius::{FireRadius, FireRadiusPlugin},
-            projectile::{Projectile, ProjectilePlugin},
+            projectile::{Projectile, ProjectilePlugin, ProjectileVariant},
             projectile_blast::ProjectileBlastPlugin,
         },
         tile::{
@@ -348,7 +348,10 @@ fn update_soldier(
             projectiles.push(projectile);
 
             commands.entity(game_audio.single()).with_child((
-                AudioPlayer::new(game_audio_assets.get_random_shoot()),
+                AudioPlayer::new(match projectile_variant {
+                    ProjectileVariant::Bullet => game_audio_assets.get_random_bullet_shoot(),
+                    ProjectileVariant::Rocket { .. } => game_audio_assets.get_random_rocket_shoot(),
+                }),
                 PlaybackSettings {
                     mode: PlaybackMode::Remove,
                     volume: Volume::new(game_audio_volume.get_sfx_volume()),
