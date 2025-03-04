@@ -54,7 +54,7 @@ impl Default for UiButton {
             disabled: false,
             width: Val::Percent(100.0),
             height: Val::Auto,
-            padding: UiRect::axes(Val::Px(24.0), Val::Px(12.0)),
+            padding: UiRect::all(Val::Px(12.0)),
             aspect_ratio: None,
             update_required: true,
         }

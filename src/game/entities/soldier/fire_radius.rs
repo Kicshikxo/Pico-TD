@@ -112,7 +112,7 @@ fn update_fire_radius(
                     * game_tilemap.single().get_tile_size().max_element() as f32;
 
                 if let Some(fire_radius_mesh) = meshes.get_mut(&fire_radius_mesh_2d.0) {
-                    *fire_radius_mesh = Annulus::new(inner_radius, inner_radius + 1.0)
+                    *fire_radius_mesh = Annulus::new(inner_radius - 1.0, inner_radius)
                         .mesh()
                         .build();
                 }

@@ -154,7 +154,9 @@ fn init_ui(
                         .spawn(Node {
                             display: Display::Grid,
                             width: Val::Percent(100.0),
-                            grid_template_columns: RepeatedGridTrack::flex(4, 1.0),
+                            grid_template_columns: RepeatedGridTrack::min_content(3),
+                            justify_content: JustifyContent::SpaceBetween,
+                            align_items: AlignItems::Start,
                             row_gap: Val::Px(8.0),
                             column_gap: Val::Px(8.0),
                             ..default()
@@ -168,9 +170,10 @@ fn init_ui(
                                 parent
                                     .spawn(
                                         UiContainer::new()
+                                            .with_width(Val::Auto)
                                             .with_row_gap(Val::Px(4.0))
-                                            .with_align_items(AlignItems::Start)
-                                            .column(),
+                                            .grid()
+                                            .center(),
                                     )
                                     .with_children(|parent| {
                                         parent
@@ -178,13 +181,14 @@ fn init_ui(
                                                 ButtonAction::Select(soldier_variant),
                                                 UiButton::new(),
                                                 UiContainer::secondary()
+                                                    .with_padding(UiRect::all(Val::Px(16.0)))
                                                     .with_aspect_ratio(1.0)
                                                     .center(),
                                             ))
                                             .with_child((
                                                 UiContainer::new()
-                                                    .with_width(Val::Px(32.0))
-                                                    .with_height(Val::Px(32.0)),
+                                                    .with_width(Val::Px(40.0))
+                                                    .with_height(Val::Px(40.0)),
                                                 ImageNode {
                                                     image: entity_assets.tilemap.clone(),
                                                     texture_atlas: Some(TextureAtlas {
@@ -221,9 +225,11 @@ fn init_ui(
                                                     },
                                                 ),
                                         );
+
                                         parent.spawn(
                                             UiText::new(soldier_variant.to_str())
-                                                .with_size(UiTextSize::Small),
+                                                .with_size(UiTextSize::Small)
+                                                .with_linebreak(LineBreak::WordOrCharacter),
                                         );
                                     });
                             }

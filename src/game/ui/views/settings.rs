@@ -111,16 +111,27 @@ fn init_ui(
                             parent.spawn((
                                 LocaleSelector,
                                 UiSelector::new()
-                                    .with_options(vec![
-                                        UiSelectorItem::new("ui.settings.english_language")
-                                            .with_value(UiSelectorItemValue::String(
-                                                Locale::En.to_string(),
-                                            )),
-                                        UiSelectorItem::new("ui.settings.russian_language")
-                                            .with_value(UiSelectorItemValue::String(
-                                                Locale::Ru.to_string(),
-                                            )),
-                                    ])
+                                    .with_options(
+                                        [
+                                            Locale::En,
+                                            Locale::Ru,
+                                            Locale::De,
+                                            Locale::Fr,
+                                            Locale::Es,
+                                            Locale::It,
+                                            Locale::Nl,
+                                            Locale::Tr,
+                                            Locale::Pl,
+                                        ]
+                                        .iter()
+                                        .map(|locale| {
+                                            UiSelectorItem::new("ui.settings.current_language")
+                                                .with_value(UiSelectorItemValue::String(
+                                                    locale.to_string(),
+                                                ))
+                                        })
+                                        .collect::<Vec<_>>(),
+                                    )
                                     .with_default_index(i18n.get_current() as usize)
                                     .cycle(),
                             ));

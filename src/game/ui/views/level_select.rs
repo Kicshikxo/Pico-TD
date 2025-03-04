@@ -144,7 +144,7 @@ fn init_ui(
                                 };
 
                                 parent
-                                    .spawn(UiContainer::new().column())
+                                    .spawn(UiContainer::new().with_row_gap(Val::Px(4.0)).column())
                                     .with_children(|parent| {
                                         parent
                                             .spawn((
@@ -226,7 +226,7 @@ fn init_ui(
                                         parent.spawn(UiText::new(&format!(
                                             "level.{}",
                                             level.get_name()
-                                        )));
+                                        )).with_size(UiTextSize::Small));
                                     });
                             }
                         });
