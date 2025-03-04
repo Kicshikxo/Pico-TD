@@ -156,7 +156,7 @@ impl UiSelector {
         } else {
             self.current_index.saturating_sub(1)
         };
-        self.update_required = true;
+        self.set_update_required(true);
         self.value_changed = true;
     }
     pub fn is_next_allowed(&self) -> bool {
@@ -172,12 +172,12 @@ impl UiSelector {
         } else {
             self.current_index.saturating_add(1).min(last_index)
         };
-        self.update_required = true;
+        self.set_update_required(true);
         self.value_changed = true;
     }
     pub fn set_index(&mut self, index: usize) {
+        self.set_update_required(self.current_index != index);
         self.current_index = index;
-        self.update_required = true;
         self.value_changed = true;
     }
     pub fn get_current_index(&self) -> usize {

@@ -51,7 +51,7 @@ impl Tilemap {
         self.tile_size
     }
     pub fn set_tile(&mut self, position: IVec2, entity: Entity) {
-        self.update_required = true;
+        self.set_update_required(true);
         self.tiles.insert(position, entity);
     }
     pub fn get_tile(&self, position: IVec2) -> Option<Entity> {

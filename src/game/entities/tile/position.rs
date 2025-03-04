@@ -58,32 +58,32 @@ impl TilePosition {
         self.position.as_ivec2()
     }
     pub fn set(&mut self, x: f32, y: f32) {
+        self.set_update_required(self.position != Vec2::new(x, y));
         self.position.x = x;
         self.position.y = y;
-        self.update_required = true;
     }
     pub fn set_from_vec2(&mut self, vec: Vec2) {
+        self.set_update_required(self.position != vec);
         self.position.x = vec.x;
         self.position.y = vec.y;
-        self.update_required = true;
     }
     pub fn set_x(&mut self, x: f32) {
+        self.set_update_required(self.position.x != x);
         self.position.x = x;
-        self.update_required = true;
     }
     pub fn get_x(&self) -> f32 {
         self.position.x
     }
     pub fn set_y(&mut self, y: f32) {
+        self.set_update_required(self.position.y != y);
         self.position.y = y;
-        self.update_required = true;
     }
     pub fn get_y(&self) -> f32 {
         self.position.y
     }
     pub fn set_z(&mut self, z: f32) {
+        self.set_update_required(self.position_z != z);
         self.position_z = z;
-        self.update_required = true;
     }
     pub fn get_z(&self) -> f32 {
         self.position_z

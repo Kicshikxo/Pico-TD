@@ -149,12 +149,12 @@ impl Soldier {
         self.variant
     }
     pub fn get_variant_mut(&mut self) -> &mut SoldierVariant {
-        self.update_required = true;
+        self.set_update_required(true);
         &mut self.variant
     }
     pub fn set_variant(&mut self, variant: SoldierVariant) {
+        self.set_update_required(self.variant != variant);
         self.variant = variant;
-        self.update_required = true;
     }
     pub fn get_damage(&self) -> u32 {
         self.get_config().get_damage()

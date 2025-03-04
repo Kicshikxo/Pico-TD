@@ -96,8 +96,8 @@ impl Enemy {
         self.variant
     }
     pub fn set_variant(&mut self, variant: EnemyVariant) {
+        self.set_update_required(self.variant != variant);
         self.variant = variant;
-        self.update_required = true;
     }
     pub fn get_damage(&self) -> u32 {
         self.get_config().get_damage()

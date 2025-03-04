@@ -27,14 +27,8 @@ impl EnemyHealth {
         }
     }
     pub fn damage(&mut self, damage: u32) {
+        self.set_update_required(true);
         self.current = self.current.saturating_sub(damage);
-        self.update_required = true;
-    }
-    pub fn get_update_required(&self) -> bool {
-        self.update_required
-    }
-    pub fn set_update_required(&mut self, value: bool) {
-        self.update_required = value;
     }
     pub fn heal(&mut self, heal: u32) {
         self.current = self.current.saturating_add(heal).min(self.max);
@@ -50,5 +44,11 @@ impl EnemyHealth {
     }
     pub fn set_max(&mut self, max: u32) {
         self.max = max;
+    }
+    pub fn get_update_required(&self) -> bool {
+        self.update_required
+    }
+    pub fn set_update_required(&mut self, value: bool) {
+        self.update_required = value;
     }
 }

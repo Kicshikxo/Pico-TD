@@ -91,8 +91,8 @@ impl TileSprite {
         self.variant
     }
     pub fn set_variant(&mut self, variant: TileSpriteVariant) {
+        self.set_update_required(self.variant != variant);
         self.variant = variant;
-        self.update_required = true;
     }
     pub fn get_update_required(&self) -> bool {
         self.update_required

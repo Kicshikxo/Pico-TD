@@ -106,17 +106,18 @@ impl I18nComponent {
             .iter_mut()
             .find(|(arg_key, _arg_value)| *arg_key == key)
         {
+            let update_required = *arg_value != new_value;
             *arg_value = new_value;
-            self.update_required = true;
+            self.set_update_required(update_required);
         }
     }
     pub fn change_i18n_args(&mut self, args: Vec<(String, String)>) {
+        self.set_update_required(true);
         self.args = args;
-        self.update_required = true;
     }
     pub fn change_i18n_key(&mut self, key: String) {
+        self.set_update_required(self.key != key);
         self.key = key;
-        self.update_required = true;
     }
     pub fn translate(&self) -> String {
         let (patterns, values): (Vec<&str>, Vec<String>) = self
