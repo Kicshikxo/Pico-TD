@@ -118,6 +118,7 @@ fn init_ui(
                                             Locale::De,
                                             Locale::Fr,
                                             Locale::Es,
+                                            Locale::Pt,
                                             Locale::It,
                                             Locale::Nl,
                                             Locale::Tr,
