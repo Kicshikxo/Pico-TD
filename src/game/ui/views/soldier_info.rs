@@ -471,6 +471,7 @@ fn update_ui(
                     player
                         .get_money_mut()
                         .increase(soldier.get_config().get_sell_price());
+
                     break;
                 }
                 next_ui_state.set(UiState::InGame);
@@ -525,7 +526,7 @@ fn update_soldier_info(
                 soldier_info_component,
             ) in soldier_info_components.iter_mut()
             {
-                let (key, value, changed) = match soldier_info_component {
+                let (key, value, value_changed) = match soldier_info_component {
                     SoldierInfoComponent::Level => (
                         "level",
                         if show_next_level {
@@ -571,7 +572,7 @@ fn update_soldier_info(
                 };
 
                 soldier_info_i18n_component.change_i18n_arg(key, value);
-                soldier_info_component_text_color.0 = if show_next_level && changed {
+                soldier_info_component_text_color.0 = if show_next_level && value_changed {
                     Color::srgb(0.5, 1.0, 0.0)
                 } else {
                     Color::WHITE
