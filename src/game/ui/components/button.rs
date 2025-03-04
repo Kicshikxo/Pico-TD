@@ -179,11 +179,13 @@ fn update_ui_button(
 ) {
     for (mut ui_button, mut image_node) in ui_buttons.p0().iter_mut() {
         if ui_button.get_update_required() == true && ui_button.variant != UiButtonVariant::None {
-            image_node.color = if ui_button.get_disabled() == true {
-                Color::srgb(0.75, 0.75, 0.75)
-            } else {
-                Color::WHITE
-            };
+            let disabled_color = Color::srgb(0.75, 0.75, 0.75);
+            if ui_button.get_disabled() {
+                image_node.color = disabled_color;
+            } else if image_node.color == disabled_color {
+                image_node.color = Color::WHITE;
+            }
+
             ui_button.set_update_required(false);
         }
     }
