@@ -1,30 +1,6 @@
 _version: 2
 
-level_select.file_upload_error.title:
-    en: "File upload error"
-    ru: "Ошибка при загрузке файла"
-    de: "Datei-Upload-Fehler"
-    fr: "Erreur de téléchargement du fichier"
-    es: "Error de carga de archivo"
-    pt: "Erro de envio de arquivo"
-    it: "Errore di caricamento del file"
-    nl: "Bestandsupload fout"
-    tr: "Dosya yükleme hatası"
-    pl: "Błąd przesyłania pliku"
-
-level_select.file_upload_error.description:
-    en: "File cannot be uploaded. Try again."
-    ru: "Файл не может быть загружен. Попробуйте ещё раз"
-    de: "Datei kann nicht hochgeladen werden. Versuchen Sie es erneut."
-    fr: "Le fichier ne peut pas être téléchargé. Réessayez."
-    es: "No se puede cargar el archivo. Inténtalo de nuevo."
-    pt: "O arquivo não pode ser enviado. Tente novamente."
-    it: "Impossibile caricare il file. Riprova."
-    nl: "Bestand kan niet worden geüpload. Probeer het opnieuw."
-    tr: "Dosya yüklenemedi. Tekrar deneyin."
-    pl: "Nie można przesłać pliku. Spróbuj ponownie."
-
-level_select.file_reading_error.title:
+error.level_select.file_reading_error.title:
     en: "File reading error"
     ru: "Ошибка при чтении файла"
     de: "Fehler beim Lesen der Datei"

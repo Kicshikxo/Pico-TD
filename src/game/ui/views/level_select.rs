@@ -1,7 +1,10 @@
-use bevy::{asset::LoadState, prelude::*, ui::widget::NodeImageMode};
+use bevy::{
+    prelude::*,
+    tasks::{AsyncComputeTaskPool, Task},
+    ui::widget::NodeImageMode,
+};
 use bevy_persistent::Persistent;
-#[cfg(not(target_arch = "wasm32"))]
-use native_dialog::{FileDialog, MessageDialog, MessageType};
+use rfd::{AsyncFileDialog, MessageDialog, MessageLevel};
 
 use crate::game::{
     assets::{
@@ -29,10 +32,7 @@ impl Plugin for LevelSelectViewUiPlugin {
             .add_systems(OnExit(UiState::LevelSelect), destroy_ui)
             .add_systems(
                 Update,
-                (
-                    update_ui.run_if(in_state(UiState::LevelSelect)),
-                    uploaded_level_update.run_if(in_state(UiState::LevelSelect)), // resource_exists::<UploadedLevel>
-                ),
+                ((update_ui, uploaded_level_update).run_if(in_state(UiState::LevelSelect)),),
             );
     }
 }
@@ -49,12 +49,12 @@ enum ButtonAction {
 
 #[derive(Resource)]
 struct UploadedLevel {
-    handle: Option<Handle<Level>>,
+    task: Option<Task<Option<Level>>>,
 }
 
 impl Default for UploadedLevel {
     fn default() -> Self {
-        Self { handle: None }
+        Self { task: None }
     }
 }
 
@@ -231,7 +231,6 @@ fn init_ui(
                             }
                         });
 
-                    #[cfg(not(target_arch = "wasm32"))]
                     parent
                         .spawn((
                             ButtonAction::UploadLevel,
@@ -255,7 +254,6 @@ fn update_ui(
     levels_assets_loader: Res<Assets<Level>>,
     mut next_ui_state: ResMut<NextState<UiState>>,
     mut next_game_state: ResMut<NextState<GameState>>,
-    asset_server: Res<AssetServer>,
     mut uploaded_level: ResMut<UploadedLevel>,
     mut selected_level: ResMut<Level>,
 ) {
@@ -268,28 +266,28 @@ fn update_ui(
                 next_ui_state.set(UiState::Menu);
             }
             ButtonAction::SelectLevel { level_index } => {
-                let level: &Level = levels_assets_loader
-                    .get(&levels_assets.compain[*level_index])
-                    .unwrap();
-                if level.get_error().is_some() {
-                    return;
+                if let Some(level) = levels_assets_loader.get(&levels_assets.compain[*level_index])
+                {
+                    if level.get_error().is_none() {
+                        *selected_level = level.clone();
+                        next_game_state.set(GameState::Start);
+                    }
                 }
-
-                *selected_level = level.clone();
-                next_game_state.set(GameState::Start);
             }
             ButtonAction::UploadLevel => {
-                #[cfg(not(target_arch = "wasm32"))]
-                if let Some(path) = FileDialog::new()
-                    .add_filter("RON Files", &["ron"])
-                    .show_open_single_file()
-                    .unwrap()
-                {
-                    let level_handle =
-                        asset_server.load::<Level>(path.to_string_lossy().to_string());
-
-                    uploaded_level.handle = Some(level_handle.clone());
-                }
+                uploaded_level.task = Some(AsyncComputeTaskPool::get().spawn(async move {
+                    if let Some(file) = AsyncFileDialog::new()
+                        .add_filter("RON Files", &["ron"])
+                        .pick_file()
+                        .await
+                    {
+                        let bytes = file.read().await;
+                        let source = std::str::from_utf8(&bytes).unwrap_or_default();
+                        Some(Level::from_source(source))
+                    } else {
+                        None
+                    }
+                }));
             }
         }
     }
@@ -300,45 +298,27 @@ fn update_ui(
 
 fn uploaded_level_update(
     mut next_game_state: ResMut<NextState<GameState>>,
-    asset_server: Res<AssetServer>,
-    levels_assets_loader: Res<Assets<Level>>,
     mut uploaded_level: ResMut<UploadedLevel>,
     mut selected_level: ResMut<Level>,
 ) {
-    if let Some(uploaded_level_handle) = &uploaded_level.handle {
-        match asset_server.get_load_state(uploaded_level_handle).unwrap() {
-            bevy::asset::LoadState::Loaded => {
-                if let Some(level) = levels_assets_loader.get(uploaded_level_handle) {
-                    if level.get_error().is_some() {
-                        #[cfg(not(target_arch = "wasm32"))]
-                        MessageDialog::new()
-                            .set_type(MessageType::Error)
-                            .set_title(&rust_i18n::t!("level_select.file_reading_error.title"))
-                            .set_text(&level.get_error().as_ref().unwrap())
-                            .show_alert()
-                            .unwrap();
-                    } else {
-                        *selected_level = level.clone();
-                        next_game_state.set(GameState::Start);
-                    }
+    if let Some(mut uploaded_level_task) = uploaded_level.task.take() {
+        if let Some(uploaded_level_task_result) =
+            bevy::tasks::block_on(bevy::tasks::poll_once(&mut uploaded_level_task))
+        {
+            if let Some(level) = uploaded_level_task_result {
+                if level.get_error().is_some() {
+                    MessageDialog::new()
+                        .set_level(MessageLevel::Error)
+                        .set_title(rust_i18n::t!("error.level_select.file_reading_error.title"))
+                        .set_description(level.get_error().unwrap())
+                        .show();
+                } else {
+                    *selected_level = level.clone();
+                    next_game_state.set(GameState::Start);
                 }
-
-                uploaded_level.handle = None;
             }
-            LoadState::Failed(error) => {
-                error!("Failed to load level file: {}", error);
-
-                #[cfg(not(target_arch = "wasm32"))]
-                MessageDialog::new()
-                    .set_type(MessageType::Error)
-                    .set_title(&rust_i18n::t!("level_select.file_upload_error.title"))
-                    .set_text(&rust_i18n::t!("level_select.file_upload_error.description"))
-                    .show_alert()
-                    .unwrap();
-
-                uploaded_level.handle = None;
-            }
-            _ => {}
+        } else {
+            uploaded_level.task = Some(uploaded_level_task);
         }
     }
 }

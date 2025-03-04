@@ -113,35 +113,6 @@ impl CompletedLevels {
     }
 }
 
-pub struct LevelsPlugin;
-
-impl Plugin for LevelsPlugin {
-    fn build(&self, app: &mut App) {
-        app.init_asset::<Level>()
-            .init_asset_loader::<LevelsLoader>();
-
-        app.insert_resource(Level::default());
-
-        app.insert_resource(
-            Persistent::<CompletedLevels>::builder()
-                .name("completed_levels")
-                .format(StorageFormat::Ron)
-                .default(CompletedLevels::default())
-                .path(
-                    if let Some(proj_dirs) = ProjectDirs::from("ru", "kicshikxo", "pico-td") {
-                        proj_dirs.data_dir().join("completed_levels.ron")
-                    } else {
-                        Path::new("local").join("completed_levels")
-                    },
-                )
-                .revertible(true)
-                .revert_to_default_on_deserialization_errors(true)
-                .build()
-                .unwrap(),
-        );
-    }
-}
-
 #[derive(Clone, Deserialize)]
 pub struct Wave {
     reward: u32,
@@ -188,6 +159,88 @@ impl WaveEnemies {
     }
 }
 
+#[derive(Asset, TypePath, Deserialize)]
+pub struct TileSymbols {
+    pub ground: char,
+    pub flower: char,
+    pub tree: char,
+    pub road: char,
+    pub bridge: char,
+    pub water: char,
+}
+
+impl Default for TileSymbols {
+    fn default() -> Self {
+        Self {
+            ground: '#',
+            flower: 'F',
+            tree: 'T',
+            bridge: '=',
+            road: '.',
+            water: '~',
+        }
+    }
+}
+
+impl TileSymbols {
+    pub fn get_tile_variant(&self, char: char) -> TilemapTileVariant {
+        if char == self.ground {
+            TilemapTileVariant::Ground
+        } else if char == self.flower {
+            TilemapTileVariant::Flower
+        } else if char == self.tree {
+            TilemapTileVariant::Tree
+        } else if char == self.road {
+            TilemapTileVariant::Road
+        } else if char == self.bridge {
+            TilemapTileVariant::Bridge
+        } else if char == self.water {
+            TilemapTileVariant::Water
+        } else {
+            TilemapTileVariant::Unknown
+        }
+    }
+}
+
+#[derive(Asset, TypePath, Deserialize)]
+pub struct LevelAsset {
+    pub name: String,
+    pub player_health: u32,
+    pub player_money: u32,
+    pub size: UVec2,
+    pub map: Vec<String>,
+    pub tile_symbols: Option<TileSymbols>,
+    pub paths: Option<Vec<Vec<Vec2>>>,
+    pub waves: Option<Vec<Wave>>,
+    pub error: Option<String>,
+}
+
+impl Default for LevelAsset {
+    fn default() -> Self {
+        Self {
+            name: String::new(),
+            player_health: 0,
+            player_money: 0,
+            size: UVec2::new(0, 0),
+            map: Vec::new(),
+            tile_symbols: None,
+            paths: None,
+            waves: None,
+            error: None,
+        }
+    }
+}
+
+impl LevelAsset {
+    fn error(error: String) -> Self {
+        Self {
+            name: "error".into(),
+            error: Some(error),
+            ..default()
+        }
+    }
+}
+
 #[derive(Resource, Asset, TypePath, Clone)]
 pub struct Level {
     name: String,
@@ -201,6 +254,51 @@ pub struct Level {
 }
 
 impl Level {
+    pub fn from_asset(level_asset: LevelAsset) -> Self {
+        let tile_symbols = level_asset.tile_symbols.unwrap_or_default();
+        let map: Vec<Vec<TilemapTile>> = level_asset
+            .map
+            .iter()
+            .map(|row| {
+                row.chars()
+                    .map(|char| TilemapTile::new(tile_symbols.get_tile_variant(char)))
+                    .collect()
+            })
+            .collect();
+
+        Self {
+            name: level_asset.name,
+            player_health: level_asset.player_health,
+            player_money: level_asset.player_money,
+            size: level_asset.size,
+            map,
+            paths: level_asset.paths.unwrap_or_default(),
+            waves: level_asset.waves.unwrap_or_default(),
+            error: level_asset.error,
+        }
+    }
+    pub fn from_source(source: &str) -> Self {
+        let level_asset = match ron::from_str::<LevelAsset>(source) {
+            Ok(asset) => {
+                if asset.map.len() < asset.size.y as usize
+                    || asset
+                        .map
+                        .iter()
+                        .any(|row| row.len() < asset.size.x as usize)
+                {
+                    LevelAsset::error("LevelAsset error: map dimensions are incorrect".to_string())
+                } else {
+                    asset
+                }
+            }
+            Err(error) => {
+                error!("Failed to deserialize RON: {}", error);
+                LevelAsset::error(error.to_string())
+            }
+        };
+
+        Self::from_asset(level_asset)
+    }
     pub fn get_name(&self) -> &str {
         &self.name
     }
@@ -299,85 +397,32 @@ impl Default for Level {
     }
 }
 
-#[derive(Asset, TypePath, Deserialize)]
-pub struct TileSymbols {
-    pub ground: char,
-    pub flower: char,
-    pub tree: char,
-    pub road: char,
-    pub bridge: char,
-    pub water: char,
-}
+pub struct LevelsPlugin;
 
-impl Default for TileSymbols {
-    fn default() -> Self {
-        Self {
-            ground: '#',
-            flower: 'F',
-            tree: 'T',
-            bridge: '=',
-            road: '.',
-            water: '~',
-        }
-    }
-}
+impl Plugin for LevelsPlugin {
+    fn build(&self, app: &mut App) {
+        app.init_asset::<Level>()
+            .init_asset_loader::<LevelsLoader>();
 
-impl TileSymbols {
-    pub fn get_tile_variant(&self, char: char) -> TilemapTileVariant {
-        if char == self.ground {
-            TilemapTileVariant::Ground
-        } else if char == self.flower {
-            TilemapTileVariant::Flower
-        } else if char == self.tree {
-            TilemapTileVariant::Tree
-        } else if char == self.road {
-            TilemapTileVariant::Road
-        } else if char == self.bridge {
-            TilemapTileVariant::Bridge
-        } else if char == self.water {
-            TilemapTileVariant::Water
-        } else {
-            TilemapTileVariant::Unknown
-        }
-    }
-}
+        app.insert_resource(Level::default());
 
-#[derive(Asset, TypePath, Deserialize)]
-pub struct LevelAsset {
-    pub name: String,
-    pub player_health: u32,
-    pub player_money: u32,
-    pub size: UVec2,
-    pub map: Vec<String>,
-    pub tile_symbols: Option<TileSymbols>,
-    pub paths: Option<Vec<Vec<Vec2>>>,
-    pub waves: Option<Vec<Wave>>,
-    pub error: Option<String>,
-}
-
-impl Default for LevelAsset {
-    fn default() -> Self {
-        Self {
-            name: String::new(),
-            player_health: 0,
-            player_money: 0,
-            size: UVec2::new(0, 0),
-            map: Vec::new(),
-            tile_symbols: None,
-            paths: None,
-            waves: None,
-            error: None,
-        }
-    }
-}
-
-impl LevelAsset {
-    fn error(error: String) -> Self {
-        Self {
-            name: "error".into(),
-            error: Some(error),
-            ..default()
-        }
+        app.insert_resource(
+            Persistent::<CompletedLevels>::builder()
+                .name("completed_levels")
+                .format(StorageFormat::Ron)
+                .default(CompletedLevels::default())
+                .path(
+                    if let Some(proj_dirs) = ProjectDirs::from("ru", "kicshikxo", "pico-td") {
+                        proj_dirs.data_dir().join("completed_levels.ron")
+                    } else {
+                        Path::new("local").join("completed_levels")
+                    },
+                )
+                .revertible(true)
+                .revert_to_default_on_deserialization_errors(true)
+                .build()
+                .unwrap(),
+        );
     }
 }
 
@@ -398,47 +443,9 @@ impl AssetLoader for LevelsLoader {
         let mut bytes = Vec::new();
         reader.read_to_end(&mut bytes).await?;
 
-        let data = std::str::from_utf8(&bytes).unwrap_or("");
-        let level_asset = match ron::from_str::<LevelAsset>(&data) {
-            Ok(asset) => {
-                if asset.map.len() < asset.size.y as usize
-                    || asset
-                        .map
-                        .iter()
-                        .any(|row| row.len() < asset.size.x as usize)
-                {
-                    LevelAsset::error("LevelAsset error: map dimensions are incorrect".to_string())
-                } else {
-                    asset
-                }
-            }
-            Err(error) => {
-                error!("Failed to deserialize RON: {}", error);
-                LevelAsset::error(error.to_string())
-            }
-        };
+        let source = std::str::from_utf8(&bytes).unwrap_or_default();
 
-        let tile_symbols = level_asset.tile_symbols.unwrap_or_default();
-        let map: Vec<Vec<TilemapTile>> = level_asset
-            .map
-            .iter()
-            .map(|row| {
-                row.chars()
-                    .map(|char| TilemapTile::new(tile_symbols.get_tile_variant(char)))
-                    .collect()
-            })
-            .collect();
-
-        Ok(Level {
-            name: level_asset.name,
-            player_health: level_asset.player_health,
-            player_money: level_asset.player_money,
-            size: level_asset.size,
-            map,
-            paths: level_asset.paths.unwrap_or_default(),
-            waves: level_asset.waves.unwrap_or_default(),
-            error: level_asset.error,
-        })
+        Ok(Level::from_source(source))
     }
     fn extensions(&self) -> &[&str] {
         &["ron"]
