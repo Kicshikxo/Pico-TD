@@ -94,8 +94,9 @@ pub enum SoldierTargetPriority {
     #[default]
     First,
     Last,
-    Nearest,
     Strongest,
+    Weakest,
+    Nearest,
 }
 
 impl SoldierTargetPriority {
@@ -103,24 +104,27 @@ impl SoldierTargetPriority {
         match self {
             SoldierTargetPriority::First => "ui.soldier.target_priority.first",
             SoldierTargetPriority::Last => "ui.soldier.target_priority.last",
-            SoldierTargetPriority::Nearest => "ui.soldier.target_priority.nearest",
             SoldierTargetPriority::Strongest => "ui.soldier.target_priority.strongest",
+            SoldierTargetPriority::Weakest => "ui.soldier.target_priority.weakest",
+            SoldierTargetPriority::Nearest => "ui.soldier.target_priority.nearest",
         }
     }
     pub fn as_index(&self) -> usize {
         match self {
             SoldierTargetPriority::First => 0,
             SoldierTargetPriority::Last => 1,
-            SoldierTargetPriority::Nearest => 2,
-            SoldierTargetPriority::Strongest => 3,
+            SoldierTargetPriority::Strongest => 2,
+            SoldierTargetPriority::Weakest => 3,
+            SoldierTargetPriority::Nearest => 4,
         }
     }
     pub fn from_index(index: usize) -> Self {
         match index {
             0 => SoldierTargetPriority::First,
             1 => SoldierTargetPriority::Last,
-            2 => SoldierTargetPriority::Nearest,
-            3 => SoldierTargetPriority::Strongest,
+            2 => SoldierTargetPriority::Strongest,
+            3 => SoldierTargetPriority::Weakest,
+            4 => SoldierTargetPriority::Nearest,
             _ => SoldierTargetPriority::default(),
         }
     }
@@ -297,6 +301,14 @@ fn update_soldier(
                     SoldierTargetPriority::Strongest => enemy_b_health
                         .get_current()
                         .cmp(&enemy_a_health.get_current())
+                        .then_with(|| {
+                            enemy_b_movement
+                                .get_progress()
+                                .total_cmp(&enemy_a_movement.get_progress())
+                        }),
+                    SoldierTargetPriority::Weakest => enemy_a_health
+                        .get_current()
+                        .cmp(&enemy_b_health.get_current())
                         .then_with(|| {
                             enemy_b_movement
                                 .get_progress()

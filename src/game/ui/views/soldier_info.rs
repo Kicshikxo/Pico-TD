@@ -322,8 +322,9 @@ fn init_ui(
                                                     [
                                                         SoldierTargetPriority::First,
                                                         SoldierTargetPriority::Last,
-                                                        SoldierTargetPriority::Nearest,
                                                         SoldierTargetPriority::Strongest,
+                                                        SoldierTargetPriority::Weakest,
+                                                        SoldierTargetPriority::Nearest,
                                                     ]
                                                     .iter()
                                                     .map(|priority| {
