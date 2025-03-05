@@ -40,6 +40,7 @@ impl UiButtonVariant {
 pub struct UiButton {
     variant: UiButtonVariant,
     disabled: bool,
+    click_audio: Option<Handle<AudioSource>>,
     width: Val,
     height: Val,
     padding: UiRect,
@@ -52,6 +53,7 @@ impl Default for UiButton {
         Self {
             variant: UiButtonVariant::default(),
             disabled: false,
+            click_audio: None,
             width: Val::Percent(100.0),
             height: Val::Auto,
             padding: UiRect::all(Val::Px(12.0)),
@@ -84,6 +86,10 @@ impl UiButton {
     }
     pub fn with_disabled(mut self, disabled: bool) -> Self {
         self.disabled = disabled;
+        self
+    }
+    pub fn with_click_audio(mut self, click_audio: Handle<AudioSource>) -> Self {
+        self.click_audio = Some(click_audio);
         self
     }
     pub fn get_disabled(&self) -> bool {
@@ -174,8 +180,8 @@ fn update_ui_button(
         Query<(&Interaction, &UiButton, &mut ImageNode), (Changed<Interaction>, With<UiButton>)>,
     )>,
     game_audio: Query<Entity, With<GameAudio>>,
-    ui_audio_assets: Option<Res<UiAudioAssets>>,
     game_audio_volume: Res<Persistent<GameAudioVolume>>,
+    ui_audio_assets: Option<Res<UiAudioAssets>>,
 ) {
     for (mut ui_button, mut image_node) in ui_buttons.p0().iter_mut() {
         if ui_button.get_update_required() == true && ui_button.variant != UiButtonVariant::None {
@@ -188,27 +194,34 @@ fn update_ui_button(
         }
     }
     for (interaction, ui_button, mut image_node) in ui_buttons.p1().iter_mut() {
-        if ui_button.get_disabled() == true {
-            continue;
+        if ui_button.get_disabled() == false {
+            image_node.color = match *interaction {
+                Interaction::Pressed => Color::srgb(0.9, 0.9, 0.9),
+                Interaction::Hovered => Color::srgb(0.95, 0.95, 0.95),
+                Interaction::None => Color::WHITE,
+            };
         }
-        image_node.color = match *interaction {
-            Interaction::Pressed => Color::srgb(0.9, 0.9, 0.9),
-            Interaction::Hovered => Color::srgb(0.95, 0.95, 0.95),
-            Interaction::None => Color::WHITE,
-        };
 
-        if *interaction != Interaction::Pressed {
-            continue;
-        }
-        if let Some(ui_audio_assets) = &ui_audio_assets {
-            commands.entity(game_audio.single()).with_child((
-                AudioPlayer::new(ui_audio_assets.button_click.clone()),
-                PlaybackSettings {
-                    mode: PlaybackMode::Remove,
-                    volume: Volume::new(game_audio_volume.get_sfx_volume()),
-                    ..default()
-                },
-            ));
+        if *interaction == Interaction::Pressed {
+            if let Some(ui_audio_assets) = &ui_audio_assets {
+                let audio_asset = if ui_button.get_disabled() {
+                    ui_audio_assets.button_click_error.clone()
+                } else {
+                    ui_button
+                        .click_audio
+                        .clone()
+                        .unwrap_or_else(|| ui_audio_assets.button_click.clone())
+                };
+
+                commands.entity(game_audio.single()).with_child((
+                    AudioPlayer::new(audio_asset),
+                    PlaybackSettings {
+                        mode: PlaybackMode::Remove,
+                        volume: Volume::new(game_audio_volume.get_sfx_volume()),
+                        ..default()
+                    },
+                ));
+            }
         }
     }
 }

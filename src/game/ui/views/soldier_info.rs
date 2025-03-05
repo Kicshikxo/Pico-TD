@@ -1,9 +1,12 @@
 use bevy::prelude::*;
 
 use crate::game::{
-    assets::sprites::{
-        entity::EntityAssets,
-        ui::{UiAssets, UiButtonSpriteVariant, UiMiscSpriteVariant},
+    assets::{
+        audio::ui::UiAudioAssets,
+        sprites::{
+            entity::EntityAssets,
+            ui::{UiAssets, UiButtonSpriteVariant, UiMiscSpriteVariant},
+        },
     },
     entities::{
         soldier::{Soldier, SoldierTargetPriority},
@@ -62,6 +65,7 @@ enum ButtonAction {
 fn init_ui(
     mut commands: Commands,
     ui_assets: Res<UiAssets>,
+    ui_audio_assets: Res<UiAudioAssets>,
     entity_assets: Res<EntityAssets>,
     player: Res<Player>,
     soldiers: Query<(&Soldier, &TilePosition)>,
@@ -356,6 +360,9 @@ fn init_ui(
                                                             .get_next_level_config()
                                                             .get_price(),
                                                 )
+                                                .with_click_audio(
+                                                    ui_audio_assets.soldier_upgrade.clone(),
+                                                )
                                                 .with_padding(UiRect::all(Val::Px(8.0))),
                                         ))
                                         .with_child(
@@ -374,7 +381,9 @@ fn init_ui(
                                 parent
                                     .spawn((
                                         ButtonAction::SellSoldier,
-                                        UiButton::danger().with_padding(UiRect::all(Val::Px(8.0))),
+                                        UiButton::danger()
+                                            .with_click_audio(ui_audio_assets.soldier_sell.clone())
+                                            .with_padding(UiRect::all(Val::Px(8.0))),
                                     ))
                                     .with_child(
                                         UiText::new("ui.soldier_info.sell_soldier").with_i18n_arg(
@@ -510,7 +519,7 @@ fn update_soldier_info(
             }
 
             let show_next_level =
-                matches!(interaction, &Interaction::Hovered | &Interaction::Pressed);
+                matches!(*interaction, Interaction::Hovered | Interaction::Pressed);
 
             let dispayed_config = if show_next_level {
                 next_level_config

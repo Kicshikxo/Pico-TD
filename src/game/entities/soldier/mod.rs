@@ -252,8 +252,8 @@ fn update_soldier(
     enemies: Query<(Entity, &EnemyHealth, &TileMovement, &TilePosition), With<Enemy>>,
     projectiles: Query<&Projectile>,
     game_audio: Query<Entity, With<GameAudio>>,
-    game_audio_assets: Res<GameAudioAssets>,
     game_audio_volume: Res<Persistent<GameAudioVolume>>,
+    game_audio_assets: Res<GameAudioAssets>,
 ) {
     let mut projectiles = projectiles.iter().cloned().collect::<Vec<Projectile>>();
 

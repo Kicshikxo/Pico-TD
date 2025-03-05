@@ -198,10 +198,10 @@ fn update_ui(
         Query<&mut UiSelector, With<SfxVolumeSelector>>,
         Query<&mut UiSelector, With<MusicVolumeSelector>>,
     )>,
-    mut next_ui_state: ResMut<NextState<UiState>>,
     mut i18n: ResMut<Persistent<I18n>>,
-    mut completed_levels: ResMut<Persistent<CompletedLevels>>,
     mut game_audio_volume: ResMut<Persistent<GameAudioVolume>>,
+    mut completed_levels: ResMut<Persistent<CompletedLevels>>,
+    mut next_ui_state: ResMut<NextState<UiState>>,
 ) {
     for mut locale_selector in settings_selectors.p0().iter_mut() {
         if let Some(changed_item) = locale_selector.get_changed_item() {

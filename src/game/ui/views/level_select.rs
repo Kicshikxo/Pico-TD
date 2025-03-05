@@ -1,4 +1,5 @@
 use bevy::{
+    audio::{PlaybackMode, Volume},
     prelude::*,
     tasks::{AsyncComputeTaskPool, Task},
     ui::widget::NodeImageMode,
@@ -8,9 +9,11 @@ use rfd::{AsyncFileDialog, MessageDialog, MessageLevel};
 
 use crate::game::{
     assets::{
+        audio::ui::UiAudioAssets,
         levels::{CompletedLevels, Level, LevelCompletionStars, LevelsAssets},
         sprites::ui::{UiAssets, UiButtonSpriteVariant, UiMiscSpriteVariant},
     },
+    audio::{GameAudio, GameAudioVolume},
     ui::{
         components::{
             button::{UiButton, UiButtonVariant},
@@ -61,6 +64,7 @@ impl Default for UploadedLevel {
 fn init_ui(
     mut commands: Commands,
     ui_assets: Res<UiAssets>,
+    ui_audio_assets: Res<UiAudioAssets>,
     levels_assets: Res<LevelsAssets>,
     levels_assets_loader: Res<Assets<Level>>,
     mut images: ResMut<Assets<Image>>,
@@ -159,6 +163,7 @@ fn init_ui(
                                                             UiButtonVariant::Secondary
                                                         }
                                                     })
+                                                    .with_click_audio(ui_audio_assets.level_select.clone())
                                                     .with_padding(UiRect::all(Val::Px(8.0)))
                                                     .with_aspect_ratio(1.0),
                                             ))
@@ -252,10 +257,10 @@ fn update_ui(
     keyboard_input: Res<ButtonInput<KeyCode>>,
     levels_assets: Res<LevelsAssets>,
     levels_assets_loader: Res<Assets<Level>>,
-    mut next_ui_state: ResMut<NextState<UiState>>,
-    mut next_game_state: ResMut<NextState<GameState>>,
     mut uploaded_level: ResMut<UploadedLevel>,
     mut selected_level: ResMut<Level>,
+    mut next_ui_state: ResMut<NextState<UiState>>,
+    mut next_game_state: ResMut<NextState<GameState>>,
 ) {
     for (interaction, button_action) in interaction_query.iter() {
         if *interaction != Interaction::Pressed {
@@ -300,9 +305,13 @@ fn update_ui(
 }
 
 fn uploaded_level_update(
-    mut next_game_state: ResMut<NextState<GameState>>,
+    mut commands: Commands,
+    game_audio: Query<Entity, With<GameAudio>>,
+    game_audio_volume: Res<Persistent<GameAudioVolume>>,
+    ui_audio_assets: Res<UiAudioAssets>,
     mut uploaded_level: ResMut<UploadedLevel>,
     mut selected_level: ResMut<Level>,
+    mut next_game_state: ResMut<NextState<GameState>>,
 ) {
     if let Some(mut uploaded_level_task) = uploaded_level.task.take() {
         if let Some(uploaded_level_task_result) =
@@ -318,6 +327,15 @@ fn uploaded_level_update(
                 } else {
                     *selected_level = level.clone();
                     next_game_state.set(GameState::Start);
+
+                    commands.entity(game_audio.single()).with_child((
+                        AudioPlayer::new(ui_audio_assets.level_select.clone()),
+                        PlaybackSettings {
+                            mode: PlaybackMode::Remove,
+                            volume: Volume::new(game_audio_volume.get_sfx_volume()),
+                            ..default()
+                        },
+                    ));
                 }
             }
         } else {

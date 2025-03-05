@@ -143,9 +143,9 @@ fn update_ui(
         Query<&mut UiSelector, With<SfxVolumeSelector>>,
         Query<&mut UiSelector, With<MusicVolumeSelector>>,
     )>,
+    mut game_audio_volume: ResMut<Persistent<GameAudioVolume>>,
     mut next_ui_state: ResMut<NextState<UiState>>,
     mut next_game_state: ResMut<NextState<GameState>>,
-    mut game_audio_volume: ResMut<Persistent<GameAudioVolume>>,
 ) {
     for mut sfx_volume_selector in pause_selectors.p0().iter_mut() {
         if let Some(changed_item) = sfx_volume_selector.get_changed_item() {

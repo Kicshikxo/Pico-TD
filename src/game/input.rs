@@ -1,6 +1,13 @@
-use bevy::{input::touch::TouchPhase, prelude::*};
+use bevy::{
+    audio::{PlaybackMode, Volume},
+    input::touch::TouchPhase,
+    prelude::*,
+};
+use bevy_persistent::Persistent;
 
 use crate::game::{
+    assets::audio::ui::UiAudioAssets,
+    audio::{GameAudio, GameAudioVolume},
     entities::{
         soldier::{Soldier, SoldierVariant},
         tile::position::TilePosition,
@@ -13,6 +20,7 @@ use crate::game::{
     waves::GameWave,
     {GameState, GameTilemap},
 };
+
 pub struct GameInputPlugin;
 
 impl Plugin for GameInputPlugin {
@@ -94,6 +102,7 @@ fn update_selected_tile(
 }
 
 fn update_selected_soldier(
+    mut commands: Commands,
     game_tilemap: Query<&Tilemap, With<GameTilemap>>,
     tiles: Query<&TilemapTile>,
     soldiers: Query<(&Soldier, &TilePosition)>,
@@ -103,6 +112,9 @@ fn update_selected_soldier(
     mouse_button_input: Res<ButtonInput<MouseButton>>,
     mut touch_events: EventReader<TouchInput>,
     ui_interaction: Query<&Interaction, (Changed<Interaction>, With<Button>)>,
+    game_audio: Query<Entity, With<GameAudio>>,
+    game_audio_volume: Res<Persistent<GameAudioVolume>>,
+    ui_audio_assets: Res<UiAudioAssets>,
     mut next_ui_state: ResMut<NextState<UiState>>,
     mut next_game_state: ResMut<NextState<GameState>>,
 ) {
@@ -155,4 +167,13 @@ fn update_selected_soldier(
 
     selected_soldier.tile_position = selected_tile.tile_position;
     next_game_state.set(GameState::Pause);
+
+    commands.entity(game_audio.single()).with_child((
+        AudioPlayer::new(ui_audio_assets.tilemap_click.clone()),
+        PlaybackSettings {
+            mode: PlaybackMode::Remove,
+            volume: Volume::new(game_audio_volume.get_sfx_volume()),
+            ..default()
+        },
+    ));
 }
