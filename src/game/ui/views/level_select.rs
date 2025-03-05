@@ -275,6 +275,9 @@ fn update_ui(
                 }
             }
             ButtonAction::UploadLevel => {
+                if uploaded_level.task.is_some() {
+                    continue;
+                }
                 uploaded_level.task = Some(AsyncComputeTaskPool::get().spawn(async move {
                     if let Some(file) = AsyncFileDialog::new()
                         .add_filter("RON Files", &["ron"])
