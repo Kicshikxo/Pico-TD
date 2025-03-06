@@ -115,6 +115,7 @@ fn init_ui(
                                         [
                                             Locale::En,
                                             Locale::Ru,
+                                            Locale::Uk,
                                             Locale::De,
                                             Locale::Fr,
                                             Locale::Es,

@@ -3,6 +3,7 @@ _version: 2
 level.example:
     en: "Example"
     ru: "Пример"
+    uk: "Приклад"
     de: "Beispiel"
     fr: "Exemple"
     es: "Ejemplo"
@@ -14,6 +15,7 @@ level.example:
 level.ring:
     en: "Ring"
     ru: "Кольцо"
+    uk: "Кільце"
     de: "Ring"
     fr: "Anneau"
     es: "Anillo"
@@ -25,6 +27,7 @@ level.ring:
 level.zigzag:
     en: "Zigzag"
     ru: "Зигзаг"
+    uk: "Зиґзаґ"
     de: "Zickzack"
     fr: "Zigzag"
     es: "Zigzag"
@@ -36,6 +39,7 @@ level.zigzag:
 level.coastal_highway:
     en: "Coastal Highway"
     ru: "Прибрежное шоссе"
+    uk: "Прибережна траса"
     de: "Küstenstraße"
     fr: "Route côtière"
     es: "Carretera costera"
@@ -47,6 +51,7 @@ level.coastal_highway:
 level.error:
     en: "Error"
     ru: "Ошибка"
+    uk: "Помилка"
     de: "Fehler"
     fr: "Erreur"
     es: "Error"

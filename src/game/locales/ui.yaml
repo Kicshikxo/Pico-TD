@@ -3,6 +3,7 @@ _version: 2
 ui.menu.game_title:
     en: "Pico TD"
     ru: "Pico TD"
+    uk: "Pico TD"
     de: "Pico TD"
     fr: "Pico TD"
     es: "Pico TD"
@@ -14,6 +15,7 @@ ui.menu.game_title:
 ui.menu.start_game:
     en: "Start game"
     ru: "Начать игру"
+    uk: "Почати гру"
     de: "Spiel starten"
     fr: "Démarrer le jeu"
     es: "Iniciar juego"
@@ -25,6 +27,7 @@ ui.menu.start_game:
 ui.menu.settings:
     en: "Settings"
     ru: "Настройки"
+    uk: "Налаштування"
     de: "Einstellungen"
     fr: "Paramètres"
     es: "Configuración"
@@ -36,6 +39,7 @@ ui.menu.settings:
 ui.menu.exit_game:
     en: "Exit game"
     ru: "Выйти из игры"
+    uk: "Вийти з гри"
     de: "Spiel beenden"
     fr: "Quitter le jeu"
     es: "Salir del juego"
@@ -48,6 +52,7 @@ ui.menu.exit_game:
 ui.settings.title:
     en: "Settings"
     ru: "Настройки"
+    uk: "Налаштування"
     de: "Einstellungen"
     fr: "Paramètres"
     es: "Configuración"
@@ -59,6 +64,7 @@ ui.settings.title:
 ui.settings.change_locale:
     en: "Change language"
     ru: "Сменить язык"
+    uk: "Змінити мову"
     de: "Sprache ändern"
     fr: "Changer la langue"
     es: "Cambiar idioma"
@@ -70,6 +76,7 @@ ui.settings.change_locale:
 ui.settings.current_language:
     en: "English"
     ru: "Русский"
+    uk: "Українська"
     de: "Deutsch"
     fr: "Français"
     es: "Español"
@@ -81,6 +88,7 @@ ui.settings.current_language:
 ui.settings.music_volume:
     en: "Music volume"
     ru: "Громкость музыки"
+    uk: "Гучність музики"
     de: "Musiklautstärke"
     fr: "Volume de la musique"
     es: "Volumen de la música"
@@ -92,6 +100,7 @@ ui.settings.music_volume:
 ui.settings.sfx_volume:
     en: "SFX volume"
     ru: "Громкость звуков"
+    uk: "Гучність ефектів"
     de: "Effektlautstärke"
     fr: "Volume de l'effet"
     es: "Volumen del efecto"
@@ -103,6 +112,7 @@ ui.settings.sfx_volume:
 ui.settings.reset_progress:
     en: "Reset Progress"
     ru: "Сбросить прогресс"
+    uk: "Скинути прогрес"
     de: "Fortschritt zurücksetzen"
     fr: "Réinitialiser la progression"
     es: "Reiniciar progreso"
@@ -115,6 +125,7 @@ ui.settings.reset_progress:
 ui.level_select.title:
     en: "Select level"
     ru: "Выберите уровень"
+    uk: "Виберіть рівень"
     de: "Level auswählen"
     fr: "Choisir un niveau"
     es: "Seleccionar nivel"
@@ -126,6 +137,7 @@ ui.level_select.title:
 ui.level_select.upload_level:
     en: "Upload level"
     ru: "Загрузить уровень"
+    uk: "Завантажити рівень"
     de: "Level hochladen"
     fr: "Téléverser un niveau"
     es: "Subir nivel"
@@ -138,6 +150,7 @@ ui.level_select.upload_level:
 ui.in_game.health:
     en: "%{health}"
     ru: "%{health}"
+    uk: "%{health}"
     de: "%{health}"
     fr: "%{health}"
     es: "%{health}"
@@ -149,6 +162,7 @@ ui.in_game.health:
 ui.in_game.money:
     en: "%{money}"
     ru: "%{money}"
+    uk: "%{money}"
     de: "%{money}"
     fr: "%{money}"
     es: "%{money}"
@@ -160,6 +174,7 @@ ui.in_game.money:
 ui.in_game.wave:
     en: "Wave %{current}/%{total}"
     ru: "Волна %{current}/%{total}"
+    uk: "Хвиля %{current}/%{total}"
     de: "Welle %{current}/%{total}"
     fr: "Vague %{current}/%{total}"
     es: "Oleada %{current}/%{total}"
@@ -171,6 +186,7 @@ ui.in_game.wave:
 ui.in_game.game_speed:
     en: "Speed: x%{speed}"
     ru: "Скорость: x%{speed}"
+    uk: "Швидкість: x%{speed}"
     de: "Tempo: x%{speed}"
     fr: "Vitesse : x%{speed}"
     es: "Velocidad: x%{speed}"
@@ -182,6 +198,7 @@ ui.in_game.game_speed:
 ui.in_game.pause:
     en: "Pause"
     ru: "Пауза"
+    uk: "Пауза"
     de: "Pause"
     fr: "Pause"
     es: "Pausa"
@@ -193,6 +210,7 @@ ui.in_game.pause:
 ui.in_game.next_wave:
     en: "Next wave"
     ru: "Следующая волна"
+    uk: "Наступна хвиля"
     de: "Nächste Welle"
     fr: "Vague suivante"
     es: "Siguiente oleada"
@@ -205,6 +223,7 @@ ui.in_game.next_wave:
 ui.soldier_select.title:
     en: "Select soldier"
     ru: "Выберите солдата"
+    uk: "Виберіть солдата"
     de: "Soldaten auswählen"
     fr: "Choisir un soldat"
     es: "Seleccionar soldado"
@@ -216,6 +235,7 @@ ui.soldier_select.title:
 ui.soldier_select.price:
     en: "%{price}$"
     ru: "%{price}$"
+    uk: "%{price}$"
     de: "%{price}$"
     fr: "%{price}$"
     es: "%{price}$"
@@ -228,6 +248,7 @@ ui.soldier_select.price:
 ui.soldier_info.title:
     en: "Soldier info"
     ru: "Информация"
+    uk: "Інформація"
     de: "Soldateninfo"
     fr: "Infos du soldat"
     es: "Información del soldado"
@@ -239,6 +260,7 @@ ui.soldier_info.title:
 ui.soldier_info.soldier_name:
     en: "Name:"
     ru: "Название:"
+    uk: "Назва:"
     de: "Name:"
     fr: "Nom :"
     es: "Nombre:"
@@ -250,6 +272,7 @@ ui.soldier_info.soldier_name:
 ui.soldier_info.soldier_level:
     en: "Level: %{level}/%{max_level}"
     ru: "Уровень: %{level}/%{max_level}"
+    uk: "Рівень: %{level}/%{max_level}"
     de: "Level: %{level}/%{max_level}"
     fr: "Niveau : %{level}/%{max_level}"
     es: "Nivel: %{level}/%{max_level}"
@@ -261,6 +284,7 @@ ui.soldier_info.soldier_level:
 ui.soldier_info.soldier_damage:
     en: "Damage: %{damage}"
     ru: "Урон: %{damage}"
+    uk: "Урон: %{damage}"
     de: "Schaden: %{damage}"
     fr: "Dégâts : %{damage}"
     es: "Daño: %{damage}"
@@ -272,6 +296,7 @@ ui.soldier_info.soldier_damage:
 ui.soldier_info.soldier_fire_radius:
     en: "Fire radius: %{fire_radius}"
     ru: "Радиус стрельбы: %{fire_radius}"
+    uk: "Радіус стрільби: %{fire_radius}"
     de: "Feuerradius: %{fire_radius}"
     fr: "Rayon de tir : %{fire_radius}"
     es: "Radio de disparo: %{fire_radius}"
@@ -283,6 +308,7 @@ ui.soldier_info.soldier_fire_radius:
 ui.soldier_info.soldier_blast_radius:
     en: "Blast radius: %{blast_radius}"
     ru: "Радиус взрыва: %{blast_radius}"
+    uk: "Радіус вибуху: %{blast_radius}"
     de: "Explosionsradius: %{blast_radius}"
     fr: "Rayon d'explosion : %{blast_radius}"
     es: "Radio de explosión: %{blast_radius}"
@@ -294,6 +320,7 @@ ui.soldier_info.soldier_blast_radius:
 ui.soldier_info.soldier_fire_rate:
     en: "Fire rate: %{fire_rate}/s"
     ru: "Скорострельность: %{fire_rate}/с"
+    uk: "Скорострільність: %{fire_rate}/с"
     de: "Feuerrate: %{fire_rate}/s"
     fr: "Cadence de tir : %{fire_rate}/s"
     es: "Cadencia de fuego: %{fire_rate}/s"
@@ -305,6 +332,7 @@ ui.soldier_info.soldier_fire_rate:
 ui.soldier_info.target_priority:
     en: "Target priority"
     ru: "Приоритет выбора цели"
+    uk: "Пріоритет вибору цілі"
     de: "Zielpriorität"
     fr: "Priorité de cible"
     es: "Prioridad de objetivo"
@@ -316,6 +344,7 @@ ui.soldier_info.target_priority:
 ui.soldier_info.upgrade_soldier:
     en: "Upgrade %{price}$"
     ru: "Улучшить %{price}$"
+    uk: "Поліпшити %{price}$"
     de: "Aufwerten %{price}$"
     fr: "Améliorer %{price}$"
     es: "Mejorar %{price}$"
@@ -327,6 +356,7 @@ ui.soldier_info.upgrade_soldier:
 ui.soldier_info.sell_soldier:
     en: "Sell %{sell_price}$"
     ru: "Продать %{sell_price}$"
+    uk: "Продати %{sell_price}$"
     de: "Verkaufen %{sell_price}$"
     fr: "Vendre %{sell_price}$"
     es: "Vender %{sell_price}$"
@@ -339,6 +369,7 @@ ui.soldier_info.sell_soldier:
 ui.soldier.soldier:
     en: "Soldier"
     ru: "Солдат"
+    uk: "Солдат"
     de: "Soldat"
     fr: "Soldat"
     es: "Soldado"
@@ -350,6 +381,7 @@ ui.soldier.soldier:
 ui.soldier.rocket_launcher:
     en: "Rocket launcher"
     ru: "Ракетница"
+    uk: "Ракетна установка"
     de: "Raketenwerfer"
     fr: "Lance-roquettes"
     es: "Lanzacohetes"
@@ -361,6 +393,7 @@ ui.soldier.rocket_launcher:
 ui.soldier.sniper:
     en: "Sniper"
     ru: "Снайпер"
+    uk: "Снайпер"
     de: "Scharfschütze"
     fr: "Tireur d'élite"
     es: "Francotirador"
@@ -372,6 +405,7 @@ ui.soldier.sniper:
 ui.soldier.target_priority.first:
     en: "Attack the first"
     ru: "Атаковать лидирующую"
+    uk: "Атакувати лідируючу"
     de: "Greife den Ersten an"
     fr: "Attaquer le premier"
     es: "Atacar al primero"
@@ -383,6 +417,7 @@ ui.soldier.target_priority.first:
 ui.soldier.target_priority.last:
     en: "Attack the last"
     ru: "Атаковать последнюю"
+    uk: "Атакувати останню"
     de: "Greife den Letzten an"
     fr: "Attaquer le dernier"
     es: "Atacar al último"
@@ -394,6 +429,7 @@ ui.soldier.target_priority.last:
 ui.soldier.target_priority.strongest:
     en: "Attack the strongest"
     ru: "Атаковать самую стойкую"
+    uk: "Атакувати найсильнішу"
     de: "Greife den Stärksten an"
     fr: "Attaquer le plus fort"
     es: "Atacar al más fuerte"
@@ -405,6 +441,7 @@ ui.soldier.target_priority.strongest:
 ui.soldier.target_priority.weakest:
     en: "Attack the weakest"
     ru: "Атаковать самую слабую"
+    uk: "Атакувати найслабшу"
     de: "Greife den Schwächsten an"
     fr: "Attaquer le plus faible"
     es: "Atacar al más débil"
@@ -416,6 +453,7 @@ ui.soldier.target_priority.weakest:
 ui.soldier.target_priority.nearest:
     en: "Attack the nearest"
     ru: "Атаковать ближайшую"
+    uk: "Атакувати найближчу"
     de: "Greife den Nächsten an"
     fr: "Attaquer le plus proche"
     es: "Atacar al más cercano"
@@ -428,6 +466,7 @@ ui.soldier.target_priority.nearest:
 ui.pause.title:
     en: "Pause"
     ru: "Пауза"
+    uk: "Пауза"
     de: "Pause"
     fr: "Pause"
     es: "Pausa"
@@ -439,6 +478,7 @@ ui.pause.title:
 ui.pause.resume_game:
     en: "Resume game"
     ru: "Продолжить игру"
+    uk: "Продовжити гру"
     de: "Spiel fortsetzen"
     fr: "Reprendre la partie"
     es: "Reanudar juego"
@@ -450,6 +490,7 @@ ui.pause.resume_game:
 ui.pause.back_to_menu:
     en: "Back to menu"
     ru: "Вернуться в меню"
+    uk: "Повернутися в меню"
     de: "Zurück zum Menü"
     fr: "Retour au menu"
     es: "Volver al menú"
@@ -462,6 +503,7 @@ ui.pause.back_to_menu:
 ui.game_over.player_win:
     en: "You win!"
     ru: "Вы победили!"
+    uk: "Ви перемогли!"
     de: "Du hast gewonnen!"
     fr: "Vous avez gagné !"
     es: "¡Has ganado!"
@@ -473,6 +515,7 @@ ui.game_over.player_win:
 ui.game_over.player_lose:
     en: "You lose!"
     ru: "Вы проиграли!"
+    uk: "Ви програли!"
     de: "Du hast verloren!"
     fr: "Vous avez perdu !"
     es: "¡Has perdido!"
@@ -484,6 +527,7 @@ ui.game_over.player_lose:
 ui.game_over.restart_level:
     en: "Restart level"
     ru: "Повторить уровень"
+    uk: "Перезапустити рівень"
     de: "Level neu starten"
     fr: "Recommencer le niveau"
     es: "Reiniciar nivel"
@@ -495,6 +539,7 @@ ui.game_over.restart_level:
 ui.game_over.back_to_menu:
     en: "Back to menu"
     ru: "Вернуться в меню"
+    uk: "Повернутися в меню"
     de: "Zurück zum Menü"
     fr: "Retour au menu"
     es: "Volver al menú"

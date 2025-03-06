@@ -3,6 +3,7 @@ _version: 2
 error.level_select.file_reading_error.title:
     en: "File reading error"
     ru: "Ошибка при чтении файла"
+    uk: "Помилка при читанні файлу"
     de: "Fehler beim Lesen der Datei"
     fr: "Erreur de lecture du fichier"
     es: "Error al leer el archivo"

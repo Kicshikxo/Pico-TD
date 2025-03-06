@@ -9,6 +9,7 @@ use serde::{Deserialize, Serialize};
 pub enum Locale {
     En,
     Ru,
+    Uk,
     De,
     Fr,
     Es,
@@ -24,6 +25,7 @@ impl Locale {
         match self {
             Locale::En => "en".to_string(),
             Locale::Ru => "ru".to_string(),
+            Locale::Uk => "uk".to_string(),
             Locale::De => "de".to_string(),
             Locale::Fr => "fr".to_string(),
             Locale::Es => "es".to_string(),
@@ -38,6 +40,7 @@ impl Locale {
         match &string[0..2] {
             "en" => Locale::En,
             "ru" => Locale::Ru,
+            "uk" => Locale::Uk,
             "de" => Locale::De,
             "fr" => Locale::Fr,
             "es" => Locale::Es,
