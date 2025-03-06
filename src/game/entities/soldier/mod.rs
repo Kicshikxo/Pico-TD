@@ -36,37 +36,37 @@ use crate::game::{
 #[derive(Clone, Copy, PartialEq)]
 pub enum SoldierVariant {
     Soldier { level: usize },
-    Sniper { level: usize },
     RocketLauncher { level: usize },
+    Sniper { level: usize },
 }
 
 impl SoldierVariant {
     pub fn to_str(&self) -> &'static str {
         match self {
             SoldierVariant::Soldier { .. } => "ui.soldier.soldier",
-            SoldierVariant::Sniper { .. } => "ui.soldier.sniper",
             SoldierVariant::RocketLauncher { .. } => "ui.soldier.rocket_launcher",
+            SoldierVariant::Sniper { .. } => "ui.soldier.sniper",
         }
     }
     pub fn get_levels(&self) -> &'static [SoldierConfig] {
         match self {
             Self::Soldier { .. } => &SOLDIER_LEVELS,
-            Self::Sniper { .. } => &SNIPER_LEVELS,
             Self::RocketLauncher { .. } => &ROCKET_LAUNCHER_LEVELS,
+            Self::Sniper { .. } => &SNIPER_LEVELS,
         }
     }
     pub fn get_level(&self) -> usize {
         match self {
             SoldierVariant::Soldier { level }
-            | SoldierVariant::Sniper { level }
-            | SoldierVariant::RocketLauncher { level } => *level,
+            | SoldierVariant::RocketLauncher { level }
+            | SoldierVariant::Sniper { level } => *level,
         }
     }
     fn set_level(&mut self, new_level: usize) {
         match self {
             SoldierVariant::Soldier { level }
-            | SoldierVariant::Sniper { level }
-            | SoldierVariant::RocketLauncher { level } => *level = new_level,
+            | SoldierVariant::RocketLauncher { level }
+            | SoldierVariant::Sniper { level } => *level = new_level,
         }
     }
     pub fn get_max_level(&self) -> usize {

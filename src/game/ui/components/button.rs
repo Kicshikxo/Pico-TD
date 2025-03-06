@@ -13,7 +13,7 @@ use crate::game::{
     audio::{GameAudio, GameAudioVolume},
 };
 
-#[derive(Default, Clone, PartialEq)]
+#[derive(Default, Clone, Copy, PartialEq)]
 pub enum UiButtonVariant {
     #[default]
     None,
@@ -40,6 +40,7 @@ impl UiButtonVariant {
 pub struct UiButton {
     variant: UiButtonVariant,
     disabled: bool,
+    next_disabled_state: bool,
     click_audio: Option<Handle<AudioSource>>,
     width: Val,
     height: Val,
@@ -53,6 +54,7 @@ impl Default for UiButton {
         Self {
             variant: UiButtonVariant::default(),
             disabled: false,
+            next_disabled_state: false,
             click_audio: None,
             width: Val::Percent(100.0),
             height: Val::Auto,
@@ -85,19 +87,28 @@ impl UiButton {
         self
     }
     pub fn with_disabled(mut self, disabled: bool) -> Self {
-        self.disabled = disabled;
+        self.next_disabled_state = disabled;
         self
     }
     pub fn with_click_audio(mut self, click_audio: Handle<AudioSource>) -> Self {
         self.click_audio = Some(click_audio);
         self
     }
+    pub fn get_variant(&self) -> UiButtonVariant {
+        self.variant
+    }
     pub fn get_disabled(&self) -> bool {
         self.disabled
     }
-    pub fn set_disabled(&mut self, disabled: bool) {
-        self.set_update_required(self.disabled != disabled);
+    fn set_disabled(&mut self, disabled: bool) {
         self.disabled = disabled;
+    }
+    pub fn set_next_disabled_state(&mut self, disabled: bool) {
+        self.set_update_required(self.next_disabled_state != disabled);
+        self.next_disabled_state = disabled;
+    }
+    pub fn get_next_disabled_state(&self) -> bool {
+        self.next_disabled_state
     }
     pub fn with_width(mut self, width: Val) -> Self {
         self.width = width;
@@ -183,18 +194,8 @@ fn update_ui_button(
     game_audio_volume: Res<Persistent<GameAudioVolume>>,
     ui_audio_assets: Option<Res<UiAudioAssets>>,
 ) {
-    for (mut ui_button, mut image_node) in ui_buttons.p0().iter_mut() {
-        if ui_button.get_update_required() == true && ui_button.variant != UiButtonVariant::None {
-            image_node.color = if ui_button.get_disabled() == true {
-                Color::srgb(0.75, 0.75, 0.75)
-            } else {
-                Color::WHITE
-            };
-            ui_button.set_update_required(false);
-        }
-    }
     for (interaction, ui_button, mut image_node) in ui_buttons.p1().iter_mut() {
-        if ui_button.get_disabled() == false {
+        if ui_button.get_next_disabled_state() == false {
             image_node.color = match *interaction {
                 Interaction::Pressed => Color::srgb(0.9, 0.9, 0.9),
                 Interaction::Hovered => Color::srgb(0.95, 0.95, 0.95),
@@ -222,6 +223,22 @@ fn update_ui_button(
                     },
                 ));
             }
+        }
+    }
+    for (mut ui_button, mut image_node) in ui_buttons.p0().iter_mut() {
+        if ui_button.get_update_required() == true {
+            let next_disabled_state = ui_button.get_next_disabled_state();
+            ui_button.set_disabled(next_disabled_state);
+
+            image_node.color = if next_disabled_state == true
+                && ui_button.get_variant() != UiButtonVariant::None
+            {
+                Color::srgb(0.75, 0.75, 0.75)
+            } else {
+                Color::WHITE
+            };
+
+            ui_button.set_update_required(false);
         }
     }
 }

@@ -41,7 +41,7 @@ impl SoldierConfig {
 pub const SOLDIER_LEVELS: [SoldierConfig; 3] = [
     SoldierConfig {
         price: 150,
-        sell_price: 70,
+        sell_price: 105,
         damage: 100,
         fire_radius: 2.5,
         fire_rate_secs: 0.5,
@@ -50,8 +50,8 @@ pub const SOLDIER_LEVELS: [SoldierConfig; 3] = [
     },
     SoldierConfig {
         price: 100,
-        sell_price: 105,
-        damage: 150,
+        sell_price: 175,
+        damage: 200,
         fire_radius: 3.0,
         fire_rate_secs: 0.5,
         sprite_variant: SoldierSpriteVariant::SoldierYellow,
@@ -59,8 +59,8 @@ pub const SOLDIER_LEVELS: [SoldierConfig; 3] = [
     },
     SoldierConfig {
         price: 200,
-        sell_price: 175,
-        damage: 200,
+        sell_price: 315,
+        damage: 300,
         fire_radius: 3.5,
         fire_rate_secs: 0.5,
         sprite_variant: SoldierSpriteVariant::SoldierRed,
@@ -68,53 +68,53 @@ pub const SOLDIER_LEVELS: [SoldierConfig; 3] = [
     },
 ];
 
+pub const ROCKET_LAUNCHER_LEVELS: [SoldierConfig; 3] = [
+    SoldierConfig {
+        price: 200,
+        sell_price: 140,
+        damage: 200,
+        fire_radius: 3.5,
+        fire_rate_secs: 1.5,
+        sprite_variant: SoldierSpriteVariant::RocketLauncherGray,
+        projectile_variant: ProjectileVariant::Rocket { blast_radius: 1.0 },
+    },
+    SoldierConfig {
+        price: 150,
+        sell_price: 245,
+        damage: 300,
+        fire_radius: 4.0,
+        fire_rate_secs: 1.5,
+        sprite_variant: SoldierSpriteVariant::RocketLauncherYellow,
+        projectile_variant: ProjectileVariant::Rocket { blast_radius: 1.5 },
+    },
+    SoldierConfig {
+        price: 200,
+        sell_price: 385,
+        damage: 300,
+        fire_radius: 4.0,
+        fire_rate_secs: 1.5,
+        sprite_variant: SoldierSpriteVariant::RocketLauncherRed,
+        projectile_variant: ProjectileVariant::Rocket { blast_radius: 2.0 },
+    },
+];
+
 pub const SNIPER_LEVELS: [SoldierConfig; 2] = [
     SoldierConfig {
         price: 250,
         sell_price: 175,
-        damage: 300,
+        damage: 500,
         fire_radius: 4.0,
         fire_rate_secs: 2.0,
         sprite_variant: SoldierSpriteVariant::SoldierGreen,
         projectile_variant: ProjectileVariant::Bullet,
     },
     SoldierConfig {
-        price: 100,
-        sell_price: 245,
-        damage: 500,
+        price: 200,
+        sell_price: 315,
+        damage: 1000,
         fire_radius: 5.0,
-        fire_rate_secs: 1.5,
+        fire_rate_secs: 2.0,
         sprite_variant: SoldierSpriteVariant::SoldierBlue,
         projectile_variant: ProjectileVariant::Bullet,
-    },
-];
-
-pub const ROCKET_LAUNCHER_LEVELS: [SoldierConfig; 3] = [
-    SoldierConfig {
-        price: 300,
-        sell_price: 210,
-        damage: 200,
-        fire_radius: 3.5,
-        fire_rate_secs: 1.0,
-        sprite_variant: SoldierSpriteVariant::RocketLauncherGray,
-        projectile_variant: ProjectileVariant::Rocket { blast_radius: 1.0 },
-    },
-    SoldierConfig {
-        price: 100,
-        sell_price: 280,
-        damage: 250,
-        fire_radius: 4.0,
-        fire_rate_secs: 1.0,
-        sprite_variant: SoldierSpriteVariant::RocketLauncherYellow,
-        projectile_variant: ProjectileVariant::Rocket { blast_radius: 1.5 },
-    },
-    SoldierConfig {
-        price: 150,
-        sell_price: 385,
-        damage: 300,
-        fire_radius: 4.0,
-        fire_rate_secs: 1.0,
-        sprite_variant: SoldierSpriteVariant::RocketLauncherRed,
-        projectile_variant: ProjectileVariant::Rocket { blast_radius: 2.0 },
     },
 ];

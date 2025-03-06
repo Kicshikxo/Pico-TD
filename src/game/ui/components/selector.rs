@@ -210,7 +210,7 @@ pub struct UiSelectorPlugin;
 impl Plugin for UiSelectorPlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(Update, init_ui_selector);
-        app.add_systems(PostUpdate, update_ui_selector);
+        app.add_systems(Update, update_ui_selector);
     }
 }
 
@@ -245,7 +245,7 @@ fn init_ui_selector(
                     parent
                         .spawn((
                             UiSelectorButton::Decrease,
-                            UiButton::primary()
+                            UiButton::secondary()
                                 .with_click_audio(ui_audio_assets.selector_click.clone())
                                 .with_width(Val::Px(ui_selector_size))
                                 .with_height(Val::Px(ui_selector_size))
@@ -264,7 +264,7 @@ fn init_ui_selector(
                     parent
                         .spawn((
                             UiSelectorButton::Increase,
-                            UiButton::primary()
+                            UiButton::secondary()
                                 .with_click_audio(ui_audio_assets.selector_click.clone())
                                 .with_width(Val::Px(ui_selector_size))
                                 .with_height(Val::Px(ui_selector_size))
@@ -316,10 +316,12 @@ fn update_ui_selector(
             {
                 match ui_selector_button_variant {
                     UiSelectorButton::Decrease => {
-                        ui_selector_button.set_disabled(ui_selector.is_previous_allowed() == false);
+                        ui_selector_button
+                            .set_next_disabled_state(ui_selector.is_previous_allowed() == false);
                     }
                     UiSelectorButton::Increase => {
-                        ui_selector_button.set_disabled(ui_selector.is_next_allowed() == false);
+                        ui_selector_button
+                            .set_next_disabled_state(ui_selector.is_next_allowed() == false);
                     }
                 }
             }

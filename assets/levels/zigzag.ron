@@ -83,7 +83,7 @@ LevelAsset(
             enemies: [
                 WaveEnemies (
                     enemy_variant: Truck(Mk1),
-                    count: 10,
+                    count: 20,
                     duration: 30.0,
                     spawn_interval: 0.5,
                     spawn_delay: 0.0,
@@ -93,8 +93,8 @@ LevelAsset(
                     enemy_variant: Truck(Mk2),
                     count: 5,
                     duration: 30.0,
-                    spawn_interval: 0.5,
-                    spawn_delay: 5.0,
+                    spawn_interval: 0.4,
+                    spawn_delay: 10.0,
                     path_index: 0
                 ),
             ]
@@ -104,7 +104,7 @@ LevelAsset(
             enemies: [
                 WaveEnemies (
                     enemy_variant: Truck(Mk1),
-                    count: 5,
+                    count: 20,
                     duration: 30.0,
                     spawn_interval: 0.5,
                     spawn_delay: 0.0,
@@ -115,7 +115,7 @@ LevelAsset(
                     count: 15,
                     duration: 25.0,
                     spawn_interval: 0.4,
-                    spawn_delay: 2.5,
+                    spawn_delay: 5.0,
                     path_index: 0
                 ),
             ]
@@ -146,7 +146,7 @@ LevelAsset(
                 ),
                 WaveEnemies (
                     enemy_variant: Truck(Mk3),
-                    count: 10,
+                    count: 20,
                     duration: 15.0,
                     spawn_interval: 0.25,
                     spawn_delay: 8.0,
@@ -183,7 +183,7 @@ LevelAsset(
                 ),
                 WaveEnemies (
                     enemy_variant: Dron(Mk1),
-                    count: 20,
+                    count: 30,
                     duration: 10.0,
                     spawn_interval: 0.25,
                     spawn_delay: 0.0,
@@ -200,6 +200,14 @@ LevelAsset(
                     duration: 15.0,
                     spawn_interval: 0.25,
                     spawn_delay: 0.0,
+                    path_index: 0
+                ),
+                 WaveEnemies (
+                    enemy_variant: Tank(Mk1),
+                    count: 10,
+                    duration: 25.0,
+                    spawn_interval: 0.5,
+                    spawn_delay: 5.0,
                     path_index: 0
                 ),
                 WaveEnemies (
@@ -233,10 +241,10 @@ LevelAsset(
                 ),
                 WaveEnemies (
                     enemy_variant: Tank(Mk1),
-                    count: 5,
-                    duration: 30.0,
+                    count: 15,
+                    duration: 25.0,
                     spawn_interval: 0.5,
-                    spawn_delay: 10.0,
+                    spawn_delay: 5.0,
                     path_index: 0
                 ),
                 WaveEnemies (
@@ -262,7 +270,7 @@ LevelAsset(
             enemies: [
                 WaveEnemies (
                     enemy_variant: Truck(Mk3),
-                    count: 30,
+                    count: 40,
                     duration: 15.0,
                     spawn_interval: 0.25,
                     spawn_delay: 0.0,
@@ -273,15 +281,15 @@ LevelAsset(
                     count: 10,
                     duration: 12.5,
                     spawn_interval: 0.2,
-                    spawn_delay: 7.5,
+                    spawn_delay: 10.0,
                     path_index: 0
                 ),
                 WaveEnemies (
-                    enemy_variant: Tank(Mk1),
-                    count: 10,
-                    duration: 30.0,
+                    enemy_variant: Tank(Mk2),
+                    count: 15,
+                    duration: 20.0,
                     spawn_interval: 0.5,
-                    spawn_delay: 9.5,
+                    spawn_delay: 7.5,
                     path_index: 0
                 ),
                 WaveEnemies (
@@ -307,7 +315,7 @@ LevelAsset(
             enemies: [
                 WaveEnemies (
                     enemy_variant: Truck(Mk3),
-                    count: 10,
+                    count: 30,
                     duration: 15.0,
                     spawn_interval: 0.25,
                     spawn_delay: 0.0,
@@ -318,15 +326,15 @@ LevelAsset(
                     count: 30,
                     duration: 12.5,
                     spawn_interval: 0.2,
-                    spawn_delay: 2.5,
+                    spawn_delay: 7.5,
                     path_index: 0
                 ),
                 WaveEnemies (
-                    enemy_variant: Tank(Mk2),
-                    count: 5,
-                    duration: 30.0,
+                    enemy_variant: Tank(Mk3),
+                    count: 15,
+                    duration: 15.0,
                     spawn_interval: 0.5,
-                    spawn_delay: 8.5,
+                    spawn_delay: 5.0,
                     path_index: 0
                 ),
                 WaveEnemies (
@@ -335,6 +343,14 @@ LevelAsset(
                     duration: 5.0,
                     spawn_interval: 0.25,
                     spawn_delay: 0.0,
+                    path_index: 1
+                ),
+                WaveEnemies (
+                    enemy_variant: Plane(Mk1),
+                    count: 10,
+                    duration: 5.0,
+                    spawn_interval: 0.25,
+                    spawn_delay: 10.0,
                     path_index: 1
                 ),
             ]

@@ -29,6 +29,7 @@ struct RootUiComponent;
 enum ButtonAction {
     Start,
     Settings,
+    #[allow(unused)]
     Exit,
 }
 

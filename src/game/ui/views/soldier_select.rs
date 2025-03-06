@@ -162,8 +162,8 @@ fn init_ui(
                         .with_children(|parent| {
                             for soldier_variant in [
                                 SoldierVariant::Soldier { level: 0 },
-                                SoldierVariant::Sniper { level: 0 },
                                 SoldierVariant::RocketLauncher { level: 0 },
+                                SoldierVariant::Sniper { level: 0 },
                             ] {
                                 parent
                                     .spawn(
@@ -176,7 +176,10 @@ fn init_ui(
                                         parent
                                             .spawn((
                                                 ButtonAction::Select(soldier_variant),
-                                                UiButton::new(),
+                                                UiButton::new().with_disabled(
+                                                    soldier_variant.get_config().get_price()
+                                                        > player.get_money().get_current(),
+                                                ),
                                                 UiContainer::secondary()
                                                     .with_width(Val::Auto)
                                                     .with_padding(UiRect::all(Val::Px(16.0)))

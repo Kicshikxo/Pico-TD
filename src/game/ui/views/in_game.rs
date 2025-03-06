@@ -286,7 +286,7 @@ fn update_ui_after_wave_change(
         wave_text_i18n.change_i18n_arg("total", game_wave.get_total().to_string())
     }
     for (mut ui_button, button_action) in next_wave_button.iter_mut() {
-        ui_button.set_disabled(
+        ui_button.set_next_disabled_state(
             *button_action == ButtonAction::NextWave && game_wave.is_next_wave_allowed() == false,
         );
     }

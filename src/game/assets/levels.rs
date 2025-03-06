@@ -25,7 +25,7 @@ pub struct LevelsAssets {
         paths(
             "embedded://levels/ring.ron",
             "embedded://levels/zigzag.ron",
-            "embedded://levels/highway.ron"
+            "embedded://levels/coastal_highway.ron"
         ),
         collection(typed)
     )]
