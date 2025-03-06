@@ -12,13 +12,13 @@ use crate::game::{
 };
 
 #[derive(Component)]
-pub struct UiSelectorDecreaseButton;
-
-#[derive(Component)]
 pub struct UiSelectorText;
 
 #[derive(Component)]
-pub struct UiSelectorIncreaseButton;
+pub enum UiSelectorButton {
+    Decrease,
+    Increase,
+}
 
 #[derive(Default)]
 pub enum UiSelectorItemValue {
@@ -210,7 +210,7 @@ pub struct UiSelectorPlugin;
 impl Plugin for UiSelectorPlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(Update, init_ui_selector);
-        app.add_systems(Update, update_ui_selector);
+        app.add_systems(PostUpdate, update_ui_selector);
     }
 }
 
@@ -244,7 +244,7 @@ fn init_ui_selector(
 
                     parent
                         .spawn((
-                            UiSelectorDecreaseButton,
+                            UiSelectorButton::Decrease,
                             UiButton::primary()
                                 .with_click_audio(ui_audio_assets.selector_click.clone())
                                 .with_width(Val::Px(ui_selector_size))
@@ -263,7 +263,7 @@ fn init_ui_selector(
                     ));
                     parent
                         .spawn((
-                            UiSelectorIncreaseButton,
+                            UiSelectorButton::Increase,
                             UiButton::primary()
                                 .with_click_audio(ui_audio_assets.selector_click.clone())
                                 .with_width(Val::Px(ui_selector_size))
@@ -279,35 +279,28 @@ fn init_ui_selector(
 
 fn update_ui_selector(
     ui_selector_buttons_interactions: Query<
-        (
-            &Interaction,
-            &Parent,
-            Option<&UiSelectorDecreaseButton>,
-            Option<&UiSelectorIncreaseButton>,
-        ),
+        (&Interaction, &Parent, &UiSelectorButton),
         Changed<Interaction>,
     >,
     mut ui_selectors: Query<(&mut UiSelector, &Children)>,
-    mut ui_selector_buttons: Query<(
-        &mut UiButton,
-        Option<&UiSelectorDecreaseButton>,
-        Option<&UiSelectorIncreaseButton>,
-    )>,
+    mut ui_selector_buttons: Query<(&mut UiButton, &UiSelectorButton)>,
     mut ui_selector_texts: Query<&mut I18nComponent, With<UiSelectorText>>,
 ) {
-    for (interaction, parent, ui_selector_decrease_buttons, ui_selector_increase_buttons) in
-        ui_selector_buttons_interactions.iter()
+    for (interaction, parent, ui_selector_button_variant) in ui_selector_buttons_interactions.iter()
     {
         if *interaction != Interaction::Pressed {
             continue;
         }
 
         if let Ok((mut ui_selector, _ui_selector_children)) = ui_selectors.get_mut(parent.get()) {
-            if ui_selector_decrease_buttons.is_some() && ui_selector.is_previous_allowed() {
-                ui_selector.select_previous();
-            }
-            if ui_selector_increase_buttons.is_some() && ui_selector.is_next_allowed() {
-                ui_selector.select_next();
+            match ui_selector_button_variant {
+                UiSelectorButton::Decrease if ui_selector.is_previous_allowed() == true => {
+                    ui_selector.select_previous();
+                }
+                UiSelectorButton::Increase if ui_selector.is_next_allowed() == true => {
+                    ui_selector.select_next();
+                }
+                _ => {}
             }
         }
     }
@@ -318,17 +311,16 @@ fn update_ui_selector(
         }
 
         for child in ui_selector_children.iter() {
-            if let Ok((
-                mut ui_selector_button,
-                ui_selector_decrease_buttons,
-                ui_selector_increase_buttons,
-            )) = ui_selector_buttons.get_mut(*child)
+            if let Ok((mut ui_selector_button, ui_selector_button_variant)) =
+                ui_selector_buttons.get_mut(*child)
             {
-                if ui_selector_decrease_buttons.is_some() {
-                    ui_selector_button.set_disabled(ui_selector.is_previous_allowed() == false);
-                }
-                if ui_selector_increase_buttons.is_some() {
-                    ui_selector_button.set_disabled(ui_selector.is_next_allowed() == false);
+                match ui_selector_button_variant {
+                    UiSelectorButton::Decrease => {
+                        ui_selector_button.set_disabled(ui_selector.is_previous_allowed() == false);
+                    }
+                    UiSelectorButton::Increase => {
+                        ui_selector_button.set_disabled(ui_selector.is_next_allowed() == false);
+                    }
                 }
             }
             if let Ok(mut ui_selector_text_i18n) = ui_selector_texts.get_mut(*child) {
