@@ -38,6 +38,7 @@ struct MusicVolumeSelector;
 #[derive(Component)]
 enum ButtonAction {
     Close,
+    RestartLevel,
     BackToMenu,
 }
 
@@ -124,6 +125,10 @@ fn init_ui(
                         .with_child(UiText::new("ui.pause.resume_game"));
 
                     parent
+                        .spawn((ButtonAction::RestartLevel, UiButton::primary()))
+                        .with_child(UiText::new("ui.pause.restart_level"));
+
+                    parent
                         .spawn((ButtonAction::BackToMenu, UiButton::danger()))
                         .with_child(UiText::new("ui.pause.back_to_menu"));
                 });
@@ -173,6 +178,9 @@ fn update_ui(
             ButtonAction::Close => {
                 next_ui_state.set(UiState::InGame);
                 next_game_state.set(GameState::InGame);
+            }
+            ButtonAction::RestartLevel => {
+                next_game_state.set(GameState::Start);
             }
             ButtonAction::BackToMenu => {
                 next_ui_state.set(UiState::Menu);

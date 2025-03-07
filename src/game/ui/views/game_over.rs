@@ -33,7 +33,7 @@ struct RootUiComponent;
 
 #[derive(Component, PartialEq)]
 enum ButtonAction {
-    RestartLevel,
+    RetryLevel,
     BackToMenu,
 }
 
@@ -139,8 +139,8 @@ fn init_ui(
                         });
 
                     parent
-                        .spawn((ButtonAction::RestartLevel, UiButton::success()))
-                        .with_child(UiText::new("ui.game_over.restart_level"));
+                        .spawn((ButtonAction::RetryLevel, UiButton::success()))
+                        .with_child(UiText::new("ui.game_over.retry_level"));
 
                     parent
                         .spawn((ButtonAction::BackToMenu, UiButton::danger()))
@@ -165,7 +165,7 @@ fn update_ui(
             continue;
         }
         match button_action {
-            ButtonAction::RestartLevel => {
+            ButtonAction::RetryLevel => {
                 next_game_state.set(GameState::Start);
             }
             ButtonAction::BackToMenu => {
