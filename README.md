@@ -56,13 +56,13 @@ cd Pico-TD
 cargo run --features bevy/dynamic_linking
 ```
 
-Если вы хотите собрать проект в режиме релиза, используйте команду:
+Для сборки проект в режиме релиза на нативной платформе:
 
 ```shell
 cargo build --release
 ```
 
-Чтобы уменьшить размер итогового билда, можно использовать [UPX](https://github.com/upx/upx):
+Чтобы уменьшить размер итогового файла, можно использовать [UPX](https://github.com/upx/upx):
 
 ```shell
 upx --best --lzma target/release/pico_td
@@ -70,13 +70,13 @@ upx --best --lzma target/release/pico_td
 
 ### Запуск под WebAssembly (WASM)
 
-Чтобы запустить проект под WebAssembly, вам нужно установить целевую платформу wasm32-unknown-unknown:
+Чтобы запустить проект под WASM, вам нужно установить целевую платформу wasm32-unknown-unknown:
 
 ```shell
 rustup target install wasm32-unknown-unknown
 ```
 
-Для запуска проекта на WASM нужно установить [wasm-server-runner](https://github.com/jakobhellermann/wasm-server-runner):
+Для запуска проекта нужно установить [wasm-server-runner](https://github.com/jakobhellermann/wasm-server-runner):
 
 ```shell
 cargo install wasm-server-runner
