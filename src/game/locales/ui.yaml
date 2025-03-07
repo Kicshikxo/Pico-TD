@@ -555,7 +555,7 @@ ui.game_over.retry_level:
     de: "Level wiederholen"
     fr: "Rejouer le niveau"
     es: "Reintentar nivel"
-    pt: "Tentar novamente nível"
+    pt: "Tentar nível"
     it: "Riprova livello"
     nl: "Herhaal niveau"
     tr: "Bölümü tekrar et"
