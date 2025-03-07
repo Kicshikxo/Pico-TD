@@ -13,7 +13,7 @@ use crate::game::{
         i18n::I18nComponent,
         UiState,
     },
-    waves::GameWave,
+    waves::GameWaves,
     GameSpeed, GameState,
 };
 
@@ -32,7 +32,7 @@ impl Plugin for InGameViewUiPlugin {
             .add_systems(
                 Update,
                 update_ui_after_wave_change
-                    .run_if(in_state(UiState::InGame).and(resource_changed::<GameWave>)),
+                    .run_if(in_state(UiState::InGame).and(resource_changed::<GameWaves>)),
             );
     }
 }
@@ -60,7 +60,7 @@ fn init_ui(
     mut commands: Commands,
     ui_assets: Res<UiAssets>,
     player: Res<Player>,
-    game_wave: Res<GameWave>,
+    game_waves: Res<GameWaves>,
     game_speed: Res<GameSpeed>,
 ) {
     commands
@@ -146,9 +146,12 @@ fn init_ui(
                     UiText::new("ui.in_game.wave")
                         .with_i18n_arg(
                             "current",
-                            game_wave.get_current().saturating_add(1).to_string(),
+                            game_waves.get_current().saturating_add(1).to_string(),
                         )
-                        .with_i18n_arg("total", game_wave.get_total().to_string()),
+                        .with_i18n_arg(
+                            "total",
+                            game_waves.get_total().saturating_add(1).to_string(),
+                        ),
                 ));
 
             parent
@@ -167,7 +170,7 @@ fn init_ui(
                         .spawn((
                             ButtonAction::NextWave,
                             UiButton::success()
-                                .with_disabled(game_wave.is_next_wave_allowed() == false)
+                                .with_disabled(game_waves.is_next_wave_allowed() == false)
                                 .with_height(Val::Px(32.0))
                                 .with_padding(UiRect::horizontal(Val::Px(16.0))),
                         ))
@@ -217,7 +220,7 @@ fn update_ui(
     interaction_query: Query<(&Interaction, &ButtonAction), (Changed<Interaction>, With<UiButton>)>,
     keyboard_input: Res<ButtonInput<KeyCode>>,
     mut speed_selector: Query<&mut UiSelector, With<SpeedSelector>>,
-    mut game_wave: ResMut<GameWave>,
+    mut game_waves: ResMut<GameWaves>,
     mut game_speed: ResMut<GameSpeed>,
     mut next_ui_state: ResMut<NextState<UiState>>,
     mut next_game_state: ResMut<NextState<GameState>>,
@@ -237,8 +240,8 @@ fn update_ui(
                 next_game_state.set(GameState::Pause);
             }
             ButtonAction::NextWave => {
-                if game_wave.is_next_wave_allowed() == true {
-                    game_wave.next_wave();
+                if game_waves.is_next_wave_allowed() == true {
+                    game_waves.next_wave();
                 }
             }
         }
@@ -248,8 +251,8 @@ fn update_ui(
         next_game_state.set(GameState::Pause);
     }
     if keyboard_input.just_pressed(KeyCode::Space) {
-        if game_wave.is_next_wave_allowed() == true {
-            game_wave.next_wave();
+        if game_waves.is_next_wave_allowed() == true {
+            game_waves.next_wave();
         }
     }
 }
@@ -274,20 +277,23 @@ fn update_ui_after_player_change(
 }
 
 fn update_ui_after_wave_change(
-    game_wave: Res<GameWave>,
+    game_waves: Res<GameWaves>,
     mut next_wave_button: Query<(&mut UiButton, &ButtonAction)>,
     mut wave_text: Query<&mut I18nComponent, With<WaveTextComponent>>,
 ) {
     for mut wave_text_i18n in wave_text.iter_mut() {
         wave_text_i18n.change_i18n_arg(
             "current",
-            game_wave.get_current().saturating_add(1).to_string(),
+            game_waves.get_current().saturating_add(1).to_string(),
         );
-        wave_text_i18n.change_i18n_arg("total", game_wave.get_total().to_string())
+        wave_text_i18n.change_i18n_arg(
+            "total",
+            game_waves.get_total().saturating_add(1).to_string(),
+        )
     }
     for (mut ui_button, button_action) in next_wave_button.iter_mut() {
         ui_button.set_next_disabled_state(
-            *button_action == ButtonAction::NextWave && game_wave.is_next_wave_allowed() == false,
+            *button_action == ButtonAction::NextWave && game_waves.is_next_wave_allowed() == false,
         );
     }
 }

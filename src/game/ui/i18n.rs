@@ -109,9 +109,8 @@ impl I18nComponent {
             .iter_mut()
             .find(|(arg_key, _arg_value)| *arg_key == key)
         {
-            let update_required = *arg_value != new_value;
             *arg_value = new_value;
-            self.set_update_required(update_required);
+            self.set_update_required(true);
         }
     }
     pub fn change_i18n_args(&mut self, args: Vec<(String, String)>) {

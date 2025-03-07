@@ -20,7 +20,7 @@ use crate::game::{
     input::GameInputPlugin,
     player::{Player, PlayerPlugin},
     ui::{GameUiPlugin, UiState},
-    waves::{GameWave, GameWavesPlugin},
+    waves::{GameWaves, GameWavesPlugin},
 };
 
 pub struct GamePlugin;
@@ -133,7 +133,7 @@ fn start_game(
     game_tilemap: Query<Entity, With<GameTilemap>>,
     selected_level: Res<Level>,
     mut player: ResMut<Player>,
-    mut game_wave: ResMut<GameWave>,
+    mut game_waves: ResMut<GameWaves>,
     mut game_speed: ResMut<GameSpeed>,
     game_audio_assets: Res<GameAudioAssets>,
     game_audio_volume: Res<Persistent<GameAudioVolume>>,
@@ -170,7 +170,7 @@ fn start_game(
         selected_level.get_player_health(),
         selected_level.get_player_money(),
     );
-    game_wave.restart(selected_level.get_waves().len());
+    game_waves.restart(selected_level.get_waves().len().saturating_sub(1));
     game_speed.set_default();
 
     next_ui_state.set(UiState::InGame);

@@ -65,7 +65,6 @@ impl Default for UiButton {
     }
 }
 
-#[allow(unused)]
 impl UiButton {
     pub fn new() -> Self {
         Self { ..default() }

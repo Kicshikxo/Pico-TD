@@ -17,7 +17,7 @@ use crate::game::{
         },
     },
     ui::UiState,
-    waves::GameWave,
+    waves::GameWaves,
     {GameState, GameTilemap},
 };
 
@@ -108,7 +108,7 @@ fn update_selected_soldier(
     soldiers: Query<(&Soldier, &TilePosition)>,
     selected_tile: Res<SelectedTile>,
     mut selected_soldier: ResMut<SelectedSoldier>,
-    game_wave: Res<GameWave>,
+    game_waves: Res<GameWaves>,
     mouse_button_input: Res<ButtonInput<MouseButton>>,
     mut touch_events: EventReader<TouchInput>,
     ui_interaction: Query<&Interaction, (Changed<Interaction>, With<Button>)>,
@@ -132,7 +132,7 @@ fn update_selected_soldier(
     if ui_interaction.is_empty() == false {
         return;
     }
-    if game_wave.is_fully_completed() == true {
+    if game_waves.is_fully_completed() == true {
         return;
     }
     let Ok(game_tilemap) = game_tilemap.get_single() else {

@@ -14,7 +14,6 @@ impl Default for PlayerHealth {
     }
 }
 
-#[allow(unused)]
 impl PlayerHealth {
     pub fn restart(&mut self, max: u32) {
         self.max = max;
@@ -23,6 +22,7 @@ impl PlayerHealth {
     pub fn damage(&mut self, damage: u32) {
         self.current = self.current.saturating_sub(damage);
     }
+    #[allow(unused)]
     pub fn heal(&mut self, heal: u32) {
         self.current = self.current.saturating_add(heal).min(self.max);
     }

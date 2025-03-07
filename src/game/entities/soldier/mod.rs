@@ -139,7 +139,6 @@ pub struct Soldier {
     update_required: bool,
 }
 
-#[allow(unused)]
 impl Soldier {
     pub fn new(variant: SoldierVariant) -> Self {
         Self {
@@ -156,6 +155,7 @@ impl Soldier {
         self.set_update_required(true);
         &mut self.variant
     }
+    #[allow(unused)]
     pub fn set_variant(&mut self, variant: SoldierVariant) {
         self.set_update_required(self.variant != variant);
         self.variant = variant;

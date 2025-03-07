@@ -5,6 +5,7 @@ use bevy::{
     prelude::*,
     window::{EnabledButtons, PresentMode, WindowResolution, WindowTheme},
 };
+
 use game::GamePlugin;
 
 rust_i18n::i18n!("src/game/locales", fallback = "en");

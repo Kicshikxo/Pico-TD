@@ -14,6 +14,7 @@ use crate::game::{
         },
         UiState,
     },
+    waves::GameWaves,
     GameState,
 };
 
@@ -36,7 +37,12 @@ enum ButtonAction {
     BackToMenu,
 }
 
-fn init_ui(mut commands: Commands, ui_assets: Res<UiAssets>, player: Res<Player>) {
+fn init_ui(
+    mut commands: Commands,
+    ui_assets: Res<UiAssets>,
+    player: Res<Player>,
+    game_waves: Res<GameWaves>,
+) {
     commands
         .spawn((
             RootUiComponent,
@@ -116,6 +122,20 @@ fn init_ui(mut commands: Commands, ui_assets: Res<UiAssets>, player: Res<Player>
                                 })
                                 .with_size(UiTextSize::Large),
                             );
+
+                            if player.get_health().is_dead() {
+                                parent.spawn(
+                                    UiText::new("ui.game_over.waves_survived")
+                                        .with_i18n_arg(
+                                            "current_wave",
+                                            game_waves.get_current().to_string(),
+                                        )
+                                        .with_i18n_arg(
+                                            "total_waves",
+                                            game_waves.get_total().saturating_add(1).to_string(),
+                                        ),
+                                );
+                            }
                         });
 
                     parent

@@ -190,6 +190,9 @@ fn update_enemy_movement(
             player.get_health_mut().damage(enemy.get_damage());
             continue;
         }
+        if enemy_movement.get_progress() == 0.0 {
+            continue;
+        }
         if enemy.get_update_required() == true {
             enemy_tile_sprite.set_variant(TileSpriteVariant::Enemy(enemy.get_variant().into()));
             let config = enemy.get_config();

@@ -219,61 +219,63 @@ fn init_ui_selector(
     ui_selectors: Query<(Entity, &UiSelector), Added<UiSelector>>,
     ui_audio_assets: Option<Res<UiAudioAssets>>,
 ) {
+    let Some(ui_audio_assets) = &ui_audio_assets else {
+        return;
+    };
+
     for (ui_selector_entity, ui_selector) in ui_selectors.iter() {
         let ui_selector_size = ui_selector.size.as_f32();
 
-        if let Some(ui_audio_assets) = &ui_audio_assets {
-            commands
-                .entity(ui_selector_entity)
-                .insert(Node {
-                    width: Val::Percent(100.0),
-                    height: Val::Px(ui_selector_size),
-                    align_items: AlignItems::Center,
-                    justify_content: JustifyContent::SpaceBetween,
-                    column_gap: Val::Px(8.0),
-                    ..default()
-                })
-                .with_children(|parent| {
-                    let current_item = ui_selector.get_current_item().unwrap();
+        commands
+            .entity(ui_selector_entity)
+            .insert(Node {
+                width: Val::Percent(100.0),
+                height: Val::Px(ui_selector_size),
+                align_items: AlignItems::Center,
+                justify_content: JustifyContent::SpaceBetween,
+                column_gap: Val::Px(8.0),
+                ..default()
+            })
+            .with_children(|parent| {
+                let current_item = ui_selector.get_current_item().unwrap();
 
-                    let text_size = match ui_selector.size {
-                        UiSelectorSize::Small => UiTextSize::Small,
-                        UiSelectorSize::Medium => UiTextSize::Medium,
-                        UiSelectorSize::Large => UiTextSize::Large,
-                    };
+                let text_size = match ui_selector.size {
+                    UiSelectorSize::Small => UiTextSize::Small,
+                    UiSelectorSize::Medium => UiTextSize::Medium,
+                    UiSelectorSize::Large => UiTextSize::Large,
+                };
 
-                    parent
-                        .spawn((
-                            UiSelectorButton::Decrease,
-                            UiButton::secondary()
-                                .with_click_audio(ui_audio_assets.selector_click.clone())
-                                .with_width(Val::Px(ui_selector_size))
-                                .with_height(Val::Px(ui_selector_size))
-                                .with_padding(UiRect::ZERO)
-                                .with_aspect_ratio(1.0),
-                        ))
-                        .with_child(UiText::new("<").with_size(text_size.clone()).without_i18n());
-                    parent.spawn((
-                        UiSelectorText,
-                        UiText::new(&current_item.text)
-                            .with_size(text_size.clone())
-                            .with_i18n_args(current_item.i18n_args.clone())
-                            .with_width(Val::Auto)
-                            .no_wrap(),
-                    ));
-                    parent
-                        .spawn((
-                            UiSelectorButton::Increase,
-                            UiButton::secondary()
-                                .with_click_audio(ui_audio_assets.selector_click.clone())
-                                .with_width(Val::Px(ui_selector_size))
-                                .with_height(Val::Px(ui_selector_size))
-                                .with_padding(UiRect::ZERO)
-                                .with_aspect_ratio(1.0),
-                        ))
-                        .with_child(UiText::new(">").with_size(text_size.clone()).without_i18n());
-                });
-        }
+                parent
+                    .spawn((
+                        UiSelectorButton::Decrease,
+                        UiButton::secondary()
+                            .with_click_audio(ui_audio_assets.selector_click.clone())
+                            .with_width(Val::Px(ui_selector_size))
+                            .with_height(Val::Px(ui_selector_size))
+                            .with_padding(UiRect::ZERO)
+                            .with_aspect_ratio(1.0),
+                    ))
+                    .with_child(UiText::new("<").with_size(text_size.clone()).without_i18n());
+                parent.spawn((
+                    UiSelectorText,
+                    UiText::new(&current_item.text)
+                        .with_size(text_size.clone())
+                        .with_i18n_args(current_item.i18n_args.clone())
+                        .with_width(Val::Auto)
+                        .no_wrap(),
+                ));
+                parent
+                    .spawn((
+                        UiSelectorButton::Increase,
+                        UiButton::secondary()
+                            .with_click_audio(ui_audio_assets.selector_click.clone())
+                            .with_width(Val::Px(ui_selector_size))
+                            .with_height(Val::Px(ui_selector_size))
+                            .with_padding(UiRect::ZERO)
+                            .with_aspect_ratio(1.0),
+                    ))
+                    .with_child(UiText::new(">").with_size(text_size.clone()).without_i18n());
+            });
     }
 }
 

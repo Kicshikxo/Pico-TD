@@ -131,9 +131,9 @@ fn update_tile_position(
             continue;
         }
 
-        position_transform.translation.x = tile_position.get_tilemap_x(tilemap);
-        position_transform.translation.y = tile_position.get_tilemap_y(tilemap);
-        position_transform.translation.z = tile_position.get_z();
+        position_transform.translation = tile_position
+            .get_tilemap_position(tilemap)
+            .extend(tile_position.get_z());
 
         tile_position.set_update_required(false);
     }

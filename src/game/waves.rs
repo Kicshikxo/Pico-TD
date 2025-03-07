@@ -20,13 +20,13 @@ pub enum WaveState {
 }
 
 #[derive(Resource)]
-pub struct GameWave {
+pub struct GameWaves {
     total: usize,
     current: usize,
     state: WaveState,
 }
 
-impl Default for GameWave {
+impl Default for GameWaves {
     fn default() -> Self {
         Self {
             total: 0,
@@ -36,7 +36,7 @@ impl Default for GameWave {
     }
 }
 
-impl GameWave {
+impl GameWaves {
     pub fn restart(&mut self, total: usize) {
         self.total = total;
         self.current = 0;
@@ -59,16 +59,14 @@ impl GameWave {
             self.state = WaveState::Setup;
             return;
         }
-        let last_index = self.total.saturating_sub(1);
-        if self.current >= last_index {
+        if self.current >= self.total {
             return;
         }
-        self.current = self.current.saturating_add(1).min(last_index);
+        self.current = self.current.saturating_add(1).min(self.total);
         self.state = WaveState::Setup;
     }
     pub fn is_last(&self) -> bool {
-        let last_index = self.total.saturating_sub(1);
-        self.current == last_index
+        self.current == self.total
     }
     pub fn is_next_wave_allowed(&self) -> bool {
         self.state == WaveState::NotStarted
@@ -83,11 +81,11 @@ pub struct GameWavesPlugin;
 
 impl Plugin for GameWavesPlugin {
     fn build(&self, app: &mut App) {
-        app.init_resource::<GameWave>();
+        app.init_resource::<GameWaves>();
 
         app.add_systems(
             PreUpdate,
-            update_wave.run_if(in_state(GameState::InGame).and(resource_changed::<GameWave>)),
+            update_wave.run_if(in_state(GameState::InGame).and(resource_changed::<GameWaves>)),
         );
         app.add_systems(
             Update,
@@ -101,7 +99,7 @@ fn update_wave(
     game_tilemap: Query<Entity, With<GameTilemap>>,
     selected_level: Res<Level>,
     mut completed_levels: ResMut<Persistent<CompletedLevels>>,
-    mut game_wave: ResMut<GameWave>,
+    mut game_waves: ResMut<GameWaves>,
     player: Res<Player>,
     mut next_ui_state: ResMut<NextState<UiState>>,
     mut next_game_state: ResMut<NextState<GameState>>,
@@ -112,8 +110,8 @@ fn update_wave(
     if selected_level.get_waves().is_empty() {
         return;
     }
-    if game_wave.get_state() != WaveState::Setup {
-        if game_wave.is_fully_completed() == true {
+    if game_waves.get_state() != WaveState::Setup {
+        if game_waves.is_fully_completed() == true {
             next_ui_state.set(UiState::GameOver);
             next_game_state.set(GameState::Pause);
             completed_levels
@@ -130,7 +128,7 @@ fn update_wave(
     let Ok(tilemap_entity) = game_tilemap.get_single() else {
         return;
     };
-    let Some(wave) = selected_level.get_wave(game_wave.get_current()) else {
+    let Some(wave) = selected_level.get_wave(game_waves.get_current()) else {
         return;
     };
 
@@ -150,18 +148,18 @@ fn update_wave(
             ));
         }
     }
-    game_wave.set_state(WaveState::InProgress);
+    game_waves.set_state(WaveState::InProgress);
 }
 
 fn update_wave_state(
     enemies: Query<&Enemy>,
     selected_level: Res<Level>,
-    mut game_wave: ResMut<GameWave>,
+    mut game_waves: ResMut<GameWaves>,
     mut player: ResMut<Player>,
 ) {
-    if enemies.is_empty() && game_wave.get_state() == WaveState::InProgress {
-        game_wave.set_state(WaveState::Completed);
-        if let Some(wave) = selected_level.get_wave(game_wave.get_current()) {
+    if enemies.is_empty() && game_waves.get_state() == WaveState::InProgress {
+        game_waves.set_state(WaveState::Completed);
+        if let Some(wave) = selected_level.get_wave(game_waves.get_current()) {
             player.get_money_mut().increase(wave.get_reward());
         }
     }

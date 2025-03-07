@@ -33,7 +33,6 @@ pub enum SoldierSpriteVariant {
     RocketLauncherYellow = 9,
 }
 
-#[allow(unused)]
 #[derive(Clone, Copy)]
 #[repr(usize)]
 pub enum EnemySpriteVariant {

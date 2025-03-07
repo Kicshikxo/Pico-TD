@@ -110,11 +110,11 @@ fn init_ui_text(
     ui_texts: Query<(Entity, &UiText), Added<UiText>>,
     ui_assets: Option<Res<UiAssets>>,
 ) {
-    for (ui_text_entity, ui_text) in ui_texts.iter() {
-        let Some(ui_assets) = &ui_assets else {
-            return;
-        };
+    let Some(ui_assets) = &ui_assets else {
+        return;
+    };
 
+    for (ui_text_entity, ui_text) in ui_texts.iter() {
         commands.entity(ui_text_entity).insert((
             Node {
                 width: ui_text.width,

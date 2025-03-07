@@ -524,6 +524,18 @@ ui.game_over.player_lose:
     nl: "Je hebt verloren!"
     tr: "Kaybettin!"
     pl: "Przegrałeś!"
+ui.game_over.waves_survived:
+    en: "Waves survived: %{current_wave}/%{total_waves}"
+    ru: "Волн отражено: %{current_wave}/%{total_waves}"
+    uk: "Хвиль відбито: %{current_wave}/%{total_waves}"
+    de: "Überlebte Wellen: %{current_wave}/%{total_waves}"
+    fr: "Vagues survécues: %{current_wave}/%{total_waves}"
+    es: "Oleadas sobrevividas: %{current_wave}/%{total_waves}"
+    pt: "Ondas sobrevividas: %{current_wave}/%{total_waves}"
+    it: "Onde sopravvissute: %{current_wave}/%{total_waves}"
+    nl: "Overleefde golven: %{current_wave}/%{total_waves}"
+    tr: "Hayatta kalınan dalgalar: %{current_wave}/%{total_waves}"
+    pl: "Przetrwane fale: %{current_wave}/%{total_waves}"
 ui.game_over.restart_level:
     en: "Restart level"
     ru: "Повторить уровень"
