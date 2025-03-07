@@ -39,6 +39,7 @@ pub struct UiContainer {
     aspect_ratio: Option<f32>,
     row_gap: Val,
     column_gap: Val,
+    max_corner_scale: f32,
 }
 
 impl Default for UiContainer {
@@ -57,6 +58,7 @@ impl Default for UiContainer {
             aspect_ratio: None,
             row_gap: Val::ZERO,
             column_gap: Val::ZERO,
+            max_corner_scale: 4.0,
         }
     }
 }
@@ -149,6 +151,10 @@ impl UiContainer {
     pub fn with_gap(mut self, gap: Val) -> Self {
         self.with_row_gap(gap).with_column_gap(gap)
     }
+    pub fn with_max_corner_scale(mut self, max_corner_scale: f32) -> Self {
+        self.max_corner_scale = max_corner_scale;
+        self
+    }
     pub fn grid(mut self) -> Self {
         self.with_display(Display::Grid)
     }
@@ -214,7 +220,7 @@ fn init_ui_container(
                 }),
                 image_mode: NodeImageMode::Sliced(TextureSlicer {
                     border: BorderRect::square(8.0),
-                    max_corner_scale: 4.0,
+                    max_corner_scale: ui_container.max_corner_scale,
                     ..default()
                 }),
                 ..default()

@@ -193,6 +193,7 @@ fn init_ui(
                                         UiContainer::secondary()
                                             .with_width(Val::Px(64.0))
                                             .with_height(Val::Px(64.0))
+                                            .with_max_corner_scale(1.5)
                                             .center(),
                                     )
                                     .with_child((
@@ -232,6 +233,7 @@ fn init_ui(
                                                         .with_justify(JustifyText::Left),
                                                 );
                                             });
+
                                         parent.spawn((
                                             SoldierInfoComponent::Level,
                                             UiText::new("ui.soldier_info.soldier_level")
@@ -254,6 +256,7 @@ fn init_ui(
                                                 .with_size(UiTextSize::Small)
                                                 .with_justify(JustifyText::Left),
                                         ));
+
                                         parent.spawn((
                                             SoldierInfoComponent::Damage,
                                             UiText::new("ui.soldier_info.soldier_damage")
@@ -264,6 +267,7 @@ fn init_ui(
                                                 .with_size(UiTextSize::Small)
                                                 .with_justify(JustifyText::Left),
                                         ));
+
                                         parent.spawn((
                                             SoldierInfoComponent::FireRadius,
                                             UiText::new("ui.soldier_info.soldier_fire_radius")
@@ -274,6 +278,7 @@ fn init_ui(
                                                 .with_size(UiTextSize::Small)
                                                 .with_justify(JustifyText::Left),
                                         ));
+
                                         if let Some(blast_radius) = soldier
                                             .get_config()
                                             .get_projectile_variant()
@@ -290,6 +295,7 @@ fn init_ui(
                                                     .with_justify(JustifyText::Left),
                                             ));
                                         }
+
                                         parent.spawn((
                                             SoldierInfoComponent::FireRate,
                                             UiText::new("ui.soldier_info.soldier_fire_rate")

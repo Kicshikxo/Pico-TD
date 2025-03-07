@@ -47,6 +47,7 @@ pub struct UiButton {
     padding: UiRect,
     aspect_ratio: Option<f32>,
     update_required: bool,
+    max_corner_scale: f32,
 }
 
 impl Default for UiButton {
@@ -61,10 +62,12 @@ impl Default for UiButton {
             padding: UiRect::all(Val::Px(12.0)),
             aspect_ratio: None,
             update_required: true,
+            max_corner_scale: 4.0,
         }
     }
 }
 
+#[allow(unused)]
 impl UiButton {
     pub fn new() -> Self {
         Self { ..default() }
@@ -125,6 +128,10 @@ impl UiButton {
         self.aspect_ratio = Some(aspect_ratio);
         self
     }
+    pub fn with_max_corner_scale(mut self, max_corner_scale: f32) -> Self {
+        self.max_corner_scale = max_corner_scale;
+        self
+    }
     pub fn get_update_required(&self) -> bool {
         self.update_required
     }
@@ -173,7 +180,7 @@ fn init_ui_button(
                     }),
                     image_mode: NodeImageMode::Sliced(TextureSlicer {
                         border: BorderRect::square(6.0),
-                        max_corner_scale: 4.0,
+                        max_corner_scale: ui_button.max_corner_scale,
                         ..default()
                     }),
                     ..default()
