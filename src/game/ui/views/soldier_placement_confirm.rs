@@ -2,38 +2,30 @@ use bevy::prelude::*;
 
 use crate::game::{
     assets::sprites::ui::{UiAssets, UiMiscSpriteVariant},
+    entities::{soldier::Soldier, tile::position::TilePosition},
+    input::SelectedSoldier,
     player::Player,
-    speed::GameSpeed,
     ui::{
         components::{
             button::UiButton,
             container::UiContainer,
-            selector::{UiSelector, UiSelectorItem, UiSelectorItemValue, UiSelectorSize},
             text::{UiText, UiTextSize},
         },
-        i18n::I18nComponent,
         UiState,
     },
     waves::GameWaves,
     GameState,
 };
 
-pub struct InGameViewUiPlugin;
+pub struct SoldierPlacementConfirmViewUiPlugin;
 
-impl Plugin for InGameViewUiPlugin {
+impl Plugin for SoldierPlacementConfirmViewUiPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(OnEnter(UiState::InGame), init_ui)
-            .add_systems(OnExit(UiState::InGame), destroy_ui)
-            .add_systems(Update, update_ui.run_if(in_state(UiState::InGame)))
+        app.add_systems(OnEnter(UiState::SoldierPlacementConfirm), init_ui)
+            .add_systems(OnExit(UiState::SoldierPlacementConfirm), destroy_ui)
             .add_systems(
                 Update,
-                update_ui_after_player_change
-                    .run_if(in_state(UiState::InGame).and(resource_changed::<Player>)),
-            )
-            .add_systems(
-                Update,
-                update_ui_after_wave_change
-                    .run_if(in_state(UiState::InGame).and(resource_changed::<GameWaves>)),
+                update_ui.run_if(in_state(UiState::SoldierPlacementConfirm)),
             );
     }
 }
@@ -41,20 +33,10 @@ impl Plugin for InGameViewUiPlugin {
 #[derive(Component)]
 struct RootUiComponent;
 
-#[derive(Component)]
-struct HealthTextComponent;
-#[derive(Component)]
-struct MoneyTextComponent;
-#[derive(Component)]
-struct WaveTextComponent;
-
-#[derive(Component)]
-struct SpeedSelector;
-
 #[derive(Component, PartialEq)]
 enum ButtonAction {
-    Pause,
-    NextWave,
+    Confirm,
+    Cancel,
 }
 
 fn init_ui(
@@ -62,7 +44,6 @@ fn init_ui(
     ui_assets: Res<UiAssets>,
     player: Res<Player>,
     game_waves: Res<GameWaves>,
-    game_speed: Res<GameSpeed>,
 ) {
     commands
         .spawn((RootUiComponent, UiContainer::new().full()))
@@ -94,15 +75,14 @@ fn init_ui(
                                             ..default()
                                         },
                                     ));
-                                    parent.spawn((
-                                        HealthTextComponent,
+                                    parent.spawn(
                                         UiText::new("ui.in_game.health")
                                             .with_justify(JustifyText::Left)
                                             .with_i18n_arg(
                                                 "health",
                                                 player.get_health().get_current().to_string(),
                                             ),
-                                    ));
+                                    );
                                 });
 
                             parent
@@ -121,15 +101,14 @@ fn init_ui(
                                             ..default()
                                         },
                                     ));
-                                    parent.spawn((
-                                        MoneyTextComponent,
+                                    parent.spawn(
                                         UiText::new("ui.in_game.money")
                                             .with_justify(JustifyText::Left)
                                             .with_i18n_arg(
                                                 "money",
                                                 player.get_money().get_current().to_string(),
                                             ),
-                                    ));
+                                    );
                                 });
                         });
                 });
@@ -142,8 +121,7 @@ fn init_ui(
                         .with_width(Val::Auto)
                         .absolute(),
                 )
-                .with_child((
-                    WaveTextComponent,
+                .with_child(
                     UiText::new("ui.in_game.wave")
                         .with_i18n_arg(
                             "current",
@@ -153,7 +131,7 @@ fn init_ui(
                             "total",
                             game_waves.get_total().saturating_add(1).to_string(),
                         ),
-                ));
+                );
 
             parent
                 .spawn((
@@ -169,44 +147,27 @@ fn init_ui(
                 .with_children(|parent| {
                     parent
                         .spawn((
-                            ButtonAction::NextWave,
+                            ButtonAction::Confirm,
                             UiButton::success()
-                                .with_disabled(game_waves.is_next_wave_allowed() == false)
                                 .with_height(Val::Px(32.0))
                                 .with_padding(UiRect::horizontal(Val::Px(16.0))),
                         ))
                         .with_child(
-                            UiText::new("ui.in_game.next_wave").with_size(UiTextSize::Small),
+                            UiText::new("ui.soldier_placement_confirm.confirm")
+                                .with_size(UiTextSize::Small),
                         );
-
-                    parent.spawn((
-                        SpeedSelector,
-                        UiSelector::new()
-                            .with_size(UiSelectorSize::Small)
-                            .with_options(
-                                (1..=5)
-                                    .map(|index| {
-                                        let game_speed = GameSpeed::from_f32(index as f32);
-
-                                        UiSelectorItem::new("ui.in_game.game_speed")
-                                            .with_i18n_arg("speed", game_speed.as_f32().to_string())
-                                            .with_value(UiSelectorItemValue::Number(
-                                                game_speed.as_f32(),
-                                            ))
-                                    })
-                                    .collect::<Vec<_>>(),
-                            )
-                            .with_default_index(game_speed.as_index()),
-                    ));
 
                     parent
                         .spawn((
-                            ButtonAction::Pause,
+                            ButtonAction::Cancel,
                             UiButton::danger()
                                 .with_height(Val::Px(32.0))
                                 .with_padding(UiRect::horizontal(Val::Px(16.0))),
                         ))
-                        .with_child(UiText::new("ui.in_game.pause").with_size(UiTextSize::Small));
+                        .with_child(
+                            UiText::new("ui.soldier_placement_confirm.cancel")
+                                .with_size(UiTextSize::Small),
+                        );
                 });
         });
 }
@@ -218,83 +179,53 @@ fn destroy_ui(mut commands: Commands, query: Query<Entity, With<RootUiComponent>
 }
 
 fn update_ui(
+    mut commands: Commands,
     interaction_query: Query<(&Interaction, &ButtonAction), (Changed<Interaction>, With<UiButton>)>,
     keyboard_input: Res<ButtonInput<KeyCode>>,
-    mut speed_selector: Query<&mut UiSelector, With<SpeedSelector>>,
-    mut game_waves: ResMut<GameWaves>,
-    mut game_speed: ResMut<GameSpeed>,
+    mut soldiers: Query<(Entity, &mut Soldier, &TilePosition)>,
+    mut player: ResMut<Player>,
+    selected_soldier: Res<SelectedSoldier>,
     mut next_ui_state: ResMut<NextState<UiState>>,
     mut next_game_state: ResMut<NextState<GameState>>,
 ) {
-    if let Ok(mut speed_selector) = speed_selector.get_single_mut() {
-        if let Some(changed_item) = speed_selector.get_changed_item() {
-            game_speed.set(GameSpeed::from_f32(changed_item.value.as_f32()));
-        }
-    }
+    let mut cancel_soldier_placement = false;
+
     for (interaction, button_action) in interaction_query.iter() {
         if *interaction != Interaction::Pressed {
             continue;
         }
         match button_action {
-            ButtonAction::Pause => {
-                next_ui_state.set(UiState::Pause);
-                next_game_state.set(GameState::Pause);
+            ButtonAction::Confirm => {
+                next_ui_state.set(UiState::InGame);
+                next_game_state.set(GameState::InGame);
             }
-            ButtonAction::NextWave => {
-                if game_waves.is_next_wave_allowed() == true {
-                    game_waves.next_wave();
-                }
+            ButtonAction::Cancel => {
+                cancel_soldier_placement = true;
             }
         }
+    }
+    if keyboard_input.just_pressed(KeyCode::Space) || keyboard_input.just_pressed(KeyCode::Enter) {
+        next_ui_state.set(UiState::InGame);
+        next_game_state.set(GameState::InGame);
     }
     if keyboard_input.just_pressed(KeyCode::Escape) {
-        next_ui_state.set(UiState::Pause);
-        next_game_state.set(GameState::Pause);
+        cancel_soldier_placement = true;
     }
-    if keyboard_input.just_pressed(KeyCode::Space) {
-        if game_waves.is_next_wave_allowed() == true {
-            game_waves.next_wave();
+
+    if cancel_soldier_placement == true {
+        for (soldier_entity, soldier, soldier_tile_position) in soldiers.iter_mut() {
+            if soldier_tile_position.as_vec2() != selected_soldier.tile_position.as_vec2() {
+                continue;
+            }
+
+            commands.entity(soldier_entity).despawn_recursive();
+            player
+                .get_money_mut()
+                .increase(soldier.get_config().get_price());
+
+            break;
         }
-    }
-}
-
-fn update_ui_after_player_change(
-    player: Res<Player>,
-    mut health_text: Query<
-        &mut I18nComponent,
-        (With<HealthTextComponent>, Without<MoneyTextComponent>),
-    >,
-    mut money_text: Query<
-        &mut I18nComponent,
-        (With<MoneyTextComponent>, Without<HealthTextComponent>),
-    >,
-) {
-    for mut health_text_i18n in health_text.iter_mut() {
-        health_text_i18n.change_i18n_arg("health", player.get_health().get_current().to_string());
-    }
-    for mut money_text_i18n in money_text.iter_mut() {
-        money_text_i18n.change_i18n_arg("money", player.get_money().get_current().to_string());
-    }
-}
-
-fn update_ui_after_wave_change(
-    game_waves: Res<GameWaves>,
-    mut next_wave_button: Query<(&mut UiButton, &ButtonAction)>,
-    mut wave_text: Query<&mut I18nComponent, With<WaveTextComponent>>,
-) {
-    for mut wave_text_i18n in wave_text.iter_mut() {
-        wave_text_i18n.change_i18n_arg(
-            "current",
-            game_waves.get_current().saturating_add(1).to_string(),
-        );
-        wave_text_i18n.change_i18n_arg(
-            "total",
-            game_waves.get_total().saturating_add(1).to_string(),
-        )
-    }
-    for (mut ui_button, button_action) in next_wave_button.iter_mut() {
-        ui_button.set_next_disabled_state(
-            *button_action == ButtonAction::NextWave && game_waves.is_next_wave_allowed() == false,
-        );
+        next_ui_state.set(UiState::InGame);
+        next_game_state.set(GameState::InGame);
     }
 }

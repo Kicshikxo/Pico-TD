@@ -112,6 +112,8 @@ pub struct TilePositionPlugin;
 
 impl Plugin for TilePositionPlugin {
     fn build(&self, app: &mut App) {
+        app.add_systems(PreUpdate, init_tile_position);
+
         app.add_systems(
             Update,
             update_tile_position.run_if(in_state(GameState::InGame)),
@@ -119,11 +121,25 @@ impl Plugin for TilePositionPlugin {
     }
 }
 
+fn init_tile_position(
+    game_tilemap: Query<&Tilemap, With<GameTilemap>>,
+    mut tile_positions: Query<(&TilePosition, &mut Transform), Added<TilePosition>>,
+) {
+    let Ok(game_tilemap) = game_tilemap.get_single() else {
+        return;
+    };
+    for (tile_position, mut tile_position_transform) in tile_positions.iter_mut() {
+        tile_position_transform.translation = tile_position
+            .get_tilemap_position(game_tilemap)
+            .extend(tile_position.get_z());
+    }
+}
+
 fn update_tile_position(
     game_tilemap: Query<&Tilemap, With<GameTilemap>>,
     mut tile_positions: Query<(&mut TilePosition, &mut Transform)>,
 ) {
-    let Ok(tilemap) = game_tilemap.get_single() else {
+    let Ok(game_tilemap) = game_tilemap.get_single() else {
         return;
     };
     for (mut tile_position, mut position_transform) in tile_positions.iter_mut() {
@@ -132,7 +148,7 @@ fn update_tile_position(
         }
 
         position_transform.translation = tile_position
-            .get_tilemap_position(tilemap)
+            .get_tilemap_position(game_tilemap)
             .extend(tile_position.get_z());
 
         tile_position.set_update_required(false);

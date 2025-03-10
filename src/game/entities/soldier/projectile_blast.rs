@@ -5,7 +5,8 @@ use bevy::prelude::*;
 use crate::game::{
     assets::sprites::entity::{EntityAssets, UtilSpriteVariant},
     entities::tilemap::Tilemap,
-    GameSpeed, GameState, GameTilemap,
+    speed::GameSpeed,
+    GameState, GameTilemap,
 };
 
 #[derive(Component, Clone)]

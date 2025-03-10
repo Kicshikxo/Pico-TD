@@ -1,9 +1,11 @@
 pub mod assets;
 pub mod audio;
+pub mod config;
 pub mod entities;
 pub mod input;
 pub mod meshes;
 pub mod player;
+pub mod speed;
 pub mod ui;
 pub mod waves;
 
@@ -16,9 +18,11 @@ use bevy_persistent::Persistent;
 use crate::game::{
     assets::{audio::game::GameAudioAssets, levels::Level, GameAssetsPlugin},
     audio::{GameAudioPlugin, GameAudioVolume},
+    config::GameConfigPlugin,
     entities::{tile::indicator::TileIndicator, tilemap::Tilemap, GameEntitiesPlugin},
     input::GameInputPlugin,
     player::{Player, PlayerPlugin},
+    speed::GameSpeed,
     ui::{GameUiPlugin, UiState},
     waves::{GameWaves, GameWavesPlugin},
 };
@@ -28,6 +32,7 @@ pub struct GamePlugin;
 impl Plugin for GamePlugin {
     fn build(&self, app: &mut App) {
         app.add_plugins((
+            GameConfigPlugin,
             GameAssetsPlugin,
             GameAudioPlugin,
             GameEntitiesPlugin,
@@ -37,9 +42,9 @@ impl Plugin for GamePlugin {
             PlayerPlugin,
         ));
 
+        app.init_state::<GameState>();
         app.init_resource::<GameSpeed>();
 
-        app.init_state::<GameState>();
         app.add_systems(OnEnter(GameState::Setup), setup)
             .add_systems(OnEnter(GameState::Start), start_game)
             .add_systems(OnEnter(GameState::Pause), pause_game)
@@ -52,53 +57,6 @@ pub struct GameTilemap;
 
 #[derive(Component)]
 pub struct GameBackgroundAudio;
-
-#[derive(Resource, Default)]
-pub enum GameSpeed {
-    #[default]
-    Normal,
-    Double,
-    Triple,
-    Quadruple,
-    Quintuple,
-}
-
-impl GameSpeed {
-    pub fn as_index(&self) -> usize {
-        match self {
-            GameSpeed::Normal => 0,
-            GameSpeed::Double => 1,
-            GameSpeed::Triple => 2,
-            GameSpeed::Quadruple => 3,
-            GameSpeed::Quintuple => 4,
-        }
-    }
-    pub fn as_f32(&self) -> f32 {
-        match self {
-            GameSpeed::Normal => 1.0,
-            GameSpeed::Double => 2.0,
-            GameSpeed::Triple => 3.0,
-            GameSpeed::Quadruple => 4.0,
-            GameSpeed::Quintuple => 5.0,
-        }
-    }
-    pub fn from_f32(value: f32) -> GameSpeed {
-        match value {
-            1.0 => GameSpeed::Normal,
-            2.0 => GameSpeed::Double,
-            3.0 => GameSpeed::Triple,
-            4.0 => GameSpeed::Quadruple,
-            5.0 => GameSpeed::Quintuple,
-            _ => GameSpeed::Normal,
-        }
-    }
-    pub fn set_default(&mut self) {
-        *self = GameSpeed::default();
-    }
-    pub fn set(&mut self, speed: GameSpeed) {
-        *self = speed;
-    }
-}
 
 #[derive(States, Default, Debug, Clone, PartialEq, Eq, Hash)]
 pub enum GameState {

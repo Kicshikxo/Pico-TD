@@ -28,7 +28,8 @@ use crate::game::{
         },
     },
     player::Player,
-    {GameSpeed, GameState, GameTilemap},
+    speed::GameSpeed,
+    GameState, GameTilemap,
 };
 
 #[derive(Clone, Copy, PartialEq, Deserialize)]
@@ -153,7 +154,7 @@ fn init_enemy(
 
         commands
             .entity(game_tilemap.single())
-            .with_child((HealthBar::new(enemy_entity),));
+            .with_child(HealthBar::new(enemy_entity));
     }
 }
 

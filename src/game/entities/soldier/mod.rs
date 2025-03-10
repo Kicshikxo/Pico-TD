@@ -30,7 +30,8 @@ use crate::game::{
             sprite::{TileSprite, TileSpriteVariant},
         },
     },
-    {GameSpeed, GameState, GameTilemap},
+    speed::GameSpeed,
+    {GameState, GameTilemap},
 };
 
 #[derive(Clone, Copy, PartialEq)]
@@ -43,9 +44,9 @@ pub enum SoldierVariant {
 impl SoldierVariant {
     pub fn to_str(&self) -> &'static str {
         match self {
-            SoldierVariant::Soldier { .. } => "ui.soldier.soldier",
-            SoldierVariant::RocketLauncher { .. } => "ui.soldier.rocket_launcher",
-            SoldierVariant::Sniper { .. } => "ui.soldier.sniper",
+            SoldierVariant::Soldier { .. } => "soldier.soldier",
+            SoldierVariant::RocketLauncher { .. } => "soldier.rocket_launcher",
+            SoldierVariant::Sniper { .. } => "soldier.sniper",
         }
     }
     pub fn get_levels(&self) -> &'static [SoldierConfig] {
@@ -102,11 +103,11 @@ pub enum SoldierTargetPriority {
 impl SoldierTargetPriority {
     pub fn to_str(&self) -> &'static str {
         match self {
-            SoldierTargetPriority::First => "ui.soldier.target_priority.first",
-            SoldierTargetPriority::Last => "ui.soldier.target_priority.last",
-            SoldierTargetPriority::Strongest => "ui.soldier.target_priority.strongest",
-            SoldierTargetPriority::Weakest => "ui.soldier.target_priority.weakest",
-            SoldierTargetPriority::Nearest => "ui.soldier.target_priority.nearest",
+            SoldierTargetPriority::First => "soldier.target_priority.first",
+            SoldierTargetPriority::Last => "soldier.target_priority.last",
+            SoldierTargetPriority::Strongest => "soldier.target_priority.strongest",
+            SoldierTargetPriority::Weakest => "soldier.target_priority.weakest",
+            SoldierTargetPriority::Nearest => "soldier.target_priority.nearest",
         }
     }
     pub fn as_index(&self) -> usize {

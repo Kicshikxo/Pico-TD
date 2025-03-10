@@ -53,29 +53,38 @@ impl Plugin for FireRadiusPlugin {
 
 fn init_fire_radius(
     mut commands: Commands,
-    mut fire_radii: Query<Entity, Added<FireRadius>>,
+    game_tilemap: Query<&Tilemap, With<GameTilemap>>,
+    mut fire_radii: Query<(Entity, &FireRadius, &mut Transform), Added<FireRadius>>,
+    soldiers: Query<(&Soldier, &Transform), Without<FireRadius>>,
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<ColorMaterial>>,
 ) {
-    for fire_radius_entity in fire_radii.iter_mut() {
-        commands
-            .entity(fire_radius_entity)
-            .insert((
-                Mesh2d(meshes.add(Annulus::new(0.0, 0.0))),
-                MeshMaterial2d(materials.add(ColorMaterial {
-                    color: Color::srgb(0.25, 0.25, 0.5).with_alpha(0.0),
-                    alpha_mode: AlphaMode2d::Blend,
-                    ..default()
-                })),
-            ))
-            .with_child((
-                Mesh2d(meshes.add(Circle::new(0.0))),
-                MeshMaterial2d(materials.add(ColorMaterial {
-                    color: Color::srgb(0.25, 0.25, 0.5).with_alpha(0.0),
-                    alpha_mode: AlphaMode2d::Blend,
-                    ..default()
-                })),
-            ));
+    for (fire_radius_entity, fire_radius, mut fire_radius_transform) in fire_radii.iter_mut() {
+        if let Ok((soldier, soldier_transform)) = soldiers.get(fire_radius.get_soldier_entity()) {
+            let inner_radius = soldier.get_fire_radius()
+                * game_tilemap.single().get_tile_size().max_element() as f32;
+
+            commands
+                .entity(fire_radius_entity)
+                .insert((
+                    Mesh2d(meshes.add(Annulus::new(inner_radius - 1.0, inner_radius))),
+                    MeshMaterial2d(materials.add(ColorMaterial {
+                        color: Color::srgb(0.25, 0.25, 0.5).with_alpha(0.5),
+                        alpha_mode: AlphaMode2d::Blend,
+                        ..default()
+                    })),
+                ))
+                .with_child((
+                    Mesh2d(meshes.add(Circle::new(inner_radius))),
+                    MeshMaterial2d(materials.add(ColorMaterial {
+                        color: Color::srgb(0.25, 0.25, 0.5).with_alpha(0.25),
+                        alpha_mode: AlphaMode2d::Blend,
+                        ..default()
+                    })),
+                ));
+
+            fire_radius_transform.translation = soldier_transform.translation.with_z(-1.0);
+        }
     }
 }
 

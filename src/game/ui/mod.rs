@@ -25,6 +25,7 @@ pub enum UiState {
     Settings,
     InGame,
     SoldierSelect,
+    SoldierPlacementConfirm,
     SoldierInfo,
     Pause,
     GameOver,

@@ -24,6 +24,7 @@ use crate::game::{
         i18n::I18nComponent,
         UiState,
     },
+    waves::GameWaves,
     GameState,
 };
 
@@ -68,6 +69,7 @@ fn init_ui(
     ui_audio_assets: Res<UiAudioAssets>,
     entity_assets: Res<EntityAssets>,
     player: Res<Player>,
+    game_waves: Res<GameWaves>,
     soldiers: Query<(&Soldier, &TilePosition)>,
     selected_soldier: Res<SelectedSoldier>,
 ) {
@@ -145,6 +147,26 @@ fn init_ui(
 
             parent
                 .spawn(
+                    UiContainer::new()
+                        .with_right(Val::Px(8.0))
+                        .with_top(Val::Px(8.0))
+                        .with_width(Val::Auto)
+                        .absolute(),
+                )
+                .with_child(
+                    UiText::new("ui.in_game.wave")
+                        .with_i18n_arg(
+                            "current",
+                            game_waves.get_current().saturating_add(1).to_string(),
+                        )
+                        .with_i18n_arg(
+                            "total",
+                            game_waves.get_total().saturating_add(1).to_string(),
+                        ),
+                );
+
+            parent
+                .spawn(
                     UiContainer::primary()
                         .with_width(Val::Px(320.0))
                         .with_padding(UiRect::all(Val::Px(24.0)))
@@ -170,6 +192,7 @@ fn init_ui(
                             ..default()
                         },
                     ));
+
                     parent
                         .spawn(UiContainer::secondary().with_padding(UiRect::all(Val::Px(8.0))))
                         .with_child(
@@ -217,26 +240,20 @@ fn init_ui(
                                 parent
                                     .spawn(UiContainer::new().with_width(Val::Auto).column())
                                     .with_children(|parent| {
-                                        parent
-                                            .spawn(UiContainer::new().with_column_gap(Val::Px(8.0)))
-                                            .with_children(|parent| {
-                                                parent.spawn(
-                                                    UiText::new("ui.soldier_info.soldier_name")
-                                                        .with_width(Val::Auto)
-                                                        .with_size(UiTextSize::Small)
-                                                        .with_justify(JustifyText::Left),
-                                                );
-                                                parent.spawn(
-                                                    UiText::new(soldier.to_str())
-                                                        .with_width(Val::Auto)
-                                                        .with_size(UiTextSize::Small)
-                                                        .with_justify(JustifyText::Left),
-                                                );
-                                            });
+                                        parent.spawn(
+                                            UiText::new("soldier.info.name")
+                                                .with_i18n_arg(
+                                                    "name",
+                                                    rust_i18n::t!(soldier.to_str()).to_string(),
+                                                )
+                                                .with_width(Val::Auto)
+                                                .with_size(UiTextSize::Small)
+                                                .with_justify(JustifyText::Left),
+                                        );
 
                                         parent.spawn((
                                             SoldierInfoComponent::Level,
-                                            UiText::new("ui.soldier_info.soldier_level")
+                                            UiText::new("soldier.info.level")
                                                 .with_i18n_arg(
                                                     "level",
                                                     soldier
@@ -259,7 +276,7 @@ fn init_ui(
 
                                         parent.spawn((
                                             SoldierInfoComponent::Damage,
-                                            UiText::new("ui.soldier_info.soldier_damage")
+                                            UiText::new("soldier.info.damage")
                                                 .with_i18n_arg(
                                                     "damage",
                                                     soldier.get_damage().to_string(),
@@ -270,7 +287,7 @@ fn init_ui(
 
                                         parent.spawn((
                                             SoldierInfoComponent::FireRadius,
-                                            UiText::new("ui.soldier_info.soldier_fire_radius")
+                                            UiText::new("soldier.info.fire_radius")
                                                 .with_i18n_arg(
                                                     "fire_radius",
                                                     soldier.get_fire_radius().to_string(),
@@ -286,7 +303,7 @@ fn init_ui(
                                         {
                                             parent.spawn((
                                                 SoldierInfoComponent::BlastRadius,
-                                                UiText::new("ui.soldier_info.soldier_blast_radius")
+                                                UiText::new("soldier.info.blast_radius")
                                                     .with_i18n_arg(
                                                         "blast_radius",
                                                         blast_radius.to_string(),
@@ -298,7 +315,7 @@ fn init_ui(
 
                                         parent.spawn((
                                             SoldierInfoComponent::FireRate,
-                                            UiText::new("ui.soldier_info.soldier_fire_rate")
+                                            UiText::new("soldier.info.fire_rate")
                                                 .with_i18n_arg(
                                                     "fire_rate",
                                                     ((1.0 / soldier.get_fire_rate().as_secs_f32()

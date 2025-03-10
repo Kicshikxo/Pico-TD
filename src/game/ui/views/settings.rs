@@ -100,6 +100,7 @@ fn init_ui(
                             ..default()
                         },
                     ));
+
                     parent
                         .spawn(UiContainer::secondary().with_padding(UiRect::all(Val::Px(8.0))))
                         .with_child(UiText::new("ui.settings.title").with_size(UiTextSize::Large));
@@ -137,7 +138,9 @@ fn init_ui(
                                     .with_default_index(i18n.get_current() as usize)
                                     .cycle(),
                             ));
+
                             parent.spawn(UiText::new("ui.settings.sfx_volume"));
+
                             parent.spawn((
                                 SfxVolumeSelector,
                                 UiSelector::new()
@@ -155,7 +158,9 @@ fn init_ui(
                                         (game_audio_volume.get_sfx_volume() * 20.0) as usize,
                                     ),
                             ));
+
                             parent.spawn(UiText::new("ui.settings.music_volume"));
+
                             parent.spawn((
                                 MusicVolumeSelector,
                                 UiSelector::new()

@@ -1,10 +1,12 @@
 use bevy::prelude::*;
+use bevy_persistent::Persistent;
 
 use crate::game::{
     assets::sprites::{
         entity::EntityAssets,
         ui::{UiAssets, UiButtonSpriteVariant, UiMiscSpriteVariant},
     },
+    config::{GameConfig, SoldierPlacement},
     entities::{
         soldier::{Soldier, SoldierVariant},
         tile::sprite::TileSprite,
@@ -15,10 +17,12 @@ use crate::game::{
         components::{
             button::UiButton,
             container::UiContainer,
+            selector::{UiSelector, UiSelectorItem, UiSelectorItemValue, UiSelectorSize},
             text::{UiText, UiTextSize},
         },
         UiState,
     },
+    waves::GameWaves,
     GameState, GameTilemap,
 };
 
@@ -36,6 +40,9 @@ impl Plugin for SoldierSelectViewUiPlugin {
 struct RootUiComponent;
 
 #[derive(Component)]
+struct SoldierPlacementSelector;
+
+#[derive(Component)]
 enum ButtonAction {
     Close,
     Select(SoldierVariant),
@@ -45,7 +52,9 @@ fn init_ui(
     mut commands: Commands,
     ui_assets: Res<UiAssets>,
     entity_assets: Res<EntityAssets>,
+    game_config: Res<Persistent<GameConfig>>,
     player: Res<Player>,
+    game_waves: Res<GameWaves>,
 ) {
     commands
         .spawn((
@@ -121,6 +130,26 @@ fn init_ui(
 
             parent
                 .spawn(
+                    UiContainer::new()
+                        .with_right(Val::Px(8.0))
+                        .with_top(Val::Px(8.0))
+                        .with_width(Val::Auto)
+                        .absolute(),
+                )
+                .with_child(
+                    UiText::new("ui.in_game.wave")
+                        .with_i18n_arg(
+                            "current",
+                            game_waves.get_current().saturating_add(1).to_string(),
+                        )
+                        .with_i18n_arg(
+                            "total",
+                            game_waves.get_total().saturating_add(1).to_string(),
+                        ),
+                );
+
+            parent
+                .spawn(
                     UiContainer::primary()
                         .with_width(Val::Px(360.0))
                         .with_padding(UiRect::all(Val::Px(24.0)))
@@ -146,6 +175,7 @@ fn init_ui(
                             ..default()
                         },
                     ));
+
                     parent
                         .spawn(UiContainer::secondary().with_padding(UiRect::all(Val::Px(8.0))))
                         .with_child(UiText::new("ui.soldier_select.title"));
@@ -245,30 +275,20 @@ fn init_ui(
                                                     .column(),
                                             )
                                             .with_children(|parent| {
-                                                parent
-                                                    .spawn(
-                                                        UiContainer::new()
-                                                            .with_column_gap(Val::Px(8.0)),
-                                                    )
-                                                    .with_children(|parent| {
-                                                        parent.spawn(
-                                                            UiText::new(
-                                                                "ui.soldier_info.soldier_name",
-                                                            )
-                                                            .with_width(Val::Auto)
-                                                            .with_size(UiTextSize::Small)
-                                                            .with_justify(JustifyText::Left),
-                                                        );
-                                                        parent.spawn(
-                                                            UiText::new(soldier_variant.to_str())
-                                                                .with_width(Val::Auto)
-                                                                .with_size(UiTextSize::Small)
-                                                                .with_justify(JustifyText::Left),
-                                                        );
-                                                    });
+                                                parent.spawn(
+                                                    UiText::new("soldier.info.name")
+                                                        .with_i18n_arg(
+                                                            "name",
+                                                            rust_i18n::t!(soldier_variant.to_str())
+                                                                .to_string(),
+                                                        )
+                                                        .with_width(Val::Auto)
+                                                        .with_size(UiTextSize::Small)
+                                                        .with_justify(JustifyText::Left),
+                                                );
 
                                                 parent.spawn(
-                                                    UiText::new("ui.soldier_info.soldier_damage")
+                                                    UiText::new("soldier.info.damage")
                                                         .with_i18n_arg(
                                                             "damage",
                                                             soldier_variant
@@ -281,18 +301,16 @@ fn init_ui(
                                                 );
 
                                                 parent.spawn(
-                                                    UiText::new(
-                                                        "ui.soldier_info.soldier_fire_radius",
-                                                    )
-                                                    .with_i18n_arg(
-                                                        "fire_radius",
-                                                        soldier_variant
-                                                            .get_config()
-                                                            .get_fire_radius()
-                                                            .to_string(),
-                                                    )
-                                                    .with_size(UiTextSize::Small)
-                                                    .with_justify(JustifyText::Left),
+                                                    UiText::new("soldier.info.fire_radius")
+                                                        .with_i18n_arg(
+                                                            "fire_radius",
+                                                            soldier_variant
+                                                                .get_config()
+                                                                .get_fire_radius()
+                                                                .to_string(),
+                                                        )
+                                                        .with_size(UiTextSize::Small)
+                                                        .with_justify(JustifyText::Left),
                                                 );
 
                                                 if let Some(blast_radius) = soldier_variant
@@ -301,41 +319,57 @@ fn init_ui(
                                                     .get_blast_radius()
                                                 {
                                                     parent.spawn(
-                                                        UiText::new(
-                                                            "ui.soldier_info.soldier_blast_radius",
-                                                        )
-                                                        .with_i18n_arg(
-                                                            "blast_radius",
-                                                            blast_radius.to_string(),
-                                                        )
-                                                        .with_size(UiTextSize::Small)
-                                                        .with_justify(JustifyText::Left),
+                                                        UiText::new("soldier.info.blast_radius")
+                                                            .with_i18n_arg(
+                                                                "blast_radius",
+                                                                blast_radius.to_string(),
+                                                            )
+                                                            .with_size(UiTextSize::Small)
+                                                            .with_justify(JustifyText::Left),
                                                     );
                                                 }
 
                                                 parent.spawn(
-                                                    UiText::new(
-                                                        "ui.soldier_info.soldier_fire_rate",
-                                                    )
-                                                    .with_i18n_arg(
-                                                        "fire_rate",
-                                                        ((1.0
-                                                            / soldier_variant
-                                                                .get_config()
-                                                                .get_fire_rate()
-                                                                .as_secs_f32()
-                                                            * 100.0)
-                                                            .round()
-                                                            / 100.0)
-                                                            .to_string(),
-                                                    )
-                                                    .with_size(UiTextSize::Small)
-                                                    .with_justify(JustifyText::Left),
+                                                    UiText::new("soldier.info.fire_rate")
+                                                        .with_i18n_arg(
+                                                            "fire_rate",
+                                                            ((1.0
+                                                                / soldier_variant
+                                                                    .get_config()
+                                                                    .get_fire_rate()
+                                                                    .as_secs_f32()
+                                                                * 100.0)
+                                                                .round()
+                                                                / 100.0)
+                                                                .to_string(),
+                                                        )
+                                                        .with_size(UiTextSize::Small)
+                                                        .with_justify(JustifyText::Left),
                                                 );
                                             });
                                     });
                             }
                         });
+
+                    parent.spawn((
+                        SoldierPlacementSelector,
+                        UiSelector::new()
+                            .with_size(UiSelectorSize::Small)
+                            .with_options(
+                                [SoldierPlacement::Confirmed, SoldierPlacement::Instant]
+                                    .iter()
+                                    .map(|placement| {
+                                        UiSelectorItem::new(placement.to_str()).with_value(
+                                                UiSelectorItemValue::Number(
+                                                    placement.as_index() as f32,
+                                                ),
+                                            )
+                                    })
+                                    .collect(),
+                            )
+                            .with_default_index(game_config.get_soldier_placement().as_index())
+                            .cycle(),
+                    ));
                 });
         });
 }
@@ -350,13 +384,26 @@ fn update_ui(
     mut commands: Commands,
     interaction_query: Query<(&Interaction, &ButtonAction), (Changed<Interaction>, With<UiButton>)>,
     keyboard_input: Res<ButtonInput<KeyCode>>,
+    mut soldier_placement_selector: Query<&mut UiSelector, With<SoldierPlacementSelector>>,
     game_tilemap: Query<Entity, With<GameTilemap>>,
+    mut game_config: ResMut<Persistent<GameConfig>>,
     mut player: ResMut<Player>,
     selected_soldier: Res<SelectedSoldier>,
     mut selected_tile: ResMut<SelectedTile>,
     mut next_ui_state: ResMut<NextState<UiState>>,
     mut next_game_state: ResMut<NextState<GameState>>,
 ) {
+    if let Ok(mut soldier_placement_selector) = soldier_placement_selector.get_single_mut() {
+        if let Some(changed_item) = soldier_placement_selector.get_changed_item() {
+            game_config
+                .update(|game_config| {
+                    game_config.set_soldier_placement(SoldierPlacement::from_index(
+                        changed_item.value.as_f32() as usize,
+                    ));
+                })
+                .unwrap();
+        }
+    }
     for (interaction, button_action) in interaction_query.iter() {
         if *interaction != Interaction::Pressed {
             continue;
@@ -384,8 +431,15 @@ fn update_ui(
                     .tile_position
                     .set_from_vec2(selected_soldier.tile_position.as_vec2());
 
-                next_ui_state.set(UiState::InGame);
-                next_game_state.set(GameState::InGame);
+                match game_config.get_soldier_placement() {
+                    SoldierPlacement::Instant => {
+                        next_ui_state.set(UiState::InGame);
+                        next_game_state.set(GameState::InGame);
+                    }
+                    SoldierPlacement::Confirmed => {
+                        next_ui_state.set(UiState::SoldierPlacementConfirm);
+                    }
+                }
             }
         }
     }

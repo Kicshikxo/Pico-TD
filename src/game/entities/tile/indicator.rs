@@ -27,7 +27,7 @@ impl Plugin for TileIndicatorPlugin {
         app.add_systems(PreUpdate, init_tile_indicator);
 
         app.add_systems(
-            Update,
+            PostUpdate,
             update_tile_indicator.run_if(resource_changed::<SelectedTile>),
         );
     }

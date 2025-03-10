@@ -35,7 +35,7 @@ impl Plugin for LevelSelectViewUiPlugin {
             .add_systems(OnExit(UiState::LevelSelect), destroy_ui)
             .add_systems(
                 Update,
-                ((update_ui, uploaded_level_update).run_if(in_state(UiState::LevelSelect)),),
+                (update_ui, uploaded_level_update).run_if(in_state(UiState::LevelSelect)),
             );
     }
 }
@@ -116,6 +116,7 @@ fn init_ui(
                             ..default()
                         },
                     ));
+
                     parent
                         .spawn(
                             UiContainer::secondary()
@@ -124,6 +125,7 @@ fn init_ui(
                         .with_child(
                             UiText::new("ui.level_select.title").with_size(UiTextSize::Large),
                         );
+
                     parent
                         .spawn(Node {
                             display: Display::Grid,
