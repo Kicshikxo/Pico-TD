@@ -44,9 +44,9 @@ pub enum SoldierVariant {
 impl SoldierVariant {
     pub fn to_str(&self) -> &'static str {
         match self {
-            SoldierVariant::Soldier { .. } => "soldier.soldier",
-            SoldierVariant::RocketLauncher { .. } => "soldier.rocket_launcher",
-            SoldierVariant::Sniper { .. } => "soldier.sniper",
+            SoldierVariant::Soldier { .. } => "soldier.variant.soldier",
+            SoldierVariant::RocketLauncher { .. } => "soldier.variant.rocket_launcher",
+            SoldierVariant::Sniper { .. } => "soldier.variant.sniper",
         }
     }
     pub fn get_levels(&self) -> &'static [SoldierConfig] {

@@ -1,6 +1,6 @@
 _version: 2
 
-soldier.soldier:
+soldier.variant.soldier:
     en: "Soldier"
     ru: "Солдат"
     uk: "Солдат"
@@ -12,7 +12,7 @@ soldier.soldier:
     nl: "Soldaat"
     tr: "Asker"
     pl: "Żołnierz"
-soldier.rocket_launcher:
+soldier.variant.rocket_launcher:
     en: "Rocket launcher"
     ru: "Ракетница"
     uk: "Ракетна установка"
@@ -24,7 +24,7 @@ soldier.rocket_launcher:
     nl: "Raketwerper"
     tr: "Roketatar"
     pl: "Wyrzutnia rakiet"
-soldier.sniper:
+soldier.variant.sniper:
     en: "Sniper"
     ru: "Снайпер"
     uk: "Снайпер"
