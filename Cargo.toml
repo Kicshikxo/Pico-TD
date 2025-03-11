@@ -1,6 +1,6 @@
 [package]
 name = "pico_td"
-version = "0.0.1"
+version = "1.0.0"
 edition = "2021"
 license = "WTFPL"
 build = "build/build.rs"
@@ -28,16 +28,17 @@ bevy-persistent = { version = "0.7.0", features = ["ron"] }
 directories = { version = "6.0.0" }
 
 rfd = { version = "0.15.2", default-features = false, features = ["gtk3"] }
-log = { version = "*", features = [
+log = { version = "0.4.26", features = [
     "max_level_debug",
     "release_max_level_warn",
 ] }
+winit = { version = "0.30.9", default-features = false }
 
 [target.'cfg(target_arch = "wasm32")'.dependencies]
 getrandom = { version = "0.3.1", features = ["wasm_js"] }
 
 [build-dependencies]
-embed-resource = { version = "3.0.1" }
+embed-resource = { version = "3.0.2" }
 
 [profile.dev]
 opt-level = 1

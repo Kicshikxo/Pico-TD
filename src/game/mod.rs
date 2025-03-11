@@ -12,11 +12,13 @@ pub mod waves;
 use bevy::{
     audio::{PlaybackMode, Volume},
     prelude::*,
+    winit::WinitWindows,
 };
 use bevy_persistent::Persistent;
+use winit::window::Icon;
 
 use crate::game::{
-    assets::{audio::game::GameAudioAssets, levels::Level, GameAssetsPlugin},
+    assets::{audio::game::GameAudioAssets, levels::Level, utils::UtilsAssets, GameAssetsPlugin},
     audio::{GameAudioPlugin, GameAudioVolume},
     config::GameConfigPlugin,
     entities::{tile::indicator::TileIndicator, tilemap::Tilemap, GameEntitiesPlugin},
@@ -70,7 +72,10 @@ pub enum GameState {
 
 fn setup(
     mut commands: Commands,
-    mut window: Single<&mut Window>,
+    mut windows: Query<(Entity, &mut Window)>,
+    winit_windows: NonSend<WinitWindows>,
+    utils_assets: Res<UtilsAssets>,
+    asset_images: Res<Assets<Image>>,
     mut next_ui_state: ResMut<NextState<UiState>>,
     mut next_game_state: ResMut<NextState<GameState>>,
 ) {
@@ -83,7 +88,25 @@ fn setup(
     next_ui_state.set(UiState::Menu);
     next_game_state.set(GameState::Pause);
 
-    window.visible = true;
+    for (window_entity, mut window) in windows.iter_mut() {
+        window.visible = true;
+
+        let Some(winit_window) = winit_windows.get_window(window_entity) else {
+            continue;
+        };
+        let Some(window_icon) = asset_images.get(&utils_assets.window_icon) else {
+            continue;
+        };
+
+        winit_window.set_window_icon(
+            Icon::from_rgba(
+                window_icon.data.clone(),
+                window_icon.width(),
+                window_icon.height(),
+            )
+            .ok(),
+        );
+    }
 }
 
 fn start_game(
