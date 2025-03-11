@@ -25,47 +25,45 @@ LevelAsset(
         "###################.",
         "###################.",
     ],
-    tile_symbols: Some(TileSymbols (
-        ground: '#',
-        flower: 'F',
-        tree: 'T',
-        road: '.',
-        bridge: '=',
-        water: '~',
-    )),
-    paths: Some([
+    tile_symbols: Some(
+        TileSymbols(
+            ground: '#',
+            flower: 'F',
+            tree: 'T',
+            road: '.',
+            bridge: '=',
+            water: '~',
+        ),
+    ),
+    paths: Some([[(0, 0), (19, 0), (19, 19)]]),
+    waves: Some(
         [
-            (0, 0),
-            (19, 0),
-            (19, 19)
-        ]
-    ]),
-    waves: Some([
-        Wave (
-            reward: 50,
-            enemies: [
-                WaveEnemies (
-                    enemy_variant: Truck(Mk1),
-                    count: 5,
-                    duration: 20.0,
-                    spawn_interval: 0.5,
-                    spawn_delay: 0.0,
-                    path_index: 0
-                )
-            ]
-        ),
-        Wave (
-            reward: 100,
-            enemies: [
-                WaveEnemies (
-                    enemy_variant: Truck(Mk1),
-                    count: 5,
-                    duration: 20.0,
-                    spawn_interval: 0.5,
-                    spawn_delay: 0.0,
-                    path_index: 0
-                )
-            ]
-        ),
-    ])
+            Wave(
+                reward: 50,
+                enemies: [
+                    WaveEnemies(
+                        enemy_variant: Truck(Mk1),
+                        count: 5,
+                        duration: 20.0,
+                        spawn_interval: 0.5,
+                        spawn_delay: 0.0,
+                        path_index: 0,
+                    ),
+                ],
+            ),
+            Wave(
+                reward: 100,
+                enemies: [
+                    WaveEnemies(
+                        enemy_variant: Truck(Mk1),
+                        count: 5,
+                        duration: 20.0,
+                        spawn_interval: 0.5,
+                        spawn_delay: 0.0,
+                        path_index: 0,
+                    ),
+                ],
+            ),
+        ],
+    ),
 )

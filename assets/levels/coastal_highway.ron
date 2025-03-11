@@ -25,389 +25,394 @@ LevelAsset(
         "TT#TF#.~~~~~~.######",
         "TTT###.~~~~~~.######",
     ],
-    paths: Some([
+    paths: Some(
         [
-            (6, -1),
-            (6, 6),
-            (13, 6),
-            (13, 20)
-        ], [
-            (13, -1),
-            (13, 13),
-            (6, 13),
-            (6, 20)
-        ]
-    ]),
-    waves: Some([
-        Wave (
-            reward: 150,
-            enemies: [
-                WaveEnemies (
-                    enemy_variant: Truck(Mk1),
-                    count: 10,
-                    duration: 10.0,
-                    spawn_interval: 0.5,
-                    spawn_delay: 0.0,
-                    path_index: 0
-                ),
-                WaveEnemies (
-                    enemy_variant: Truck(Mk1),
-                    count: 10,
-                    duration: 10.0,
-                    spawn_interval: 0.5,
-                    spawn_delay: 0.0,
-                    path_index: 1
-                )
-            ]
-        ),
-        Wave (
-            reward: 150,
-            enemies: [
-                WaveEnemies (
-                    enemy_variant: Truck(Mk1),
-                    count: 12,
-                    duration: 10.0,
-                    spawn_interval: 0.5,
-                    spawn_delay: 0.0,
-                    path_index: 0
-                ),
-                WaveEnemies (
-                    enemy_variant: Truck(Mk2),
-                    count: 5,
-                    duration: 10.0,
-                    spawn_interval: 0.5,
-                    spawn_delay: 6.0,
-                    path_index: 0
-                ),
-                WaveEnemies (
-                    enemy_variant: Truck(Mk1),
-                    count: 12,
-                    duration: 10.0,
-                    spawn_interval: 0.5,
-                    spawn_delay: 0.0,
-                    path_index: 1
-                ),
-                WaveEnemies (
-                    enemy_variant: Truck(Mk2),
-                    count: 3,
-                    duration: 10.0,
-                    spawn_interval: 0.5,
-                    spawn_delay: 6.0,
-                    path_index: 1
-                )
-            ]
-        ),
-        Wave (
-            reward: 100,
-            enemies: [
-                WaveEnemies (
-                    enemy_variant: Truck(Mk1),
-                    count: 10,
-                    duration: 10.0,
-                    spawn_interval: 0.5,
-                    spawn_delay: 0.0,
-                    path_index: 0
-                ),
-                WaveEnemies (
-                    enemy_variant: Truck(Mk2),
-                    count: 10,
-                    duration: 10.0,
-                    spawn_interval: 0.5,
-                    spawn_delay: 5.0,
-                    path_index: 0
-                ),
-                WaveEnemies (
-                    enemy_variant: Truck(Mk1),
-                    count: 10,
-                    duration: 10.0,
-                    spawn_interval: 0.5,
-                    spawn_delay: 0.0,
-                    path_index: 1
-                ),
-                WaveEnemies (
-                    enemy_variant: Truck(Mk2),
-                    count: 10,
-                    duration: 10.0,
-                    spawn_interval: 0.5,
-                    spawn_delay: 5.0,
-                    path_index: 1
-                )
-            ]
-        ),
-        Wave (
-            reward: 100,
-            enemies: [
-                WaveEnemies (
-                    enemy_variant: Truck(Mk2),
-                    count: 25,
-                    duration: 9.0,
-                    spawn_interval: 0.4,
-                    spawn_delay: 0.0,
-                    path_index: 0
-                ),
-                WaveEnemies (
-                    enemy_variant: Truck(Mk2),
-                    count: 25,
-                    duration: 9.0,
-                    spawn_interval: 0.4,
-                    spawn_delay: 0.0,
-                    path_index: 1
-                )
-            ]
-        ),
-        Wave (
-            reward: 100,
-            enemies: [
-                WaveEnemies (
-                    enemy_variant: Truck(Mk2),
-                    count: 20,
-                    duration: 9.0,
-                    spawn_interval: 0.4,
-                    spawn_delay: 0.0,
-                    path_index: 0
-                ),
-                WaveEnemies (
-                    enemy_variant: Truck(Mk3),
-                    count: 5,
-                    duration: 9.0,
-                    spawn_interval: 0.4,
-                    spawn_delay: 8.0,
-                    path_index: 0
-                ),
-                WaveEnemies (
-                    enemy_variant: Truck(Mk2),
-                    count: 20,
-                    duration: 9.0,
-                    spawn_interval: 0.4,
-                    spawn_delay: 0.0,
-                    path_index: 1
-                ),
-                WaveEnemies (
-                    enemy_variant: Truck(Mk3),
-                    count: 5,
-                    duration: 9.0,
-                    spawn_interval: 0.4,
-                    spawn_delay: 8.0,
-                    path_index: 1
-                ),
-            ]
-        ),
-        Wave (
-            reward: 100,
-            enemies: [
-                WaveEnemies (
-                    enemy_variant: Truck(Mk2),
-                    count: 10,
-                    duration: 9.0,
-                    spawn_interval: 0.4,
-                    spawn_delay: 0.0,
-                    path_index: 0
-                ),
-                WaveEnemies (
-                    enemy_variant: Truck(Mk3),
-                    count: 20,
-                    duration: 9.0,
-                    spawn_interval: 0.4,
-                    spawn_delay: 4.0,
-                    path_index: 0
-                ),
-                WaveEnemies (
-                    enemy_variant: Truck(Mk2),
-                    count: 10,
-                    duration: 9.0,
-                    spawn_interval: 0.4,
-                    spawn_delay: 0.0,
-                    path_index: 1
-                ),
-                WaveEnemies (
-                    enemy_variant: Truck(Mk3),
-                    count: 10,
-                    duration: 9.0,
-                    spawn_interval: 0.4,
-                    spawn_delay: 4.0,
-                    path_index: 1
-                ),
-            ]
-        ),
-        Wave (
-            reward: 100,
-            enemies: [
-                WaveEnemies (
-                    enemy_variant: Truck(Mk3),
-                    count: 10,
-                    duration: 7.0,
-                    spawn_interval: 0.33,
-                    spawn_delay: 0.0,
-                    path_index: 0
-                ),
-                WaveEnemies (
-                    enemy_variant: Tank(Mk1),
-                    count: 5,
-                    duration: 12.0,
-                    spawn_interval: 0.5,
-                    spawn_delay: 4.8,
-                    path_index: 0
-                ),
-                WaveEnemies (
-                    enemy_variant: Truck(Mk3),
-                    count: 15,
-                    duration: 7.0,
-                    spawn_interval: 0.33,
-                    spawn_delay: 0.0,
-                    path_index: 1
-                ),
-                WaveEnemies (
-                    enemy_variant: Tank(Mk1),
-                    count: 3,
-                    duration: 12.0,
-                    spawn_interval: 0.5,
-                    spawn_delay: 5.0,
-                    path_index: 1
-                ),
-            ]
-        ),
-        Wave (
-            reward: 100,
-            enemies: [
-                WaveEnemies (
-                    enemy_variant: Truck(Mk3),
-                    count: 15,
-                    duration: 7.0,
-                    spawn_interval: 0.25,
-                    spawn_delay: 0.0,
-                    path_index: 0
-                ),
-                WaveEnemies (
-                    enemy_variant: Tank(Mk1),
-                    count: 5,
-                    duration: 10.0,
-                    spawn_interval: 0.4,
-                    spawn_delay: 5.0,
-                    path_index: 0
-                ),
-                WaveEnemies (
-                    enemy_variant: Truck(Mk3),
-                    count: 15,
-                    duration: 7.0,
-                    spawn_interval: 0.25,
-                    spawn_delay: 0.0,
-                    path_index: 1
-                ),
-                WaveEnemies (
-                    enemy_variant: Tank(Mk1),
-                    count: 3,
-                    duration: 10.0,
-                    spawn_interval: 0.4,
-                    spawn_delay: 3.75,
-                    path_index: 1
-                ),
-            ]
-        ),
-        Wave (
-            reward: 100,
-            enemies: [
-                WaveEnemies (
-                    enemy_variant: Truck(Mk3),
-                    count: 15,
-                    duration: 7.0,
-                    spawn_interval: 0.25,
-                    spawn_delay: 0.0,
-                    path_index: 0
-                ),
-                WaveEnemies (
-                    enemy_variant: Truck(Mk4),
-                    count: 3,
-                    duration: 7.0,
-                    spawn_interval: 0.2,
-                    spawn_delay: 3.75,
-                    path_index: 0
-                ),
-                WaveEnemies (
-                    enemy_variant: Tank(Mk1),
-                    count: 5,
-                    duration: 10.0,
-                    spawn_interval: 0.5,
-                    spawn_delay: 5.0,
-                    path_index: 0
-                ),
-                WaveEnemies (
-                    enemy_variant: Truck(Mk3),
-                    count: 15,
-                    duration: 7.0,
-                    spawn_interval: 0.25,
-                    spawn_delay: 0.0,
-                    path_index: 1
-                ),
-                WaveEnemies (
-                    enemy_variant: Truck(Mk4),
-                    count: 3,
-                    duration: 7.0,
-                    spawn_interval: 0.2,
-                    spawn_delay: 3.75,
-                    path_index: 1
-                ),
-                WaveEnemies (
-                    enemy_variant: Tank(Mk1),
-                    count: 3,
-                    duration: 10.0,
-                    spawn_interval: 0.5,
-                    spawn_delay: 3.75,
-                    path_index: 1
-                ),
-            ]
-        ),
-        Wave (
-            reward: 100,
-            enemies: [
-                WaveEnemies (
-                    enemy_variant: Truck(Mk3),
-                    count: 20,
-                    duration: 7.0,
-                    spawn_interval: 0.25,
-                    spawn_delay: 0.0,
-                    path_index: 0
-                ),
-                WaveEnemies (
-                    enemy_variant: Truck(Mk4),
-                    count: 5,
-                    duration: 7.0,
-                    spawn_interval: 0.2,
-                    spawn_delay: 5.0,
-                    path_index: 0
-                ),
-                WaveEnemies (
-                    enemy_variant: Tank(Mk2),
-                    count: 3,
-                    duration: 10.0,
-                    spawn_interval: 0.5,
-                    spawn_delay: 6.0,
-                    path_index: 0
-                ),
-                WaveEnemies (
-                    enemy_variant: Truck(Mk3),
-                    count: 20,
-                    duration: 7.0,
-                    spawn_interval: 0.25,
-                    spawn_delay: 0.0,
-                    path_index: 1
-                ),
-                WaveEnemies (
-                    enemy_variant: Truck(Mk4),
-                    count: 4,
-                    duration: 7.0,
-                    spawn_interval: 0.2,
-                    spawn_delay: 5.0,
-                    path_index: 1
-                ),
-                WaveEnemies (
-                    enemy_variant: Tank(Mk2),
-                    count: 3,
-                    duration: 10.0,
-                    spawn_interval: 0.5,
-                    spawn_delay: 5.0,
-                    path_index: 1
-                ),
-            ]
-        )
-    ])
+            [
+                (6, -1),
+                (6, 6),
+                (13, 6),
+                (13, 20),
+            ],
+            [
+                (13, -1),
+                (13, 13),
+                (6, 13),
+                (6, 20),
+            ],
+        ],
+    ),
+    waves: Some(
+        [
+            Wave(
+                reward: 150,
+                enemies: [
+                    WaveEnemies(
+                        enemy_variant: Truck(Mk1),
+                        count: 10,
+                        duration: 10.0,
+                        spawn_interval: 0.5,
+                        spawn_delay: 0.0,
+                        path_index: 0,
+                    ),
+                    WaveEnemies(
+                        enemy_variant: Truck(Mk1),
+                        count: 10,
+                        duration: 10.0,
+                        spawn_interval: 0.5,
+                        spawn_delay: 0.0,
+                        path_index: 1,
+                    ),
+                ],
+            ),
+            Wave(
+                reward: 150,
+                enemies: [
+                    WaveEnemies(
+                        enemy_variant: Truck(Mk1),
+                        count: 12,
+                        duration: 10.0,
+                        spawn_interval: 0.5,
+                        spawn_delay: 0.0,
+                        path_index: 0,
+                    ),
+                    WaveEnemies(
+                        enemy_variant: Truck(Mk2),
+                        count: 5,
+                        duration: 10.0,
+                        spawn_interval: 0.5,
+                        spawn_delay: 6.0,
+                        path_index: 0,
+                    ),
+                    WaveEnemies(
+                        enemy_variant: Truck(Mk1),
+                        count: 12,
+                        duration: 10.0,
+                        spawn_interval: 0.5,
+                        spawn_delay: 0.0,
+                        path_index: 1,
+                    ),
+                    WaveEnemies(
+                        enemy_variant: Truck(Mk2),
+                        count: 3,
+                        duration: 10.0,
+                        spawn_interval: 0.5,
+                        spawn_delay: 6.0,
+                        path_index: 1,
+                    ),
+                ],
+            ),
+            Wave(
+                reward: 100,
+                enemies: [
+                    WaveEnemies(
+                        enemy_variant: Truck(Mk1),
+                        count: 10,
+                        duration: 10.0,
+                        spawn_interval: 0.5,
+                        spawn_delay: 0.0,
+                        path_index: 0,
+                    ),
+                    WaveEnemies(
+                        enemy_variant: Truck(Mk2),
+                        count: 10,
+                        duration: 10.0,
+                        spawn_interval: 0.5,
+                        spawn_delay: 5.0,
+                        path_index: 0,
+                    ),
+                    WaveEnemies(
+                        enemy_variant: Truck(Mk1),
+                        count: 10,
+                        duration: 10.0,
+                        spawn_interval: 0.5,
+                        spawn_delay: 0.0,
+                        path_index: 1,
+                    ),
+                    WaveEnemies(
+                        enemy_variant: Truck(Mk2),
+                        count: 10,
+                        duration: 10.0,
+                        spawn_interval: 0.5,
+                        spawn_delay: 5.0,
+                        path_index: 1,
+                    ),
+                ],
+            ),
+            Wave(
+                reward: 100,
+                enemies: [
+                    WaveEnemies(
+                        enemy_variant: Truck(Mk2),
+                        count: 25,
+                        duration: 9.0,
+                        spawn_interval: 0.4,
+                        spawn_delay: 0.0,
+                        path_index: 0,
+                    ),
+                    WaveEnemies(
+                        enemy_variant: Truck(Mk2),
+                        count: 25,
+                        duration: 9.0,
+                        spawn_interval: 0.4,
+                        spawn_delay: 0.0,
+                        path_index: 1,
+                    ),
+                ],
+            ),
+            Wave(
+                reward: 100,
+                enemies: [
+                    WaveEnemies(
+                        enemy_variant: Truck(Mk2),
+                        count: 20,
+                        duration: 9.0,
+                        spawn_interval: 0.4,
+                        spawn_delay: 0.0,
+                        path_index: 0,
+                    ),
+                    WaveEnemies(
+                        enemy_variant: Truck(Mk3),
+                        count: 5,
+                        duration: 9.0,
+                        spawn_interval: 0.4,
+                        spawn_delay: 8.0,
+                        path_index: 0,
+                    ),
+                    WaveEnemies(
+                        enemy_variant: Truck(Mk2),
+                        count: 20,
+                        duration: 9.0,
+                        spawn_interval: 0.4,
+                        spawn_delay: 0.0,
+                        path_index: 1,
+                    ),
+                    WaveEnemies(
+                        enemy_variant: Truck(Mk3),
+                        count: 5,
+                        duration: 9.0,
+                        spawn_interval: 0.4,
+                        spawn_delay: 8.0,
+                        path_index: 1,
+                    ),
+                ],
+            ),
+            Wave(
+                reward: 100,
+                enemies: [
+                    WaveEnemies(
+                        enemy_variant: Truck(Mk2),
+                        count: 10,
+                        duration: 9.0,
+                        spawn_interval: 0.4,
+                        spawn_delay: 0.0,
+                        path_index: 0,
+                    ),
+                    WaveEnemies(
+                        enemy_variant: Truck(Mk3),
+                        count: 20,
+                        duration: 9.0,
+                        spawn_interval: 0.4,
+                        spawn_delay: 4.0,
+                        path_index: 0,
+                    ),
+                    WaveEnemies(
+                        enemy_variant: Truck(Mk2),
+                        count: 10,
+                        duration: 9.0,
+                        spawn_interval: 0.4,
+                        spawn_delay: 0.0,
+                        path_index: 1,
+                    ),
+                    WaveEnemies(
+                        enemy_variant: Truck(Mk3),
+                        count: 10,
+                        duration: 9.0,
+                        spawn_interval: 0.4,
+                        spawn_delay: 4.0,
+                        path_index: 1,
+                    ),
+                ],
+            ),
+            Wave(
+                reward: 100,
+                enemies: [
+                    WaveEnemies(
+                        enemy_variant: Truck(Mk3),
+                        count: 10,
+                        duration: 7.0,
+                        spawn_interval: 0.33,
+                        spawn_delay: 0.0,
+                        path_index: 0,
+                    ),
+                    WaveEnemies(
+                        enemy_variant: Tank(Mk1),
+                        count: 5,
+                        duration: 12.0,
+                        spawn_interval: 0.5,
+                        spawn_delay: 4.8,
+                        path_index: 0,
+                    ),
+                    WaveEnemies(
+                        enemy_variant: Truck(Mk3),
+                        count: 15,
+                        duration: 7.0,
+                        spawn_interval: 0.33,
+                        spawn_delay: 0.0,
+                        path_index: 1,
+                    ),
+                    WaveEnemies(
+                        enemy_variant: Tank(Mk1),
+                        count: 3,
+                        duration: 12.0,
+                        spawn_interval: 0.5,
+                        spawn_delay: 5.0,
+                        path_index: 1,
+                    ),
+                ],
+            ),
+            Wave(
+                reward: 100,
+                enemies: [
+                    WaveEnemies(
+                        enemy_variant: Truck(Mk3),
+                        count: 15,
+                        duration: 7.0,
+                        spawn_interval: 0.25,
+                        spawn_delay: 0.0,
+                        path_index: 0,
+                    ),
+                    WaveEnemies(
+                        enemy_variant: Tank(Mk1),
+                        count: 5,
+                        duration: 10.0,
+                        spawn_interval: 0.4,
+                        spawn_delay: 5.0,
+                        path_index: 0,
+                    ),
+                    WaveEnemies(
+                        enemy_variant: Truck(Mk3),
+                        count: 15,
+                        duration: 7.0,
+                        spawn_interval: 0.25,
+                        spawn_delay: 0.0,
+                        path_index: 1,
+                    ),
+                    WaveEnemies(
+                        enemy_variant: Tank(Mk1),
+                        count: 3,
+                        duration: 10.0,
+                        spawn_interval: 0.4,
+                        spawn_delay: 3.75,
+                        path_index: 1,
+                    ),
+                ],
+            ),
+            Wave(
+                reward: 100,
+                enemies: [
+                    WaveEnemies(
+                        enemy_variant: Truck(Mk3),
+                        count: 15,
+                        duration: 7.0,
+                        spawn_interval: 0.25,
+                        spawn_delay: 0.0,
+                        path_index: 0,
+                    ),
+                    WaveEnemies(
+                        enemy_variant: Truck(Mk4),
+                        count: 3,
+                        duration: 7.0,
+                        spawn_interval: 0.2,
+                        spawn_delay: 3.75,
+                        path_index: 0,
+                    ),
+                    WaveEnemies(
+                        enemy_variant: Tank(Mk1),
+                        count: 5,
+                        duration: 10.0,
+                        spawn_interval: 0.5,
+                        spawn_delay: 5.0,
+                        path_index: 0,
+                    ),
+                    WaveEnemies(
+                        enemy_variant: Truck(Mk3),
+                        count: 15,
+                        duration: 7.0,
+                        spawn_interval: 0.25,
+                        spawn_delay: 0.0,
+                        path_index: 1,
+                    ),
+                    WaveEnemies(
+                        enemy_variant: Truck(Mk4),
+                        count: 3,
+                        duration: 7.0,
+                        spawn_interval: 0.2,
+                        spawn_delay: 3.75,
+                        path_index: 1,
+                    ),
+                    WaveEnemies(
+                        enemy_variant: Tank(Mk1),
+                        count: 3,
+                        duration: 10.0,
+                        spawn_interval: 0.5,
+                        spawn_delay: 3.75,
+                        path_index: 1,
+                    ),
+                ],
+            ),
+            Wave(
+                reward: 100,
+                enemies: [
+                    WaveEnemies(
+                        enemy_variant: Truck(Mk3),
+                        count: 20,
+                        duration: 7.0,
+                        spawn_interval: 0.25,
+                        spawn_delay: 0.0,
+                        path_index: 0,
+                    ),
+                    WaveEnemies(
+                        enemy_variant: Truck(Mk4),
+                        count: 5,
+                        duration: 7.0,
+                        spawn_interval: 0.2,
+                        spawn_delay: 5.0,
+                        path_index: 0,
+                    ),
+                    WaveEnemies(
+                        enemy_variant: Tank(Mk2),
+                        count: 3,
+                        duration: 10.0,
+                        spawn_interval: 0.5,
+                        spawn_delay: 6.0,
+                        path_index: 0,
+                    ),
+                    WaveEnemies(
+                        enemy_variant: Truck(Mk3),
+                        count: 20,
+                        duration: 7.0,
+                        spawn_interval: 0.25,
+                        spawn_delay: 0.0,
+                        path_index: 1,
+                    ),
+                    WaveEnemies(
+                        enemy_variant: Truck(Mk4),
+                        count: 4,
+                        duration: 7.0,
+                        spawn_interval: 0.2,
+                        spawn_delay: 5.0,
+                        path_index: 1,
+                    ),
+                    WaveEnemies(
+                        enemy_variant: Tank(Mk2),
+                        count: 3,
+                        duration: 10.0,
+                        spawn_interval: 0.5,
+                        spawn_delay: 5.0,
+                        path_index: 1,
+                    ),
+                ],
+            ),
+        ],
+    ),
 )
