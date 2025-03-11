@@ -8,27 +8,27 @@ use serde::{Deserialize, Serialize};
 #[derive(Default, Clone, Copy, Serialize, Deserialize)]
 pub enum SoldierPlacement {
     #[default]
-    Confirmed,
-    Instant,
+    WithConfirmation,
+    WithoutConfirmation,
 }
 
 impl SoldierPlacement {
     pub fn to_str(&self) -> &'static str {
         match self {
-            SoldierPlacement::Confirmed => "soldier.placement.confirmed",
-            SoldierPlacement::Instant => "soldier.placement.instant",
+            SoldierPlacement::WithConfirmation => "soldier.placement.with_confirmation",
+            SoldierPlacement::WithoutConfirmation => "soldier.placement.without_confirmation",
         }
     }
     pub fn as_index(&self) -> usize {
         match self {
-            SoldierPlacement::Confirmed => 0,
-            SoldierPlacement::Instant => 1,
+            SoldierPlacement::WithConfirmation => 0,
+            SoldierPlacement::WithoutConfirmation => 1,
         }
     }
     pub fn from_index(index: usize) -> Self {
         match index {
-            0 => SoldierPlacement::Confirmed,
-            1 => SoldierPlacement::Instant,
+            0 => SoldierPlacement::WithConfirmation,
+            1 => SoldierPlacement::WithoutConfirmation,
             _ => SoldierPlacement::default(),
         }
     }

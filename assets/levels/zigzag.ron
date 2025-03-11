@@ -75,7 +75,7 @@ LevelAsset(
                     spawn_interval: 0.5,
                     spawn_delay: 0.0,
                     path_index: 0
-                ),
+                )
             ]
         ),
         Wave (
@@ -93,10 +93,10 @@ LevelAsset(
                     enemy_variant: Truck(Mk2),
                     count: 5,
                     duration: 30.0,
-                    spawn_interval: 0.4,
+                    spawn_interval: 0.5,
                     spawn_delay: 10.0,
                     path_index: 0
-                ),
+                )
             ]
         ),
         Wave (
@@ -117,7 +117,7 @@ LevelAsset(
                     spawn_interval: 0.4,
                     spawn_delay: 5.0,
                     path_index: 0
-                ),
+                )
             ]
         ),
         Wave (
@@ -130,7 +130,7 @@ LevelAsset(
                     spawn_interval: 0.4,
                     spawn_delay: 0.0,
                     path_index: 0
-                ),
+                )
             ]
         ),
         Wave (
@@ -159,7 +159,7 @@ LevelAsset(
                     spawn_interval: 0.25,
                     spawn_delay: 0.0,
                     path_index: 1
-                ),
+                )
             ]
         ),
         Wave (
@@ -188,7 +188,7 @@ LevelAsset(
                     spawn_interval: 0.25,
                     spawn_delay: 0.0,
                     path_index: 1
-                ),
+                )
             ]
         ),
         Wave (
@@ -225,7 +225,7 @@ LevelAsset(
                     spawn_interval: 0.25,
                     spawn_delay: 3.75,
                     path_index: 1
-                ),
+                )
             ]
         ),
         Wave (
@@ -262,7 +262,7 @@ LevelAsset(
                     spawn_interval: 0.25,
                     spawn_delay: 5.0,
                     path_index: 1
-                ),
+                )
             ]
         ),
         Wave (
@@ -307,7 +307,7 @@ LevelAsset(
                     spawn_interval: 0.25,
                     spawn_delay: 5.0,
                     path_index: 1
-                ),
+                )
             ]
         ),
         Wave (
@@ -352,7 +352,7 @@ LevelAsset(
                     spawn_interval: 0.25,
                     spawn_delay: 5.0,
                     path_index: 1
-                ),
+                )
             ]
         ),
     ])

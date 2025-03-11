@@ -150,7 +150,7 @@ LevelAsset(
                     spawn_interval: 0.33,
                     spawn_delay: 0.0,
                     path_index: 2
-                ),
+                )
             ]
         ),
         Wave (
@@ -187,7 +187,7 @@ LevelAsset(
                     spawn_interval: 0.33,
                     spawn_delay: 0.0,
                     path_index: 2
-                ),
+                )
             ]
         ),
         Wave (
@@ -224,7 +224,7 @@ LevelAsset(
                     spawn_interval: 0.33,
                     spawn_delay: 0.0,
                     path_index: 2
-                ),
+                )
             ]
         ),
         Wave (
@@ -261,7 +261,7 @@ LevelAsset(
                     spawn_interval: 0.33,
                     spawn_delay: 0.0,
                     path_index: 2
-                ),
+                )
             ]
         ),
         Wave (
@@ -314,7 +314,7 @@ LevelAsset(
                     spawn_interval: 0.33,
                     spawn_delay: 6.6,
                     path_index: 2
-                ),
+                )
             ]
         ),
         Wave (
@@ -359,7 +359,7 @@ LevelAsset(
                     spawn_interval: 0.33,
                     spawn_delay: 0.0,
                     path_index: 2
-                ),
+                )
             ]
         ),
         Wave (
@@ -412,7 +412,7 @@ LevelAsset(
                     spawn_interval: 0.33,
                     spawn_delay: 6.6,
                     path_index: 2
-                ),
+                )
             ]
         )
     ])

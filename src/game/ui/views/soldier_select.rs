@@ -288,6 +288,19 @@ fn init_ui(
                                                 );
 
                                                 parent.spawn(
+                                                    UiText::new("soldier.info.max_level")
+                                                        .with_i18n_arg(
+                                                            "max_level",
+                                                            soldier_variant
+                                                                .get_max_level()
+                                                                .saturating_add(1)
+                                                                .to_string(),
+                                                        )
+                                                        .with_size(UiTextSize::Small)
+                                                        .with_justify(JustifyText::Left),
+                                                );
+
+                                                parent.spawn(
                                                     UiText::new("soldier.info.damage")
                                                         .with_i18n_arg(
                                                             "damage",
@@ -356,16 +369,17 @@ fn init_ui(
                         UiSelector::new()
                             .with_size(UiSelectorSize::Small)
                             .with_options(
-                                [SoldierPlacement::Confirmed, SoldierPlacement::Instant]
-                                    .iter()
-                                    .map(|placement| {
-                                        UiSelectorItem::new(placement.to_str()).with_value(
-                                                UiSelectorItemValue::Number(
-                                                    placement.as_index() as f32,
-                                                ),
-                                            )
-                                    })
-                                    .collect(),
+                                [
+                                    SoldierPlacement::WithConfirmation,
+                                    SoldierPlacement::WithoutConfirmation,
+                                ]
+                                .iter()
+                                .map(|placement| {
+                                    UiSelectorItem::new(placement.to_str()).with_value(
+                                        UiSelectorItemValue::Number(placement.as_index() as f32),
+                                    )
+                                })
+                                .collect(),
                             )
                             .with_default_index(game_config.get_soldier_placement().as_index())
                             .cycle(),
@@ -432,11 +446,11 @@ fn update_ui(
                     .set_from_vec2(selected_soldier.tile_position.as_vec2());
 
                 match game_config.get_soldier_placement() {
-                    SoldierPlacement::Instant => {
+                    SoldierPlacement::WithoutConfirmation => {
                         next_ui_state.set(UiState::InGame);
                         next_game_state.set(GameState::InGame);
                     }
-                    SoldierPlacement::Confirmed => {
+                    SoldierPlacement::WithConfirmation => {
                         next_ui_state.set(UiState::SoldierPlacementConfirm);
                     }
                 }

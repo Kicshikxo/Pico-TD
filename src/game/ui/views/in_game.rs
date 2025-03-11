@@ -256,6 +256,24 @@ fn update_ui(
             game_waves.next_wave();
         }
     }
+    if let Ok(mut speed_selector) = speed_selector.get_single_mut() {
+        let speed = if keyboard_input.just_pressed(KeyCode::Digit1) {
+            GameSpeed::Normal
+        } else if keyboard_input.just_pressed(KeyCode::Digit2) {
+            GameSpeed::Double
+        } else if keyboard_input.just_pressed(KeyCode::Digit3) {
+            GameSpeed::Triple
+        } else if keyboard_input.just_pressed(KeyCode::Digit4) {
+            GameSpeed::Quadruple
+        } else if keyboard_input.just_pressed(KeyCode::Digit5) {
+            GameSpeed::Quintuple
+        } else {
+            return;
+        };
+
+        game_speed.set(speed);
+        speed_selector.set_index(game_speed.as_index());
+    }
 }
 
 fn update_ui_after_player_change(

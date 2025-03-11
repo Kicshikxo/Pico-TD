@@ -54,13 +54,13 @@ impl LevelCompletionStars {
 
 impl LevelCompletionStars {
     pub fn from_player_health(health: &PlayerHealth) -> Self {
-        let health_percent = health.get_percentage();
+        let health_percentage = health.get_percentage();
 
-        if health_percent > 2.0 / 3.0 {
+        if health_percentage > 0.8 {
             LevelCompletionStars::Three
-        } else if health_percent > 1.0 / 3.0 {
+        } else if health_percentage > 0.5 {
             LevelCompletionStars::Two
-        } else if health_percent > 0.0 {
+        } else if health_percentage > 0.0 {
             LevelCompletionStars::One
         } else {
             LevelCompletionStars::Zero
