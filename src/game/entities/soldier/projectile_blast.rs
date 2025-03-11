@@ -3,7 +3,7 @@ use std::time::Duration;
 use bevy::prelude::*;
 
 use crate::game::{
-    assets::sprites::entity::{EntityAssets, UtilSpriteVariant},
+    assets::images::entity::{EntityAssets, UtilSpriteVariant},
     entities::tilemap::Tilemap,
     speed::GameSpeed,
     GameState, GameTilemap,

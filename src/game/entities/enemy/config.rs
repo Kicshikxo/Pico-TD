@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-use crate::game::assets::sprites::entity::EnemySpriteVariant;
+use crate::game::assets::images::entity::EnemySpriteVariant;
 
 pub struct EnemyConfig {
     health: u32,

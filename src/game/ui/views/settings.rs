@@ -3,8 +3,8 @@ use bevy_persistent::Persistent;
 
 use crate::game::{
     assets::{
+        images::ui::{UiAssets, UiButtonSpriteVariant, UiMiscSpriteVariant},
         levels::CompletedLevels,
-        sprites::ui::{UiAssets, UiButtonSpriteVariant, UiMiscSpriteVariant},
     },
     audio::GameAudioVolume,
     ui::{
@@ -187,6 +187,20 @@ fn init_ui(
                         ))
                         .with_child(UiText::new("ui.settings.reset_progress"));
                 });
+
+            parent
+                .spawn(
+                    UiContainer::new()
+                        .with_right(Val::Px(8.0))
+                        .with_bottom(Val::Px(8.0))
+                        .absolute(),
+                )
+                .with_child(
+                    UiText::new("ui.version")
+                        .with_size(UiTextSize::Small)
+                        .with_justify(JustifyText::Right)
+                        .with_i18n_arg("version", env!("CARGO_PKG_VERSION").to_string()),
+                );
         });
 }
 

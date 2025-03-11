@@ -3,7 +3,7 @@ use std::{f32::consts::FRAC_PI_2, ops::Deref, time::Duration};
 use bevy::prelude::*;
 
 use crate::game::{
-    assets::sprites::entity::{EntityAssets, UtilSpriteVariant},
+    assets::images::entity::{EntityAssets, UtilSpriteVariant},
     entities::{
         enemy::{health::EnemyHealth, Enemy},
         soldier::projectile_blast::ProjectileBlast,

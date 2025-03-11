@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 
 use crate::game::{
-    assets::sprites::ui::{UiAssets, UiMiscSpriteVariant},
+    assets::images::ui::{UiAssets, UiMiscSpriteVariant},
     entities::{soldier::Soldier, tile::position::TilePosition},
     input::SelectedSoldier,
     player::Player,

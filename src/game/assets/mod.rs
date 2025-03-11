@@ -1,16 +1,18 @@
 pub mod audio;
+pub mod images;
 pub mod levels;
-pub mod sprites;
+pub mod utils;
 
 use bevy::prelude::*;
 use bevy_asset_loader::prelude::*;
 use bevy_embedded_assets::EmbeddedAssetPlugin;
+use utils::UtilsAssets;
 
 use crate::game::{
     assets::{
         audio::{game::GameAudioAssets, ui::UiAudioAssets},
+        images::{entity::EntityAssets, tilemap::TilemapTileAssets, ui::UiAssets},
         levels::{LevelsAssets, LevelsPlugin},
-        sprites::{entity::EntityAssets, tilemap::TilemapTileAssets, ui::UiAssets},
     },
     GameState,
 };
@@ -25,6 +27,7 @@ impl Plugin for GameAssetsPlugin {
                 .load_collection::<EntityAssets>()
                 .load_collection::<TilemapTileAssets>()
                 .load_collection::<UiAssets>()
+                .load_collection::<UtilsAssets>()
                 .load_collection::<UiAudioAssets>()
                 .load_collection::<GameAudioAssets>()
                 .load_collection::<LevelsAssets>()

@@ -3,9 +3,6 @@ use bevy_asset_loader::asset_collection::AssetCollection;
 
 #[derive(AssetCollection, Resource)]
 pub struct UiAssets {
-    #[asset(path = "embedded://fonts/Fairfax.ttf")]
-    pub primary_font: Handle<Font>,
-
     #[asset(path = "embedded://images/ui/containers.png")]
     pub ui_containers: Handle<Image>,
     #[asset(texture_atlas_layout(tile_size_x = 32, tile_size_y = 32, columns = 4, rows = 1))]

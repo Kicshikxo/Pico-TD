@@ -3,7 +3,7 @@ use bevy::prelude::*;
 use crate::game::{
     assets::{
         audio::ui::UiAudioAssets,
-        sprites::{
+        images::{
             entity::EntityAssets,
             ui::{UiAssets, UiButtonSpriteVariant, UiMiscSpriteVariant},
         },

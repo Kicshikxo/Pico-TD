@@ -1,6 +1,6 @@
 use bevy::{prelude::*, ui::widget::NodeImageMode};
 
-use crate::game::assets::sprites::ui::{UiAssets, UiContainerSpriteVariant};
+use crate::game::assets::images::ui::{UiAssets, UiContainerSpriteVariant};
 
 #[derive(Default, Clone, PartialEq)]
 pub enum UiContainerVariant {

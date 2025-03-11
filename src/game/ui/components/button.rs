@@ -8,7 +8,7 @@ use bevy_persistent::Persistent;
 use crate::game::{
     assets::{
         audio::ui::UiAudioAssets,
-        sprites::ui::{UiAssets, UiButtonSpriteVariant},
+        images::ui::{UiAssets, UiButtonSpriteVariant},
     },
     audio::{GameAudio, GameAudioVolume},
 };

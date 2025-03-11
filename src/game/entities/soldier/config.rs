@@ -1,7 +1,7 @@
 use std::time::Duration;
 
 use crate::game::{
-    assets::sprites::entity::SoldierSpriteVariant, entities::soldier::projectile::ProjectileVariant,
+    assets::images::entity::SoldierSpriteVariant, entities::soldier::projectile::ProjectileVariant,
 };
 
 pub struct SoldierConfig {

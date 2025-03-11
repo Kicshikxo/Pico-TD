@@ -10,8 +10,8 @@ use rfd::{AsyncFileDialog, MessageDialog, MessageLevel};
 use crate::game::{
     assets::{
         audio::ui::UiAudioAssets,
+        images::ui::{UiAssets, UiButtonSpriteVariant, UiMiscSpriteVariant},
         levels::{CompletedLevels, Level, LevelCompletionStars, LevelsAssets},
-        sprites::ui::{UiAssets, UiButtonSpriteVariant, UiMiscSpriteVariant},
     },
     audio::{GameAudio, GameAudioVolume},
     ui::{
@@ -118,10 +118,7 @@ fn init_ui(
                     ));
 
                     parent
-                        .spawn(
-                            UiContainer::secondary()
-                                .with_padding(UiRect::all(Val::Px(8.0))),
-                        )
+                        .spawn(UiContainer::secondary().with_padding(UiRect::all(Val::Px(8.0))))
                         .with_child(
                             UiText::new("ui.level_select.title").with_size(UiTextSize::Large),
                         );
@@ -165,7 +162,9 @@ fn init_ui(
                                                             UiButtonVariant::Secondary
                                                         }
                                                     })
-                                                    .with_click_audio(ui_audio_assets.level_select.clone())
+                                                    .with_click_audio(
+                                                        ui_audio_assets.level_select.clone(),
+                                                    )
                                                     .with_padding(UiRect::all(Val::Px(8.0)))
                                                     .with_aspect_ratio(1.0),
                                             ))
@@ -230,21 +229,32 @@ fn init_ui(
                                                 ));
                                             });
 
-                                        parent.spawn(UiText::new(&format!(
-                                            "level.{}",
-                                            level.get_name()
-                                        )).with_size(UiTextSize::Small));
+                                        parent.spawn(
+                                            UiText::new(&format!("level.{}", level.get_name()))
+                                                .with_size(UiTextSize::Small),
+                                        );
                                     });
                             }
                         });
 
                     parent
-                        .spawn((
-                            ButtonAction::UploadLevel,
-                            UiButton::primary(),
-                        ))
+                        .spawn((ButtonAction::UploadLevel, UiButton::primary()))
                         .with_child(UiText::new("ui.level_select.upload_level"));
                 });
+
+            parent
+                .spawn(
+                    UiContainer::new()
+                        .with_right(Val::Px(8.0))
+                        .with_bottom(Val::Px(8.0))
+                        .absolute(),
+                )
+                .with_child(
+                    UiText::new("ui.version")
+                        .with_size(UiTextSize::Small)
+                        .with_justify(JustifyText::Right)
+                        .with_i18n_arg("version", env!("CARGO_PKG_VERSION").to_string()),
+                );
         });
 }
 

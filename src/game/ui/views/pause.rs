@@ -2,7 +2,7 @@ use bevy::prelude::*;
 use bevy_persistent::Persistent;
 
 use crate::game::{
-    assets::sprites::ui::{UiAssets, UiButtonSpriteVariant},
+    assets::images::ui::{UiAssets, UiButtonSpriteVariant},
     audio::GameAudioVolume,
     ui::{
         components::{

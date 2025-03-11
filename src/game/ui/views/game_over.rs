@@ -2,8 +2,8 @@ use bevy::prelude::*;
 
 use crate::game::{
     assets::{
+        images::ui::{UiAssets, UiMiscSpriteVariant},
         levels::LevelCompletionStars,
-        sprites::ui::{UiAssets, UiMiscSpriteVariant},
     },
     player::Player,
     ui::{

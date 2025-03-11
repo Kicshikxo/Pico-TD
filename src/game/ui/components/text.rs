@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-use crate::game::{assets::sprites::ui::UiAssets, ui::i18n::I18nComponent};
+use crate::game::{assets::utils::UtilsAssets, ui::i18n::I18nComponent};
 
 #[derive(Clone, Copy, Default)]
 pub enum UiTextSize {
@@ -108,9 +108,9 @@ impl Plugin for UiTextPlugin {
 fn init_ui_text(
     mut commands: Commands,
     ui_texts: Query<(Entity, &UiText), Added<UiText>>,
-    ui_assets: Option<Res<UiAssets>>,
+    utils_assets: Option<Res<UtilsAssets>>,
 ) {
-    let Some(ui_assets) = &ui_assets else {
+    let Some(utils_assets) = &utils_assets else {
         return;
     };
 
@@ -121,7 +121,7 @@ fn init_ui_text(
                 ..default()
             },
             TextFont {
-                font: ui_assets.primary_font.clone(),
+                font: utils_assets.primary_font.clone(),
                 font_size: ui_text.size.as_f32(),
                 ..default()
             },

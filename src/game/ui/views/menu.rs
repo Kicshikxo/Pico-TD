@@ -1,7 +1,7 @@
 use bevy::{prelude::*, ui::widget::NodeImageMode};
 
 use crate::game::{
-    assets::sprites::ui::{UiAssets, UiMiscSpriteVariant},
+    assets::images::ui::{UiAssets, UiMiscSpriteVariant},
     ui::{
         components::{
             button::UiButton,
@@ -82,6 +82,20 @@ fn init_ui(mut commands: Commands, ui_assets: Res<UiAssets>) {
                         .spawn((ButtonAction::Exit, UiButton::danger()))
                         .with_child(UiText::new("ui.menu.exit_game").with_size(UiTextSize::Large));
                 });
+
+            parent
+                .spawn(
+                    UiContainer::new()
+                        .with_right(Val::Px(8.0))
+                        .with_bottom(Val::Px(8.0))
+                        .absolute(),
+                )
+                .with_child(
+                    UiText::new("ui.version")
+                        .with_size(UiTextSize::Small)
+                        .with_justify(JustifyText::Right)
+                        .with_i18n_arg("version", env!("CARGO_PKG_VERSION").to_string()),
+                );
         });
 }
 

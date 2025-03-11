@@ -5,7 +5,7 @@ use std::collections::HashMap;
 use bevy::prelude::*;
 
 use crate::game::{
-    assets::{levels::Level, sprites::tilemap::TilemapTileAssets},
+    assets::{levels::Level, images::tilemap::TilemapTileAssets},
     entities::{
         tile::{position::TilePosition, sprite::TileSprite},
         tilemap::tile::{TilemapTile, TilemapTileVariant},

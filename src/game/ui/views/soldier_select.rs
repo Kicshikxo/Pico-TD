@@ -2,7 +2,7 @@ use bevy::prelude::*;
 use bevy_persistent::Persistent;
 
 use crate::game::{
-    assets::sprites::{
+    assets::images::{
         entity::EntityAssets,
         ui::{UiAssets, UiButtonSpriteVariant, UiMiscSpriteVariant},
     },

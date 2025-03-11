@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 
 use crate::game::{
-    assets::sprites::{
+    assets::images::{
         entity::{EntityAssets, ProjectileSpriteVariant, UtilSpriteVariant},
         tilemap::{TilemapTileAssets, TilemapTileSpriteVariant},
     },
