@@ -23,18 +23,19 @@ pub enum Locale {
 impl Locale {
     pub fn to_string(&self) -> String {
         match self {
-            Locale::En => "en".to_string(),
-            Locale::Ru => "ru".to_string(),
-            Locale::Uk => "uk".to_string(),
-            Locale::De => "de".to_string(),
-            Locale::Fr => "fr".to_string(),
-            Locale::Es => "es".to_string(),
-            Locale::Pt => "pt".to_string(),
-            Locale::It => "it".to_string(),
-            Locale::Nl => "nl".to_string(),
-            Locale::Tr => "tr".to_string(),
-            Locale::Pl => "pl".to_string(),
+            Locale::En => "en",
+            Locale::Ru => "ru",
+            Locale::Uk => "uk",
+            Locale::De => "de",
+            Locale::Fr => "fr",
+            Locale::Es => "es",
+            Locale::Pt => "pt",
+            Locale::It => "it",
+            Locale::Nl => "nl",
+            Locale::Tr => "tr",
+            Locale::Pl => "pl",
         }
+        .to_string()
     }
     pub fn from_string(string: &str) -> Locale {
         match &string[0..2] {

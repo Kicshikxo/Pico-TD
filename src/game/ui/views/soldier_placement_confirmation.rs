@@ -17,15 +17,15 @@ use crate::game::{
     GameState,
 };
 
-pub struct SoldierPlacementConfirmViewUiPlugin;
+pub struct SoldierPlacementConfirmationViewUiPlugin;
 
-impl Plugin for SoldierPlacementConfirmViewUiPlugin {
+impl Plugin for SoldierPlacementConfirmationViewUiPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(OnEnter(UiState::SoldierPlacementConfirm), init_ui)
-            .add_systems(OnExit(UiState::SoldierPlacementConfirm), destroy_ui)
+        app.add_systems(OnEnter(UiState::SoldierPlacementConfirmation), init_ui)
+            .add_systems(OnExit(UiState::SoldierPlacementConfirmation), destroy_ui)
             .add_systems(
                 Update,
-                update_ui.run_if(in_state(UiState::SoldierPlacementConfirm)),
+                update_ui.run_if(in_state(UiState::SoldierPlacementConfirmation)),
             );
     }
 }
@@ -152,7 +152,7 @@ fn init_ui(
                                 .with_padding(UiRect::horizontal(Val::Px(16.0))),
                         ))
                         .with_child(
-                            UiText::new("ui.soldier_placement_confirm.confirm")
+                            UiText::new("ui.soldier_placement_confirmation.confirm")
                                 .with_size(UiTextSize::Small),
                         );
 
@@ -164,7 +164,7 @@ fn init_ui(
                                 .with_padding(UiRect::horizontal(Val::Px(16.0))),
                         ))
                         .with_child(
-                            UiText::new("ui.soldier_placement_confirm.cancel")
+                            UiText::new("ui.soldier_placement_confirmation.cancel")
                                 .with_size(UiTextSize::Small),
                         );
                 });

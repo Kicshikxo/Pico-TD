@@ -10,9 +10,9 @@ pub struct GameUiPlugin;
 
 impl Plugin for GameUiPlugin {
     fn build(&self, app: &mut App) {
-        app.add_plugins((I18nPlugin, ComponentsUiPlugin, ViewsUiPlugin));
-
         app.init_state::<UiState>();
+
+        app.add_plugins((I18nPlugin, ComponentsUiPlugin, ViewsUiPlugin));
     }
 }
 
@@ -25,7 +25,7 @@ pub enum UiState {
     Settings,
     InGame,
     SoldierSelect,
-    SoldierPlacementConfirm,
+    SoldierPlacementConfirmation,
     SoldierInfo,
     Pause,
     GameOver,

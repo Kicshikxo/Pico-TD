@@ -258,7 +258,7 @@ ui.soldier_select.price:
     tr: "%{price}$"
     pl: "%{price}$"
 
-ui.soldier_placement_confirm.confirm:
+ui.soldier_placement_confirmation.confirm:
     en: "Confirm"
     ru: "Подтвердить"
     uk: "Підтвердити"
@@ -270,7 +270,7 @@ ui.soldier_placement_confirm.confirm:
     nl: "Bevestigen"
     tr: "Onayla"
     pl: "Potwierdzenie"
-ui.soldier_placement_confirm.cancel:
+ui.soldier_placement_confirmation.cancel:
     en: "Cancel"
     ru: "Отмена"
     uk: "Скасувати"

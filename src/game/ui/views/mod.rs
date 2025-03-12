@@ -5,7 +5,7 @@ pub mod menu;
 pub mod pause;
 pub mod settings;
 pub mod soldier_info;
-pub mod soldier_placement_confirm;
+pub mod soldier_placement_confirmation;
 pub mod soldier_select;
 
 use bevy::prelude::*;
@@ -14,7 +14,7 @@ use crate::game::ui::views::{
     game_over::GameOverViewUiPlugin, in_game::InGameViewUiPlugin,
     level_select::LevelSelectViewUiPlugin, menu::MenuViewUiPlugin, pause::PauseViewUiPlugin,
     settings::SettingsViewUiPlugin, soldier_info::SoldierInfoViewUiPlugin,
-    soldier_placement_confirm::SoldierPlacementConfirmViewUiPlugin,
+    soldier_placement_confirmation::SoldierPlacementConfirmationViewUiPlugin,
     soldier_select::SoldierSelectViewUiPlugin,
 };
 
@@ -28,7 +28,7 @@ impl Plugin for ViewsUiPlugin {
             SettingsViewUiPlugin,
             InGameViewUiPlugin,
             SoldierSelectViewUiPlugin,
-            SoldierPlacementConfirmViewUiPlugin,
+            SoldierPlacementConfirmationViewUiPlugin,
             SoldierInfoViewUiPlugin,
             PauseViewUiPlugin,
             GameOverViewUiPlugin,

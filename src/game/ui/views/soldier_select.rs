@@ -454,7 +454,7 @@ fn update_ui(
                         next_game_state.set(GameState::InGame);
                     }
                     SoldierPlacement::WithConfirmation => {
-                        next_ui_state.set(UiState::SoldierPlacementConfirm);
+                        next_ui_state.set(UiState::SoldierPlacementConfirmation);
                     }
                 }
             }
