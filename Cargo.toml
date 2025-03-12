@@ -27,7 +27,7 @@ sys-locale = { version = "0.3.2", features = ["js"] }
 bevy-persistent = { version = "0.7.0", features = ["ron"] }
 directories = { version = "6.0.0" }
 
-rfd = { version = "0.15.2", default-features = false, features = ["gtk3"] }
+rfd = { version = "0.15.3", default-features = false, features = ["gtk3"] }
 log = { version = "0.4.26", features = [
     "max_level_debug",
     "release_max_level_warn",
