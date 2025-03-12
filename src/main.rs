@@ -32,6 +32,7 @@ fn main() {
                             ..default()
                         },
                         fit_canvas_to_parent: true,
+                        #[cfg(not(debug_assertions))]
                         canvas: Some("#pico-td".into()),
                         window_theme: Some(WindowTheme::Dark),
                         #[cfg(not(target_os = "windows"))]
