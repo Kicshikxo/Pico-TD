@@ -220,7 +220,6 @@ fn update_ui_button(
         >,
         Query<(&mut UiButton, &mut ImageNode)>,
     )>,
-    touches: Res<Touches>,
     game_audio: Query<Entity, With<GameAudio>>,
     game_audio_volume: Res<Persistent<GameAudioVolume>>,
     ui_audio_assets: Option<Res<UiAudioAssets>>,
@@ -236,18 +235,17 @@ fn update_ui_button(
             };
         }
 
-        *ui_button_interaction =
-            if *interaction == Interaction::Hovered || touches.any_just_released() {
-                if ui_button.get_previous_interaction() == Interaction::Pressed {
-                    UiButtonInteraction::Clicked
-                } else {
-                    UiButtonInteraction::Hovered
-                }
-            } else if *interaction == Interaction::Pressed {
-                UiButtonInteraction::Hovered
-            } else {
-                UiButtonInteraction::None
-            };
+        *ui_button_interaction = if matches!(*interaction, Interaction::Hovered | Interaction::None)
+            && ui_button.get_previous_interaction() == Interaction::Pressed
+        {
+            UiButtonInteraction::Clicked
+        } else {
+            match *interaction {
+                Interaction::Pressed => UiButtonInteraction::Hovered,
+                Interaction::Hovered => UiButtonInteraction::Hovered,
+                Interaction::None => UiButtonInteraction::None,
+            }
+        };
         ui_button.set_previous_interaction(*interaction);
 
         if *ui_button_interaction == UiButtonInteraction::Clicked {
