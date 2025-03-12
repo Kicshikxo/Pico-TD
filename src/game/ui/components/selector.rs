@@ -4,7 +4,7 @@ use crate::game::{
     assets::audio::ui::UiAudioAssets,
     ui::{
         components::{
-            button::UiButton,
+            button::{UiButton, UiButtonInteraction},
             text::{UiText, UiTextSize},
         },
         i18n::I18nComponent,
@@ -281,16 +281,17 @@ fn init_ui_selector(
 
 fn update_ui_selector(
     ui_selector_buttons_interactions: Query<
-        (&Interaction, &Parent, &UiSelectorButton),
-        Changed<Interaction>,
+        (&UiButtonInteraction, &Parent, &UiSelectorButton),
+        Changed<UiButtonInteraction>,
     >,
     mut ui_selectors: Query<(&mut UiSelector, &Children)>,
     mut ui_selector_buttons: Query<(&mut UiButton, &UiSelectorButton)>,
     mut ui_selector_texts: Query<&mut I18nComponent, With<UiSelectorText>>,
 ) {
-    for (interaction, parent, ui_selector_button_variant) in ui_selector_buttons_interactions.iter()
+    for (ui_button_interaction, parent, ui_selector_button_variant) in
+        ui_selector_buttons_interactions.iter()
     {
-        if *interaction != Interaction::Pressed {
+        if *ui_button_interaction != UiButtonInteraction::Clicked {
             continue;
         }
 

@@ -13,6 +13,14 @@ use crate::game::{
     audio::{GameAudio, GameAudioVolume},
 };
 
+#[derive(Component, Default, Clone, Copy, PartialEq)]
+pub enum UiButtonInteraction {
+    Clicked,
+    Hovered,
+    #[default]
+    None,
+}
+
 #[derive(Default, Clone, Copy, PartialEq)]
 pub enum UiButtonVariant {
     #[default]
@@ -36,7 +44,7 @@ impl UiButtonVariant {
 }
 
 #[derive(Component)]
-#[require(Node)]
+#[require(Node, UiButtonInteraction)]
 pub struct UiButton {
     variant: UiButtonVariant,
     disabled: bool,
@@ -46,8 +54,9 @@ pub struct UiButton {
     height: Val,
     padding: UiRect,
     aspect_ratio: Option<f32>,
-    update_required: bool,
     max_corner_scale: f32,
+    previous_interaction: Interaction,
+    update_required: bool,
 }
 
 impl Default for UiButton {
@@ -61,8 +70,9 @@ impl Default for UiButton {
             height: Val::Auto,
             padding: UiRect::all(Val::Px(12.0)),
             aspect_ratio: None,
-            update_required: true,
             max_corner_scale: 4.0,
+            previous_interaction: Interaction::default(),
+            update_required: true,
         }
     }
 }
@@ -132,6 +142,12 @@ impl UiButton {
         self.max_corner_scale = max_corner_scale;
         self
     }
+    fn get_previous_interaction(&self) -> Interaction {
+        self.previous_interaction
+    }
+    fn set_previous_interaction(&mut self, interaction: Interaction) {
+        self.previous_interaction = interaction;
+    }
     pub fn get_update_required(&self) -> bool {
         self.update_required
     }
@@ -193,14 +209,24 @@ fn init_ui_button(
 fn update_ui_button(
     mut commands: Commands,
     mut ui_buttons: ParamSet<(
+        Query<
+            (
+                &Interaction,
+                &mut UiButtonInteraction,
+                &mut UiButton,
+                &mut ImageNode,
+            ),
+            (Changed<Interaction>, With<UiButton>),
+        >,
         Query<(&mut UiButton, &mut ImageNode)>,
-        Query<(&Interaction, &UiButton, &mut ImageNode), (Changed<Interaction>, With<UiButton>)>,
     )>,
     game_audio: Query<Entity, With<GameAudio>>,
     game_audio_volume: Res<Persistent<GameAudioVolume>>,
     ui_audio_assets: Option<Res<UiAudioAssets>>,
 ) {
-    for (interaction, ui_button, mut image_node) in ui_buttons.p1().iter_mut() {
+    for (interaction, mut ui_button_interaction, mut ui_button, mut image_node) in
+        ui_buttons.p0().iter_mut()
+    {
         if ui_button.get_next_disabled_state() == false {
             image_node.color = match *interaction {
                 Interaction::Pressed => Color::srgb(0.9, 0.9, 0.9),
@@ -209,7 +235,20 @@ fn update_ui_button(
             };
         }
 
-        if *interaction == Interaction::Pressed {
+        *ui_button_interaction = match *interaction {
+            Interaction::Hovered => {
+                if ui_button.get_previous_interaction() == Interaction::Pressed {
+                    UiButtonInteraction::Clicked
+                } else {
+                    UiButtonInteraction::Hovered
+                }
+            }
+            Interaction::Pressed => UiButtonInteraction::Hovered,
+            Interaction::None => UiButtonInteraction::None,
+        };
+        ui_button.set_previous_interaction(*interaction);
+
+        if *ui_button_interaction == UiButtonInteraction::Clicked {
             if let Some(ui_audio_assets) = &ui_audio_assets {
                 let audio_asset = if ui_button.get_disabled() {
                     ui_audio_assets.button_click_error.clone()
@@ -231,7 +270,7 @@ fn update_ui_button(
             }
         }
     }
-    for (mut ui_button, mut image_node) in ui_buttons.p0().iter_mut() {
+    for (mut ui_button, mut image_node) in ui_buttons.p1().iter_mut() {
         if ui_button.get_update_required() == true {
             let next_disabled_state = ui_button.get_next_disabled_state();
             ui_button.set_disabled(next_disabled_state);

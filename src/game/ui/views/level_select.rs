@@ -16,7 +16,7 @@ use crate::game::{
     audio::{GameAudio, GameAudioVolume},
     ui::{
         components::{
-            button::{UiButton, UiButtonVariant},
+            button::{UiButton, UiButtonInteraction, UiButtonVariant},
             container::UiContainer,
             text::{UiText, UiTextSize},
         },
@@ -265,7 +265,10 @@ fn destroy_ui(mut commands: Commands, query: Query<Entity, With<RootUiComponent>
 }
 
 fn update_ui(
-    interaction_query: Query<(&Interaction, &ButtonAction), (Changed<Interaction>, With<UiButton>)>,
+    interaction_query: Query<
+        (&UiButtonInteraction, &ButtonAction),
+        (Changed<UiButtonInteraction>, With<UiButton>),
+    >,
     keyboard_input: Res<ButtonInput<KeyCode>>,
     levels_assets: Res<LevelsAssets>,
     levels_assets_loader: Res<Assets<Level>>,
@@ -274,8 +277,8 @@ fn update_ui(
     mut next_ui_state: ResMut<NextState<UiState>>,
     mut next_game_state: ResMut<NextState<GameState>>,
 ) {
-    for (interaction, button_action) in interaction_query.iter() {
-        if *interaction != Interaction::Pressed {
+    for (ui_button_interaction, button_action) in interaction_query.iter() {
+        if *ui_button_interaction != UiButtonInteraction::Clicked {
             continue;
         }
         match button_action {

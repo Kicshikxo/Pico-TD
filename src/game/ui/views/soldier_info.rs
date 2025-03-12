@@ -16,7 +16,7 @@ use crate::game::{
     player::Player,
     ui::{
         components::{
-            button::UiButton,
+            button::{UiButton, UiButtonInteraction},
             container::UiContainer,
             selector::{UiSelector, UiSelectorItem, UiSelectorItemValue, UiSelectorSize},
             text::{UiText, UiTextSize},
@@ -428,7 +428,10 @@ fn destroy_ui(mut commands: Commands, query: Query<Entity, With<RootUiComponent>
 
 fn update_ui(
     mut commands: Commands,
-    interaction_query: Query<(&Interaction, &ButtonAction), (Changed<Interaction>, With<UiButton>)>,
+    interaction_query: Query<
+        (&UiButtonInteraction, &ButtonAction),
+        (Changed<UiButtonInteraction>, With<UiButton>),
+    >,
     keyboard_input: Res<ButtonInput<KeyCode>>,
     mut soldier_target_priority_selector: Query<
         &mut UiSelector,
@@ -458,8 +461,8 @@ fn update_ui(
             }
         }
     }
-    for (interaction, button_action) in interaction_query.iter() {
-        if *interaction != Interaction::Pressed {
+    for (ui_button_interaction, button_action) in interaction_query.iter() {
+        if *ui_button_interaction != UiButtonInteraction::Clicked {
             continue;
         }
         match button_action {
@@ -519,12 +522,15 @@ fn update_ui(
 }
 
 fn update_soldier_info(
-    interaction_query: Query<(&Interaction, &ButtonAction), (Changed<Interaction>, With<UiButton>)>,
+    interaction_query: Query<
+        (&UiButtonInteraction, &ButtonAction),
+        (Changed<UiButtonInteraction>, With<UiButton>),
+    >,
     mut soldier_info_components: Query<(&mut TextColor, &mut I18nComponent, &SoldierInfoComponent)>,
     soldiers: Query<(&Soldier, &TilePosition)>,
     selected_soldier: Res<SelectedSoldier>,
 ) {
-    for (interaction, button_action) in interaction_query.iter() {
+    for (ui_button_interaction, button_action) in interaction_query.iter() {
         if *button_action != ButtonAction::UpgradeSoldier {
             continue;
         }
@@ -541,8 +547,7 @@ fn update_soldier_info(
                 break;
             }
 
-            let show_next_level =
-                matches!(*interaction, Interaction::Hovered | Interaction::Pressed);
+            let show_next_level = *ui_button_interaction == UiButtonInteraction::Hovered;
 
             let dispayed_config = if show_next_level {
                 next_level_config

@@ -6,7 +6,7 @@ use crate::game::{
     speed::GameSpeed,
     ui::{
         components::{
-            button::UiButton,
+            button::{UiButton, UiButtonInteraction},
             container::UiContainer,
             selector::{UiSelector, UiSelectorItem, UiSelectorItemValue, UiSelectorSize},
             text::{UiText, UiTextSize},
@@ -218,7 +218,10 @@ fn destroy_ui(mut commands: Commands, query: Query<Entity, With<RootUiComponent>
 }
 
 fn update_ui(
-    interaction_query: Query<(&Interaction, &ButtonAction), (Changed<Interaction>, With<UiButton>)>,
+    interaction_query: Query<
+        (&UiButtonInteraction, &ButtonAction),
+        (Changed<UiButtonInteraction>, With<UiButton>),
+    >,
     keyboard_input: Res<ButtonInput<KeyCode>>,
     mut speed_selector: Query<&mut UiSelector, With<SpeedSelector>>,
     mut game_waves: ResMut<GameWaves>,
@@ -231,8 +234,8 @@ fn update_ui(
             game_speed.set(GameSpeed::from_f32(changed_item.value.as_f32()));
         }
     }
-    for (interaction, button_action) in interaction_query.iter() {
-        if *interaction != Interaction::Pressed {
+    for (ui_button_interaction, button_action) in interaction_query.iter() {
+        if *ui_button_interaction != UiButtonInteraction::Clicked {
             continue;
         }
         match button_action {

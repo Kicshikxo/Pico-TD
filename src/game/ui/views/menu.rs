@@ -4,7 +4,7 @@ use crate::game::{
     assets::images::ui::{UiAssets, UiMiscSpriteVariant},
     ui::{
         components::{
-            button::UiButton,
+            button::{UiButton, UiButtonInteraction},
             container::UiContainer,
             text::{UiText, UiTextSize},
         },
@@ -106,12 +106,15 @@ fn destroy_ui(mut commands: Commands, query: Query<Entity, With<RootUiComponent>
 }
 
 fn update_ui(
-    interaction_query: Query<(&Interaction, &ButtonAction), (Changed<Interaction>, With<UiButton>)>,
+    interaction_query: Query<
+        (&UiButtonInteraction, &ButtonAction),
+        (Changed<UiButtonInteraction>, With<UiButton>),
+    >,
     mut next_ui_state: ResMut<NextState<UiState>>,
     mut app_exit_events: EventWriter<AppExit>,
 ) {
-    for (interaction, button_action) in interaction_query.iter() {
-        if *interaction != Interaction::Pressed {
+    for (ui_button_interaction, button_action) in interaction_query.iter() {
+        if *ui_button_interaction != UiButtonInteraction::Clicked {
             continue;
         }
         match button_action {

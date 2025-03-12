@@ -15,7 +15,7 @@ use crate::game::{
     player::Player,
     ui::{
         components::{
-            button::UiButton,
+            button::{UiButton, UiButtonInteraction},
             container::UiContainer,
             selector::{UiSelector, UiSelectorItem, UiSelectorItemValue, UiSelectorSize},
             text::{UiText, UiTextSize},
@@ -396,7 +396,10 @@ fn destroy_ui(mut commands: Commands, query: Query<Entity, With<RootUiComponent>
 
 fn update_ui(
     mut commands: Commands,
-    interaction_query: Query<(&Interaction, &ButtonAction), (Changed<Interaction>, With<UiButton>)>,
+    interaction_query: Query<
+        (&UiButtonInteraction, &ButtonAction),
+        (Changed<UiButtonInteraction>, With<UiButton>),
+    >,
     keyboard_input: Res<ButtonInput<KeyCode>>,
     mut soldier_placement_selector: Query<&mut UiSelector, With<SoldierPlacementSelector>>,
     game_tilemap: Query<Entity, With<GameTilemap>>,
@@ -418,8 +421,8 @@ fn update_ui(
                 .unwrap();
         }
     }
-    for (interaction, button_action) in interaction_query.iter() {
-        if *interaction != Interaction::Pressed {
+    for (ui_button_interaction, button_action) in interaction_query.iter() {
+        if *ui_button_interaction != UiButtonInteraction::Clicked {
             continue;
         }
         match button_action {

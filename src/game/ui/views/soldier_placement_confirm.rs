@@ -7,7 +7,7 @@ use crate::game::{
     player::Player,
     ui::{
         components::{
-            button::UiButton,
+            button::{UiButton, UiButtonInteraction},
             container::UiContainer,
             text::{UiText, UiTextSize},
         },
@@ -134,8 +134,7 @@ fn init_ui(
                 );
 
             parent
-                .spawn((
-                    Button,
+                .spawn(
                     UiContainer::new()
                         .with_right(Val::Px(8.0))
                         .with_bottom(Val::Px(8.0))
@@ -143,7 +142,7 @@ fn init_ui(
                         .with_row_gap(Val::Px(8.0))
                         .grid()
                         .absolute(),
-                ))
+                )
                 .with_children(|parent| {
                     parent
                         .spawn((
@@ -180,7 +179,10 @@ fn destroy_ui(mut commands: Commands, query: Query<Entity, With<RootUiComponent>
 
 fn update_ui(
     mut commands: Commands,
-    interaction_query: Query<(&Interaction, &ButtonAction), (Changed<Interaction>, With<UiButton>)>,
+    interaction_query: Query<
+        (&UiButtonInteraction, &ButtonAction),
+        (Changed<UiButtonInteraction>, With<UiButton>),
+    >,
     keyboard_input: Res<ButtonInput<KeyCode>>,
     mut soldiers: Query<(Entity, &mut Soldier, &TilePosition)>,
     mut player: ResMut<Player>,
@@ -190,8 +192,8 @@ fn update_ui(
 ) {
     let mut cancel_soldier_placement = false;
 
-    for (interaction, button_action) in interaction_query.iter() {
-        if *interaction != Interaction::Pressed {
+    for (ui_button_interaction, button_action) in interaction_query.iter() {
+        if *ui_button_interaction != UiButtonInteraction::Clicked {
             continue;
         }
         match button_action {
