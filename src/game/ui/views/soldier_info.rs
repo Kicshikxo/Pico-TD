@@ -547,7 +547,10 @@ fn update_soldier_info(
                 break;
             }
 
-            let show_next_level = *ui_button_interaction == UiButtonInteraction::Hovered;
+            let show_next_level = matches!(
+                *ui_button_interaction,
+                UiButtonInteraction::Hovered | UiButtonInteraction::Clicked
+            );
 
             let dispayed_config = if show_next_level {
                 next_level_config
