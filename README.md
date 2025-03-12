@@ -101,8 +101,10 @@ cargo install wasm-bindgen-cli
 
 ```shell
 cargo build --release --target wasm32-unknown-unknown
+```
 
-wasm-bindgen --out-name pico_td --out-dir wasm --target web target/wasm32-unknown-unknown/release/pico_td.wasm
+```shell
+wasm-bindgen --out-name pico_td --out-dir wasm --target web --no-typescript target/wasm32-unknown-unknown/release/pico_td.wasm
 ```
 
 Для дополнительной оптимизации полученного файла можно использовать [wasm-opt](https://github.com/WebAssembly/binaryen).
