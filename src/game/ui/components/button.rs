@@ -236,23 +236,18 @@ fn update_ui_button(
             };
         }
 
-        *ui_button_interaction = match *interaction {
-            Interaction::Hovered => {
+        *ui_button_interaction =
+            if *interaction == Interaction::Hovered || touches.any_just_released() {
                 if ui_button.get_previous_interaction() == Interaction::Pressed {
                     UiButtonInteraction::Clicked
                 } else {
                     UiButtonInteraction::Hovered
                 }
-            }
-            Interaction::Pressed => UiButtonInteraction::Hovered,
-            Interaction::None => {
-                if touches.any_just_released() {
-                    UiButtonInteraction::Clicked
-                } else {
-                    UiButtonInteraction::None
-                }
-            }
-        };
+            } else if *interaction == Interaction::Pressed {
+                UiButtonInteraction::Hovered
+            } else {
+                UiButtonInteraction::None
+            };
         ui_button.set_previous_interaction(*interaction);
 
         if *ui_button_interaction == UiButtonInteraction::Clicked {
