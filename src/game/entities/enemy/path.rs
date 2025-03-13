@@ -53,19 +53,23 @@ struct EnemyPath {
 }
 
 impl EnemyPath {
-    fn new(path_index: usize) -> Self {
+    pub fn new(path_index: usize) -> Self {
         Self {
             path_index,
             visible: false,
         }
     }
+    pub fn with_visibility(mut self, visible: bool) -> Self {
+        self.visible = visible;
+        self
+    }
     pub fn get_path_index(&self) -> usize {
         self.path_index
     }
-    fn get_visible(&self) -> bool {
+    pub fn get_visible(&self) -> bool {
         self.visible
     }
-    fn set_visible(&mut self, value: bool) {
+    pub fn set_visible(&mut self, value: bool) {
         self.visible = value;
     }
 }
@@ -126,7 +130,7 @@ fn init_enemy_paths(
             let segment_angle = (end_position - start_position).angle_to(Vec2::X);
 
             commands.entity(game_tilemap_entity).with_child((
-                EnemyPath::new(path_index),
+                EnemyPath::new(path_index).with_visibility(path_visible),
                 Mesh2d(meshes.add(RoundedRectangle::new(
                     segment_length * game_tilemap.get_tile_size() as f32,
                     2.0,

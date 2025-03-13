@@ -54,13 +54,16 @@ impl Plugin for FireRadiusPlugin {
 fn init_fire_radius(
     mut commands: Commands,
     game_tilemap: Query<&Tilemap, With<GameTilemap>>,
-    mut fire_radii: Query<(Entity, &FireRadius, &mut Transform), Added<FireRadius>>,
-    soldiers: Query<(&Soldier, &Transform), Without<FireRadius>>,
+    mut fire_radii: Query<(Entity, &mut FireRadius, &mut Transform), Added<FireRadius>>,
+    soldiers: Query<(&Soldier, &TilePosition, &Transform), Without<FireRadius>>,
+    selected_tile: Res<SelectedTile>,
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<ColorMaterial>>,
 ) {
-    for (fire_radius_entity, fire_radius, mut fire_radius_transform) in fire_radii.iter_mut() {
-        if let Ok((soldier, soldier_transform)) = soldiers.get(fire_radius.get_soldier_entity()) {
+    for (fire_radius_entity, mut fire_radius, mut fire_radius_transform) in fire_radii.iter_mut() {
+        if let Ok((soldier, soldier_tile_position, soldier_transform)) =
+            soldiers.get(fire_radius.get_soldier_entity())
+        {
             let inner_radius =
                 soldier.get_fire_radius() * game_tilemap.single().get_tile_size() as f32;
 
@@ -83,6 +86,9 @@ fn init_fire_radius(
                     })),
                 ));
 
+            fire_radius.set_visible(
+                soldier_tile_position.as_vec2() == selected_tile.tile_position.as_vec2(),
+            );
             fire_radius_transform.translation = soldier_transform.translation.with_z(-1.0);
         }
     }
