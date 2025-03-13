@@ -6,9 +6,9 @@ use crate::game::{
         entity::EntityAssets,
         ui::{UiAssets, UiButtonSpriteVariant, UiMiscSpriteVariant},
     },
-    config::{GameConfig, SoldierPlacement},
+    config::GameConfig,
     entities::{
-        soldier::{Soldier, SoldierVariant},
+        soldier::{Soldier, SoldierPlacement, SoldierVariant},
         tile::sprite::TileSprite,
     },
     input::{SelectedSoldier, SelectedTile},

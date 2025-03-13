@@ -26,8 +26,8 @@ impl ProjectileBlast {
     pub fn get_alpha(&self) -> f32 {
         self.alpha
     }
-    pub fn set_alpha(&mut self, opacity: f32) {
-        self.alpha = opacity;
+    pub fn set_alpha(&mut self, alpha: f32) {
+        self.alpha = alpha;
     }
 }
 
@@ -61,7 +61,7 @@ fn init_projectile_blast(
                 color: Color::srgb(1.0, 1.0, 0.0),
                 custom_size: Some(
                     Vec2::splat(projectile_blast.get_radius() * 2.0)
-                        * game_tilemap.single().get_tile_size().max_element() as f32,
+                        * game_tilemap.single().get_tile_size() as f32,
                 ),
                 ..default()
             });

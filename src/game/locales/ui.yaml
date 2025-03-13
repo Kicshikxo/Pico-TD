@@ -344,6 +344,18 @@ ui.pause.title:
     nl: "Pauze"
     tr: "Duraklat"
     pl: "Pauza"
+ui.pause.enemy_path_visibility:
+    en: "Show enemy paths"
+    ru: "Отображать пути врагов"
+    uk: "Відображати шляхи ворогів"
+    de: "Gegnerwege anzeigen"
+    fr: "Afficher les chemins des ennemis"
+    es: "Mostrar caminos de enemigos"
+    pt: "Mostrar caminhos dos inimigos"
+    it: "Mostrare i percorsi dei nemici"
+    nl: "Vijandelijke paden weergeven"
+    tr: "Düşman yollarını göster"
+    pl: "Wyświetlanie ścieżek wroga"
 ui.pause.resume_game:
     en: "Resume game"
     ru: "Продолжить игру"
@@ -366,7 +378,7 @@ ui.pause.restart_level:
     pt: "Reiniciar nível"
     it: "Riavvia livello"
     nl: "Herstart niveau"
-    tr: "Bölümü yeniden başlat"
+    tr: "Bölümü tekrar başlat"
     pl: "Zrestartuj poziom"
 ui.pause.back_to_menu:
     en: "Back to menu"

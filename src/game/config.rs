@@ -5,44 +5,19 @@ use bevy_persistent::prelude::*;
 use directories::ProjectDirs;
 use serde::{Deserialize, Serialize};
 
-#[derive(Default, Clone, Copy, Serialize, Deserialize)]
-pub enum SoldierPlacement {
-    #[default]
-    WithConfirmation,
-    WithoutConfirmation,
-}
-
-impl SoldierPlacement {
-    pub fn to_str(&self) -> &'static str {
-        match self {
-            SoldierPlacement::WithConfirmation => "soldier.placement.with_confirmation",
-            SoldierPlacement::WithoutConfirmation => "soldier.placement.without_confirmation",
-        }
-    }
-    pub fn as_index(&self) -> usize {
-        match self {
-            SoldierPlacement::WithConfirmation => 0,
-            SoldierPlacement::WithoutConfirmation => 1,
-        }
-    }
-    pub fn from_index(index: usize) -> Self {
-        match index {
-            0 => SoldierPlacement::WithConfirmation,
-            1 => SoldierPlacement::WithoutConfirmation,
-            _ => SoldierPlacement::default(),
-        }
-    }
-}
+use crate::game::entities::{enemy::path::EnemyPathVisibility, soldier::SoldierPlacement};
 
 #[derive(Resource, Serialize, Deserialize)]
 pub struct GameConfig {
     soldier_placement: SoldierPlacement,
+    enemy_path_visibility: EnemyPathVisibility,
 }
 
 impl Default for GameConfig {
     fn default() -> Self {
         Self {
             soldier_placement: SoldierPlacement::default(),
+            enemy_path_visibility: EnemyPathVisibility::default(),
         }
     }
 }
@@ -53,6 +28,12 @@ impl GameConfig {
     }
     pub fn set_soldier_placement(&mut self, placement: SoldierPlacement) {
         self.soldier_placement = placement;
+    }
+    pub fn get_enemy_path_visibility(&self) -> EnemyPathVisibility {
+        self.enemy_path_visibility
+    }
+    pub fn set_enemy_path_visibility(&mut self, visibility: EnemyPathVisibility) {
+        self.enemy_path_visibility = visibility;
     }
 }
 

@@ -4,11 +4,13 @@ use bevy_persistent::Persistent;
 use crate::game::{
     assets::images::ui::{UiAssets, UiButtonSpriteVariant},
     audio::GameAudioVolume,
+    config::GameConfig,
+    entities::enemy::path::EnemyPathVisibility,
     ui::{
         components::{
             button::{UiButton, UiButtonInteraction},
             container::UiContainer,
-            selector::{UiSelector, UiSelectorItem, UiSelectorItemValue},
+            selector::{UiSelector, UiSelectorItem, UiSelectorItemValue, UiSelectorSize},
             text::{UiText, UiTextSize},
         },
         UiState,
@@ -36,6 +38,9 @@ struct SfxVolumeSelector;
 struct MusicVolumeSelector;
 
 #[derive(Component)]
+struct EnemyPathVisibilitySelector;
+
+#[derive(Component)]
 enum ButtonAction {
     Close,
     RestartLevel,
@@ -46,6 +51,7 @@ fn init_ui(
     mut commands: Commands,
     ui_assets: Res<UiAssets>,
     game_audio_volume: Res<Persistent<GameAudioVolume>>,
+    game_config: Res<Persistent<GameConfig>>,
 ) {
     commands
         .spawn((
@@ -125,6 +131,40 @@ fn init_ui(
                     ));
 
                     parent
+                        .spawn(UiContainer::new().with_row_gap(Val::Px(8.0)).column())
+                        .with_children(|parent| {
+                            parent.spawn(
+                                UiText::new("ui.pause.enemy_path_visibility")
+                                    .with_size(UiTextSize::Small),
+                            );
+
+                            parent.spawn((
+                                EnemyPathVisibilitySelector,
+                                UiSelector::new()
+                                    .with_size(UiSelectorSize::Small)
+                                    .with_options(
+                                        [
+                                            EnemyPathVisibility::PreWaveVisible,
+                                            EnemyPathVisibility::AlwaysVisible,
+                                            EnemyPathVisibility::NeverVisible,
+                                        ]
+                                        .iter()
+                                        .map(|visibility| {
+                                            UiSelectorItem::new(visibility.to_str()).with_value(
+                                                UiSelectorItemValue::Number(
+                                                    visibility.as_index() as f32
+                                                ),
+                                            )
+                                        })
+                                        .collect(),
+                                    )
+                                    .with_default_index(
+                                        game_config.get_enemy_path_visibility().as_index(),
+                                    ),
+                            ));
+                        });
+
+                    parent
                         .spawn((ButtonAction::Close, UiButton::success()))
                         .with_child(UiText::new("ui.pause.resume_game"));
 
@@ -154,7 +194,9 @@ fn update_ui(
     mut pause_selectors: ParamSet<(
         Query<&mut UiSelector, With<SfxVolumeSelector>>,
         Query<&mut UiSelector, With<MusicVolumeSelector>>,
+        Query<&mut UiSelector, With<EnemyPathVisibilitySelector>>,
     )>,
+    mut game_config: ResMut<Persistent<GameConfig>>,
     mut game_audio_volume: ResMut<Persistent<GameAudioVolume>>,
     mut next_ui_state: ResMut<NextState<UiState>>,
     mut next_game_state: ResMut<NextState<GameState>>,
@@ -173,6 +215,17 @@ fn update_ui(
             game_audio_volume
                 .update(|volume| {
                     volume.set_music_volume(changed_item.value.as_f32());
+                })
+                .unwrap();
+        }
+    }
+    for mut enemy_path_visibility_selector in pause_selectors.p2().iter_mut() {
+        if let Some(changed_item) = enemy_path_visibility_selector.get_changed_item() {
+            game_config
+                .update(|game_config| {
+                    game_config.set_enemy_path_visibility(EnemyPathVisibility::from_index(
+                        changed_item.value.as_f32() as usize,
+                    ));
                 })
                 .unwrap();
         }

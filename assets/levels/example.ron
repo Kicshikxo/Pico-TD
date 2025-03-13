@@ -3,6 +3,7 @@ LevelAsset(
     player_health: 100,
     player_money: 150,
     size: (20, 20),
+    tile_size: 16,
     map: [
         "....................",
         "###################.",

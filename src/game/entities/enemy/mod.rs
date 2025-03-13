@@ -1,6 +1,7 @@
 pub mod config;
 pub mod health;
 pub mod health_bar;
+pub mod path;
 
 use std::{
     f32::consts::{FRAC_PI_2, PI, TAU},
@@ -20,6 +21,7 @@ use crate::game::{
             },
             health::EnemyHealth,
             health_bar::{HealthBar, HealthBarPlugin},
+            path::EnemyPathPlugin,
         },
         tile::{
             movement::TileMovement,
@@ -126,7 +128,7 @@ pub struct EnemyPlugin;
 
 impl Plugin for EnemyPlugin {
     fn build(&self, app: &mut App) {
-        app.add_plugins(HealthBarPlugin);
+        app.add_plugins((HealthBarPlugin, EnemyPathPlugin));
 
         app.add_systems(PreUpdate, init_enemy);
 

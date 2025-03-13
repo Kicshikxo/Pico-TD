@@ -134,7 +134,7 @@ fn start_game(
     commands
         .spawn((
             GameTilemap,
-            Tilemap::new(selected_level.get_size(), UVec2::new(16, 16)),
+            Tilemap::new(selected_level.get_size(), selected_level.get_tile_size()),
         ))
         .with_child((
             GameBackgroundAudio,

@@ -5,7 +5,7 @@ use std::collections::HashMap;
 use bevy::prelude::*;
 
 use crate::game::{
-    assets::{levels::Level, images::tilemap::TilemapTileAssets},
+    assets::{images::tilemap::TilemapTileAssets, levels::Level},
     entities::{
         tile::{position::TilePosition, sprite::TileSprite},
         tilemap::tile::{TilemapTile, TilemapTileVariant},
@@ -18,7 +18,7 @@ use crate::game::{
 pub struct Tilemap {
     size: UVec2,
     tiles: HashMap<IVec2, Entity>,
-    tile_size: UVec2,
+    tile_size: u32,
     update_required: bool,
 }
 
@@ -27,14 +27,14 @@ impl Default for Tilemap {
         Self {
             size: UVec2::ZERO,
             tiles: HashMap::new(),
-            tile_size: UVec2::ZERO,
+            tile_size: 0,
             update_required: true,
         }
     }
 }
 
 impl Tilemap {
-    pub fn new(size: UVec2, tile_size: UVec2) -> Self {
+    pub fn new(size: UVec2, tile_size: u32) -> Self {
         Self {
             size,
             tile_size,
@@ -47,7 +47,7 @@ impl Tilemap {
     pub fn get_tiles(&self) -> &HashMap<IVec2, Entity> {
         &self.tiles
     }
-    pub fn get_tile_size(&self) -> UVec2 {
+    pub fn get_tile_size(&self) -> u32 {
         self.tile_size
     }
     pub fn set_tile(&mut self, position: IVec2, entity: Entity) {

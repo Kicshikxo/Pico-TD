@@ -80,7 +80,7 @@ fn update_selected_tile(
             .compute_matrix()
             .inverse()
             .transform_point3(
-                (cursor_position - game_tilemap.get_tile_size().as_vec2() / 2.0).extend(0.0),
+                (cursor_position - game_tilemap.get_tile_size() as f32 / 2.0).extend(0.0),
             )
             .xy();
 

@@ -46,7 +46,7 @@ impl Plugin for FireRadiusPlugin {
         );
         app.add_systems(
             PostUpdate,
-            update_fire_radius_opacity.run_if(in_state(GameState::InGame)),
+            update_fire_radius_alpha.run_if(in_state(GameState::InGame)),
         );
     }
 }
@@ -61,8 +61,8 @@ fn init_fire_radius(
 ) {
     for (fire_radius_entity, fire_radius, mut fire_radius_transform) in fire_radii.iter_mut() {
         if let Ok((soldier, soldier_transform)) = soldiers.get(fire_radius.get_soldier_entity()) {
-            let inner_radius = soldier.get_fire_radius()
-                * game_tilemap.single().get_tile_size().max_element() as f32;
+            let inner_radius =
+                soldier.get_fire_radius() * game_tilemap.single().get_tile_size() as f32;
 
             commands
                 .entity(fire_radius_entity)
@@ -117,8 +117,8 @@ fn update_fire_radius(
             soldiers.get(fire_radius.get_soldier_entity())
         {
             if soldier_tile_position.as_vec2() == selected_tile.tile_position.as_vec2() {
-                let inner_radius = soldier.get_fire_radius()
-                    * game_tilemap.single().get_tile_size().max_element() as f32;
+                let inner_radius =
+                    soldier.get_fire_radius() * game_tilemap.single().get_tile_size() as f32;
 
                 if let Some(fire_radius_mesh) = meshes.get_mut(&fire_radius_mesh_2d.0) {
                     *fire_radius_mesh = Annulus::new(inner_radius - 1.0, inner_radius)
@@ -148,7 +148,7 @@ fn update_fire_radius(
     }
 }
 
-fn update_fire_radius_opacity(
+fn update_fire_radius_alpha(
     fire_radii: Query<(&FireRadius, &MeshMaterial2d<ColorMaterial>, &Children)>,
     inner_fire_radii: Query<&MeshMaterial2d<ColorMaterial>, Without<FireRadius>>,
     mut materials: ResMut<Assets<ColorMaterial>>,

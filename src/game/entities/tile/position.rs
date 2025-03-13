@@ -42,8 +42,8 @@ impl TilePosition {
         Self::new(ivec.x as f32, ivec.y as f32)
     }
     pub fn from_tilemap_position(tilemap: &Tilemap, position: Vec2) -> Self {
-        let tile_size_x = tilemap.get_tile_size().x as f32;
-        let tile_size_y = tilemap.get_tile_size().y as f32;
+        let tile_size_x = tilemap.get_tile_size() as f32;
+        let tile_size_y = tilemap.get_tile_size() as f32;
         let tilemap_size_y = tilemap.get_size().y as f32;
 
         Self::new(
@@ -89,10 +89,10 @@ impl TilePosition {
         self.position_z
     }
     pub fn get_tilemap_x(&self, tilemap: &Tilemap) -> f32 {
-        self.position.x * tilemap.get_tile_size().x as f32
+        self.position.x * tilemap.get_tile_size() as f32
     }
     pub fn get_tilemap_y(&self, tilemap: &Tilemap) -> f32 {
-        let tile_size_y = tilemap.get_tile_size().y as f32;
+        let tile_size_y = tilemap.get_tile_size() as f32;
         let tilemap_size_y = tilemap.get_size().y as f32;
 
         (tilemap_size_y - self.position.y) * tile_size_y - tile_size_y

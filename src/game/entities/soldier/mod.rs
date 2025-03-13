@@ -11,6 +11,7 @@ use bevy::{
     prelude::*,
 };
 use bevy_persistent::Persistent;
+use serde::{Deserialize, Serialize};
 
 use crate::game::{
     assets::audio::game::GameAudioAssets,
@@ -127,6 +128,35 @@ impl SoldierTargetPriority {
             3 => SoldierTargetPriority::Weakest,
             4 => SoldierTargetPriority::Nearest,
             _ => SoldierTargetPriority::default(),
+        }
+    }
+}
+
+#[derive(Default, Clone, Copy, Serialize, Deserialize)]
+pub enum SoldierPlacement {
+    #[default]
+    WithConfirmation,
+    WithoutConfirmation,
+}
+
+impl SoldierPlacement {
+    pub fn to_str(&self) -> &'static str {
+        match self {
+            SoldierPlacement::WithConfirmation => "soldier.placement.with_confirmation",
+            SoldierPlacement::WithoutConfirmation => "soldier.placement.without_confirmation",
+        }
+    }
+    pub fn as_index(&self) -> usize {
+        match self {
+            SoldierPlacement::WithConfirmation => 0,
+            SoldierPlacement::WithoutConfirmation => 1,
+        }
+    }
+    pub fn from_index(index: usize) -> Self {
+        match index {
+            0 => SoldierPlacement::WithConfirmation,
+            1 => SoldierPlacement::WithoutConfirmation,
+            _ => SoldierPlacement::default(),
         }
     }
 }
