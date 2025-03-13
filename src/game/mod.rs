@@ -132,10 +132,7 @@ fn start_game(
     }
 
     commands
-        .spawn((
-            GameTilemap,
-            Tilemap::new(selected_level.get_size(), selected_level.get_tile_size()),
-        ))
+        .spawn((GameTilemap, Tilemap::new(selected_level.get_size(), 16)))
         .with_child((
             GameBackgroundAudio,
             AudioPlayer::new(game_audio_assets.background.clone()),

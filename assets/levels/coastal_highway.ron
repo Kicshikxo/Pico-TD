@@ -3,7 +3,6 @@ LevelAsset(
     player_health: 100,
     player_money: 300,
     size: (20, 20),
-    tile_size: 16,
     map: [
         "TTTF##.~~~~~~=~TTTTT",
         "TTTFF#.~~~~~~=~~~~~~",

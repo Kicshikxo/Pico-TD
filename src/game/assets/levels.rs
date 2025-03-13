@@ -208,7 +208,6 @@ pub struct LevelAsset {
     pub player_health: u32,
     pub player_money: u32,
     pub size: UVec2,
-    pub tile_size: u32,
     pub map: Vec<String>,
     pub tile_symbols: Option<TileSymbols>,
     pub paths: Option<Vec<Vec<Vec2>>>,
@@ -223,7 +222,6 @@ impl Default for LevelAsset {
             player_health: 0,
             player_money: 0,
             size: UVec2::default(),
-            tile_size: 0,
             map: Vec::new(),
             tile_symbols: None,
             paths: None,
@@ -249,7 +247,6 @@ pub struct Level {
     player_health: u32,
     player_money: u32,
     size: UVec2,
-    tile_size: u32,
     map: Vec<Vec<TilemapTile>>,
     paths: Vec<Vec<Vec2>>,
     waves: Vec<Wave>,
@@ -274,7 +271,6 @@ impl Level {
             player_health: level_asset.player_health,
             player_money: level_asset.player_money,
             size: level_asset.size,
-            tile_size: level_asset.tile_size,
             map,
             paths: level_asset.paths.unwrap_or_default(),
             waves: level_asset.waves.unwrap_or_default(),
@@ -314,9 +310,6 @@ impl Level {
     }
     pub fn get_size(&self) -> UVec2 {
         self.size
-    }
-    pub fn get_tile_size(&self) -> u32 {
-        self.tile_size
     }
     pub fn get_map(&self) -> &Vec<Vec<TilemapTile>> {
         &self.map
@@ -396,7 +389,6 @@ impl Default for Level {
             player_health: 0,
             player_money: 0,
             size: UVec2::default(),
-            tile_size: 0,
             map: Vec::new(),
             paths: Vec::new(),
             waves: Vec::new(),
