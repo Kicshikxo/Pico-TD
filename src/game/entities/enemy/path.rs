@@ -13,7 +13,7 @@ use crate::game::{
     GameState, GameTilemap,
 };
 
-#[derive(Default, Clone, Copy, Serialize, Deserialize)]
+#[derive(Default, Clone, Copy, PartialEq, Serialize, Deserialize)]
 pub enum EnemyPathVisibility {
     #[default]
     PreWaveVisible,
@@ -96,6 +96,7 @@ fn init_enemy_paths(
     mut enemy_paths: Query<Entity, With<EnemyPath>>,
     game_tilemap: Query<(Entity, &Tilemap), With<GameTilemap>>,
     selected_level: Res<Level>,
+    game_config: Res<Persistent<GameConfig>>,
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<ColorMaterial>>,
 ) {
@@ -112,7 +113,8 @@ fn init_enemy_paths(
             wave.get_enemies()
                 .iter()
                 .any(|wave_enemies| wave_enemies.get_path_index() == path_index)
-        });
+        }) && game_config.get_enemy_path_visibility()
+            != EnemyPathVisibility::NeverVisible;
         let path_color = Color::hsl(path_index as f32 * 60.0, 1.0, 0.67)
             .with_alpha(if path_visible { 0.5 } else { 0.0 });
 
@@ -135,7 +137,7 @@ fn init_enemy_paths(
                     alpha_mode: AlphaMode2d::Blend,
                     ..default()
                 })),
-                TilePosition::from_vec2(middle_position).with_z(path_index as f32 * 0.01),
+                TilePosition::from_vec2(middle_position).with_z(path_index as f32 * 1e-6),
                 Transform::from_rotation(Quat::from_rotation_z(segment_angle)),
             ));
         }
