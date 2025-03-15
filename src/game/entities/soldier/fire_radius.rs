@@ -64,6 +64,9 @@ fn init_fire_radius(
         if let Ok((soldier, soldier_tile_position, soldier_transform)) =
             soldiers.get(fire_radius.get_soldier_entity())
         {
+            let fire_radius_visible =
+                soldier_tile_position.as_vec2() == selected_tile.tile_position.as_vec2();
+
             let inner_radius =
                 soldier.get_fire_radius() * game_tilemap.single().get_tile_size() as f32;
 
@@ -72,7 +75,11 @@ fn init_fire_radius(
                 .insert((
                     Mesh2d(meshes.add(Annulus::new(inner_radius - 1.0, inner_radius))),
                     MeshMaterial2d(materials.add(ColorMaterial {
-                        color: Color::srgb(0.25, 0.25, 0.5).with_alpha(0.5),
+                        color: Color::srgb(0.25, 0.25, 0.5).with_alpha(if fire_radius_visible {
+                            0.5
+                        } else {
+                            0.0
+                        }),
                         alpha_mode: AlphaMode2d::Blend,
                         ..default()
                     })),
@@ -80,16 +87,18 @@ fn init_fire_radius(
                 .with_child((
                     Mesh2d(meshes.add(Circle::new(inner_radius))),
                     MeshMaterial2d(materials.add(ColorMaterial {
-                        color: Color::srgb(0.25, 0.25, 0.5).with_alpha(0.25),
+                        color: Color::srgb(0.25, 0.25, 0.5).with_alpha(if fire_radius_visible {
+                            0.25
+                        } else {
+                            0.0
+                        }),
                         alpha_mode: AlphaMode2d::Blend,
                         ..default()
                     })),
                 ));
 
-            fire_radius.set_visible(
-                soldier_tile_position.as_vec2() == selected_tile.tile_position.as_vec2(),
-            );
-            fire_radius_transform.translation = soldier_transform.translation.with_z(-1.0);
+            fire_radius.set_visible(fire_radius_visible);
+            fire_radius_transform.translation = soldier_transform.translation.with_z(1.0);
         }
     }
 }
@@ -144,7 +153,7 @@ fn update_fire_radius(
                     }
                 }
 
-                fire_radius_transform.translation = soldier_transform.translation.with_z(-1.0);
+                fire_radius_transform.translation = soldier_transform.translation.with_z(1.0);
 
                 fire_radius.set_visible(true);
             } else {

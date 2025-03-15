@@ -264,7 +264,7 @@ fn init_soldier(
         commands
             .entity(soldier_entity)
             .insert(TileSprite::new(soldier.get_variant().into()));
-        soldier_tile_position.set_z(1.0);
+        soldier_tile_position.set_z(2.0);
 
         commands
             .entity(game_tilemap.single())

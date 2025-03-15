@@ -141,7 +141,8 @@ fn init_enemy_paths(
                     alpha_mode: AlphaMode2d::Blend,
                     ..default()
                 })),
-                TilePosition::from_vec2(middle_position).with_z(path_index as f32 * 1e-6),
+                TilePosition::from_vec2(middle_position)
+                    .with_z((-1.0 + path_index as f32 * 1e-3).clamp(-1.0, 0.0)),
                 Transform::from_rotation(Quat::from_rotation_z(segment_angle)),
             ));
         }
