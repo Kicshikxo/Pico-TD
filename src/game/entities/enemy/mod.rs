@@ -20,7 +20,7 @@ use crate::game::{
                 SUBMARINE_LEVELS, TANK_LEVELS, TRUCK_LEVELS,
             },
             health::EnemyHealth,
-            health_bar::{HealthBar, HealthBarPlugin},
+            health_bar::{EnemyHealthBar, EnemyHealthBarPlugin},
             path::EnemyPathPlugin,
         },
         tile::{
@@ -128,7 +128,7 @@ pub struct EnemyPlugin;
 
 impl Plugin for EnemyPlugin {
     fn build(&self, app: &mut App) {
-        app.add_plugins((HealthBarPlugin, EnemyPathPlugin));
+        app.add_plugins((EnemyHealthBarPlugin, EnemyPathPlugin));
 
         app.add_systems(PreUpdate, init_enemy);
 
@@ -156,7 +156,7 @@ fn init_enemy(
 
         commands
             .entity(game_tilemap.single())
-            .with_child(HealthBar::new(enemy_entity));
+            .with_child(EnemyHealthBar::new(enemy_entity));
     }
 }
 
@@ -222,7 +222,7 @@ fn update_enemy_movement(
 fn update_enemy_health(
     mut commands: Commands,
     mut enemies: Query<(Entity, &Enemy, &mut EnemyHealth, &mut Sprite, &Transform), With<Enemy>>,
-    mut health_bars: Query<&mut HealthBar>,
+    mut enemy_health_bars: Query<&mut EnemyHealthBar>,
     mut player: ResMut<Player>,
     game_speed: Res<GameSpeed>,
     time: Res<Time>,
@@ -258,9 +258,9 @@ fn update_enemy_health(
         if enemy_health.get_update_required() == true {
             enemy_sprite.color = Color::srgb(1.0, 0.0, 0.0);
 
-            for mut health_bar in health_bars.iter_mut() {
-                if health_bar.get_enemy_entity() == enemy_entity {
-                    health_bar.set_update_required(true);
+            for mut enemy_health_bar in enemy_health_bars.iter_mut() {
+                if enemy_health_bar.get_enemy_entity() == enemy_entity {
+                    enemy_health_bar.set_update_required(true);
                 }
             }
 
