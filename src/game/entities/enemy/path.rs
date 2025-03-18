@@ -119,10 +119,8 @@ fn init_enemy_paths(
                 .any(|wave_enemies| wave_enemies.get_path_index() == path_index)
         }) && game_config.get_enemy_path_visibility()
             != EnemyPathVisibility::NeverVisible;
-        let path_color = Color::hsl(path_index as f32 * 60.0, 1.0, 0.67)
-            .with_alpha(if path_visible { 0.5 } else { 0.0 });
 
-        for segment in path.windows(2) {
+        for segment in path.get_points().windows(2) {
             let (start_position, end_position) = (segment[0], segment[1]);
 
             let middle_position = (start_position + end_position) / 2.0;
@@ -136,11 +134,15 @@ fn init_enemy_paths(
                     2.0,
                     1.0,
                 ))),
-                MeshMaterial2d(materials.add(ColorMaterial {
-                    color: path_color,
-                    alpha_mode: AlphaMode2d::Blend,
-                    ..default()
-                })),
+                MeshMaterial2d(
+                    materials.add(ColorMaterial {
+                        color: path
+                            .get_color()
+                            .with_alpha(if path_visible { 0.5 } else { 0.0 }),
+                        alpha_mode: AlphaMode2d::Blend,
+                        ..default()
+                    }),
+                ),
                 TilePosition::from_vec2(middle_position)
                     .with_z((-1.0 + path_index as f32 * 1e-3).clamp(-1.0, 0.0)),
                 Transform::from_rotation(Quat::from_rotation_z(segment_angle)),

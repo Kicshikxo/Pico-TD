@@ -1,5 +1,3 @@
-use std::path::Path;
-
 use bevy::prelude::*;
 use bevy_persistent::prelude::*;
 use directories::ProjectDirs;
@@ -50,7 +48,7 @@ impl Plugin for GameConfigPlugin {
                     if let Some(proj_dirs) = ProjectDirs::from("ru", "kicshikxo", "pico-td") {
                         proj_dirs.preference_dir().join("config.ron")
                     } else {
-                        Path::new("local").join("config")
+                        std::path::Path::new("local").join("config")
                     },
                 )
                 .revertible(true)

@@ -1,5 +1,3 @@
-use std::path::Path;
-
 use bevy::prelude::*;
 use bevy_persistent::prelude::*;
 use directories::ProjectDirs;
@@ -155,7 +153,7 @@ impl Plugin for I18nPlugin {
                     if let Some(proj_dirs) = ProjectDirs::from("ru", "kicshikxo", "pico-td") {
                         proj_dirs.preference_dir().join("i18n.ron")
                     } else {
-                        Path::new("local").join("i18n")
+                        std::path::Path::new("local").join("i18n")
                     },
                 )
                 .revertible(true)

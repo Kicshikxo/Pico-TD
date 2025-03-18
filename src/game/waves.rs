@@ -137,7 +137,10 @@ fn update_wave(
             commands.entity(tilemap_entity).with_child((
                 Enemy::new(wave_enemies.get_enemy_variant()),
                 TileMovement::new(
-                    selected_level.get_path(wave_enemies.get_path_index()),
+                    selected_level
+                        .get_path(wave_enemies.get_path_index())
+                        .get_points()
+                        .clone(),
                     Duration::from_secs_f32(wave_enemies.get_duration()),
                     Some(Duration::from_secs_f32(
                         wave_enemies.get_spawn_interval() * index as f32

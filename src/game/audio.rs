@@ -1,5 +1,3 @@
-use std::path::Path;
-
 use bevy::prelude::*;
 use bevy_persistent::prelude::*;
 use directories::ProjectDirs;
@@ -52,7 +50,7 @@ impl Plugin for GameAudioPlugin {
                     if let Some(proj_dirs) = ProjectDirs::from("ru", "kicshikxo", "pico-td") {
                         proj_dirs.preference_dir().join("volume.ron")
                     } else {
-                        Path::new("local").join("volume")
+                        std::path::Path::new("local").join("volume")
                     },
                 )
                 .revertible(true)

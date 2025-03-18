@@ -1,5 +1,3 @@
-use std::path::Path;
-
 use bevy::{
     asset::{io::Reader, AssetLoader, LoadContext, RenderAssetUsages},
     math::VectorSpace,
@@ -113,6 +111,21 @@ impl CompletedLevels {
     }
 }
 
+#[derive(Default, Clone, Deserialize)]
+pub struct Path {
+    color: Vec3,
+    points: Vec<Vec2>,
+}
+
+impl Path {
+    pub fn get_color(&self) -> Color {
+        LinearRgba::from_vec3(self.color).into()
+    }
+    pub fn get_points(&self) -> &Vec<Vec2> {
+        &self.points
+    }
+}
+
 #[derive(Clone, Deserialize)]
 pub struct Wave {
     reward: u32,
@@ -210,7 +223,7 @@ pub struct LevelAsset {
     pub size: UVec2,
     pub map: Vec<String>,
     pub tile_symbols: Option<TileSymbols>,
-    pub paths: Option<Vec<Vec<Vec2>>>,
+    pub paths: Option<Vec<Path>>,
     pub waves: Option<Vec<Wave>>,
     pub error: Option<String>,
 }
@@ -248,7 +261,7 @@ pub struct Level {
     player_money: u32,
     size: UVec2,
     map: Vec<Vec<TilemapTile>>,
-    paths: Vec<Vec<Vec2>>,
+    paths: Vec<Path>,
     waves: Vec<Wave>,
     error: Option<String>,
 }
@@ -321,10 +334,10 @@ impl Level {
             .cloned()
             .unwrap_or_default()
     }
-    pub fn get_paths(&self) -> &Vec<Vec<Vec2>> {
+    pub fn get_paths(&self) -> &Vec<Path> {
         &self.paths
     }
-    pub fn get_path(&self, path_index: usize) -> Vec<Vec2> {
+    pub fn get_path(&self, path_index: usize) -> Path {
         self.get_paths()
             .get(path_index)
             .cloned()
@@ -415,7 +428,7 @@ impl Plugin for LevelsPlugin {
                     if let Some(proj_dirs) = ProjectDirs::from("ru", "kicshikxo", "pico-td") {
                         proj_dirs.data_dir().join("completed_levels.ron")
                     } else {
-                        Path::new("local").join("completed_levels")
+                        std::path::Path::new("local").join("completed_levels")
                     },
                 )
                 .revertible(true)
