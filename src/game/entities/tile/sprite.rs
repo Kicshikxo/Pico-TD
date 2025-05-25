@@ -1,16 +1,16 @@
 use bevy::prelude::*;
 
 use crate::game::{
+    GameState,
     assets::images::{
         entity::{EntityAssets, ProjectileSpriteVariant, UtilSpriteVariant},
         tilemap::{TilemapTileAssets, TilemapTileSpriteVariant},
     },
     entities::{
         enemy::EnemyVariant,
-        soldier::{projectile::ProjectileVariant, SoldierVariant},
+        soldier::{SoldierVariant, projectile::ProjectileVariant},
         tilemap::tile::TilemapTileVariant,
     },
-    GameState,
 };
 
 #[derive(Clone, Copy, PartialEq)]

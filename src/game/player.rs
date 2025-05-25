@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-use crate::game::{ui::UiState, GameState};
+use crate::game::{GameState, ui::UiState};
 
 #[derive(Resource)]
 pub struct PlayerHealth {

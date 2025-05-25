@@ -2,6 +2,7 @@ use bevy::prelude::*;
 use bevy_persistent::Persistent;
 
 use crate::game::{
+    GameState, GameTilemap,
     assets::images::{
         entity::EntityAssets,
         ui::{UiAssets, UiButtonSpriteVariant, UiMiscSpriteVariant},
@@ -14,16 +15,15 @@ use crate::game::{
     input::{SelectedSoldier, SelectedTile},
     player::Player,
     ui::{
+        UiState,
         components::{
             button::{UiButton, UiButtonInteraction},
             container::UiContainer,
             selector::{UiSelector, UiSelectorItem, UiSelectorItemValue, UiSelectorSize},
             text::{UiText, UiTextSize},
         },
-        UiState,
     },
     waves::GameWaves,
-    GameState, GameTilemap,
 };
 
 pub struct SoldierSelectViewUiPlugin;
@@ -133,7 +133,7 @@ fn init_ui(
                     UiContainer::new()
                         .with_right(Val::Px(8.0))
                         .with_top(Val::Px(8.0))
-                        .with_width(Val::Auto)
+                        .auto_width()
                         .absolute(),
                 )
                 .with_child(
@@ -204,11 +204,11 @@ fn init_ui(
                                         parent
                                             .spawn(
                                                 UiContainer::new()
-                                                    .with_width(Val::Auto)
                                                     .with_height(Val::Percent(100.0))
                                                     .with_justify_content(
                                                         JustifyContent::SpaceBetween,
                                                     )
+                                                    .auto_width()
                                                     .column(),
                                             )
                                             .with_children(|parent| {
@@ -267,11 +267,11 @@ fn init_ui(
                                         parent
                                             .spawn(
                                                 UiContainer::new()
-                                                    .with_width(Val::Auto)
                                                     .with_height(Val::Percent(100.0))
                                                     .with_justify_content(
                                                         JustifyContent::SpaceBetween,
                                                     )
+                                                    .auto_width()
                                                     .column(),
                                             )
                                             .with_children(|parent| {
@@ -282,7 +282,6 @@ fn init_ui(
                                                             rust_i18n::t!(soldier_variant.to_str())
                                                                 .to_string(),
                                                         )
-                                                        .with_width(Val::Auto)
                                                         .with_size(UiTextSize::Small)
                                                         .with_justify(JustifyText::Left),
                                                 );
@@ -390,7 +389,7 @@ fn init_ui(
 
 fn destroy_ui(mut commands: Commands, query: Query<Entity, With<RootUiComponent>>) {
     for entity in query.iter() {
-        commands.entity(entity).despawn_recursive();
+        commands.entity(entity).despawn();
     }
 }
 
@@ -402,7 +401,7 @@ fn update_ui(
     >,
     keyboard_input: Res<ButtonInput<KeyCode>>,
     mut soldier_placement_selector: Query<&mut UiSelector, With<SoldierPlacementSelector>>,
-    game_tilemap: Query<Entity, With<GameTilemap>>,
+    game_tilemap: Single<Entity, With<GameTilemap>>,
     mut game_config: ResMut<Persistent<GameConfig>>,
     mut player: ResMut<Player>,
     selected_soldier: Res<SelectedSoldier>,
@@ -410,7 +409,7 @@ fn update_ui(
     mut next_ui_state: ResMut<NextState<UiState>>,
     mut next_game_state: ResMut<NextState<GameState>>,
 ) {
-    if let Ok(mut soldier_placement_selector) = soldier_placement_selector.get_single_mut() {
+    if let Ok(mut soldier_placement_selector) = soldier_placement_selector.single_mut() {
         if let Some(changed_item) = soldier_placement_selector.get_changed_item() {
             game_config
                 .update(|game_config| {
@@ -435,7 +434,7 @@ fn update_ui(
                     continue;
                 }
 
-                commands.entity(game_tilemap.single()).with_child((
+                commands.entity(game_tilemap.entity()).with_child((
                     Soldier::new(variant.clone()),
                     selected_soldier.tile_position.clone(),
                 ));

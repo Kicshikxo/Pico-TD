@@ -2,7 +2,8 @@ LevelAsset(
     name: "ring",
     player_health: 100,
     player_money: 150,
-    size: (21, 20),
+    viewport_size: Some((20, 20)),
+    map_size: (21, 20),
     map: [
         "#FTT.TT~~TTTTT~~~=~~~",
         "##FT.TT~~T###T~~~=~~~",

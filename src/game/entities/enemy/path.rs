@@ -5,12 +5,12 @@ use bevy_persistent::Persistent;
 use serde::{Deserialize, Serialize};
 
 use crate::game::{
+    GameState, GameTilemap,
     assets::levels::Level,
     config::GameConfig,
     entities::{tile::position::TilePosition, tilemap::Tilemap},
     meshes::rounded_rectangle::RoundedRectangle,
     waves::{GameWaves, WaveState},
-    GameState, GameTilemap,
 };
 
 #[derive(Default, Clone, Copy, PartialEq, Serialize, Deserialize)]
@@ -98,19 +98,17 @@ impl Plugin for EnemyPathPlugin {
 fn init_enemy_paths(
     mut commands: Commands,
     mut enemy_paths: Query<Entity, With<EnemyPath>>,
-    game_tilemap: Query<(Entity, &Tilemap), With<GameTilemap>>,
+    game_tilemap: Single<(Entity, &Tilemap), With<GameTilemap>>,
     selected_level: Res<Level>,
     game_config: Res<Persistent<GameConfig>>,
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<ColorMaterial>>,
 ) {
     for enemy_path_entity in enemy_paths.iter_mut() {
-        commands.entity(enemy_path_entity).despawn_recursive();
+        commands.entity(enemy_path_entity).despawn();
     }
 
-    let Ok((game_tilemap_entity, game_tilemap)) = game_tilemap.get_single() else {
-        return;
-    };
+    let (game_tilemap_entity, game_tilemap) = game_tilemap.into_inner();
 
     for (path_index, path) in selected_level.get_paths().iter().enumerate() {
         let path_visible = selected_level.get_wave(0).map_or(false, |wave| {

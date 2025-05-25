@@ -3,10 +3,10 @@ use std::time::Duration;
 use bevy::prelude::*;
 
 use crate::game::{
+    GameState, GameTilemap,
     assets::images::entity::{EntityAssets, UtilSpriteVariant},
     entities::tilemap::Tilemap,
     speed::GameSpeed,
-    GameState, GameTilemap,
 };
 
 #[derive(Component, Clone)]
@@ -46,7 +46,7 @@ impl Plugin for ProjectileBlastPlugin {
 
 fn init_projectile_blast(
     mut commands: Commands,
-    game_tilemap: Query<&Tilemap, With<GameTilemap>>,
+    game_tilemap: Single<&Tilemap, With<GameTilemap>>,
     mut projectile_blasts: Query<(Entity, &ProjectileBlast), Added<ProjectileBlast>>,
     entity_assets: Option<Res<EntityAssets>>,
 ) {
@@ -61,7 +61,7 @@ fn init_projectile_blast(
                 color: Color::srgb(1.0, 1.0, 0.0),
                 custom_size: Some(
                     Vec2::splat(projectile_blast.get_radius() * 2.0)
-                        * game_tilemap.single().get_tile_size() as f32,
+                        * game_tilemap.get_tile_size() as f32,
                 ),
                 ..default()
             });
@@ -79,7 +79,7 @@ fn update_projectile_blast(
         projectile_blasts.iter_mut()
     {
         if projectile_blast.get_alpha() < 1e-3 {
-            commands.entity(projectile_blast_entity).despawn_recursive();
+            commands.entity(projectile_blast_entity).despawn();
             continue;
         }
 

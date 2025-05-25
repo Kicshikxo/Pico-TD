@@ -1,19 +1,16 @@
-use bevy::{
-    audio::{PlaybackMode, Volume},
-    input::touch::TouchPhase,
-    prelude::*,
-};
+use bevy::{audio::PlaybackMode, input::touch::TouchPhase, prelude::*};
 use bevy_persistent::Persistent;
 
 use crate::game::{
     assets::audio::ui::UiAudioAssets,
     audio::{GameAudio, GameAudioVolume},
+    camera::GameCamera,
     entities::{
         soldier::{Soldier, SoldierVariant},
         tile::position::TilePosition,
         tilemap::{
-            tile::{TilemapTile, TilemapTileVariant},
             Tilemap,
+            tile::{TilemapTile, TilemapTileVariant},
         },
     },
     ui::UiState,
@@ -50,8 +47,8 @@ pub struct SelectedSoldier {
 }
 
 fn update_selected_tile(
-    main_camera: Query<(&Camera, &GlobalTransform)>,
-    game_tilemap: Query<(&Tilemap, &Transform), With<GameTilemap>>,
+    game_camera: Query<(&Camera, &GlobalTransform), With<GameCamera>>,
+    game_tilemap: Single<(&Tilemap, &Transform), With<GameTilemap>>,
     mut selected_tile: ResMut<SelectedTile>,
     mut cursor_moved_events: EventReader<CursorMoved>,
     mut touch_events: EventReader<TouchInput>,
@@ -62,12 +59,10 @@ fn update_selected_tile(
     if cursor_moved == false && touch_moved == false {
         return;
     }
-    let Ok((camera, camera_transform)) = main_camera.get_single() else {
+    let Ok((camera, camera_transform)) = game_camera.single() else {
         return;
     };
-    let Ok((game_tilemap, game_tilemap_transform)) = game_tilemap.get_single() else {
-        return;
-    };
+    let (game_tilemap, game_tilemap_transform) = game_tilemap.into_inner();
 
     selected_tile.previous_tile_position = selected_tile.tile_position;
 
@@ -103,7 +98,7 @@ fn update_selected_tile(
 
 fn update_selected_soldier(
     mut commands: Commands,
-    game_tilemap: Query<&Tilemap, With<GameTilemap>>,
+    game_tilemap: Single<&Tilemap, With<GameTilemap>>,
     tiles: Query<&TilemapTile>,
     soldiers: Query<(&Soldier, &TilePosition)>,
     selected_tile: Res<SelectedTile>,
@@ -112,7 +107,7 @@ fn update_selected_soldier(
     mouse_button_input: Res<ButtonInput<MouseButton>>,
     mut touch_events: EventReader<TouchInput>,
     ui_interaction: Query<&Interaction, (Changed<Interaction>, With<Button>)>,
-    game_audio: Query<Entity, With<GameAudio>>,
+    game_audio: Single<Entity, With<GameAudio>>,
     game_audio_volume: Res<Persistent<GameAudioVolume>>,
     ui_audio_assets: Res<UiAudioAssets>,
     mut next_ui_state: ResMut<NextState<UiState>>,
@@ -135,9 +130,6 @@ fn update_selected_soldier(
     if game_waves.is_fully_completed() == true {
         return;
     }
-    let Ok(game_tilemap) = game_tilemap.get_single() else {
-        return;
-    };
 
     if let Some(selected_tile_entity) =
         game_tilemap.get_tile(selected_tile.tile_position.as_ivec2())
@@ -168,11 +160,11 @@ fn update_selected_soldier(
     selected_soldier.tile_position = selected_tile.tile_position;
     next_game_state.set(GameState::Pause);
 
-    commands.entity(game_audio.single()).with_child((
+    commands.entity(game_audio.entity()).with_child((
         AudioPlayer::new(ui_audio_assets.tilemap_click.clone()),
         PlaybackSettings {
             mode: PlaybackMode::Remove,
-            volume: Volume::new(game_audio_volume.get_sfx_volume()),
+            volume: game_audio_volume.get_sfx_volume(),
             ..default()
         },
     ));

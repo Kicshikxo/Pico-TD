@@ -1,9 +1,9 @@
 use bevy::prelude::*;
 
 use crate::game::{
-    entities::enemy::{health::EnemyHealth, Enemy},
-    meshes::rounded_rectangle::RoundedRectangle,
     GameState,
+    entities::enemy::{Enemy, health::EnemyHealth},
+    meshes::rounded_rectangle::RoundedRectangle,
 };
 
 #[derive(Component, Clone)]
@@ -67,7 +67,7 @@ fn despawn_enemy_health_bar(
     for removed_enemy_entity in removed_enemies.read() {
         for (enemy_health_bar_entity, enemy_health_bar) in enemy_health_bars.iter() {
             if enemy_health_bar.get_enemy_entity() == removed_enemy_entity {
-                commands.entity(enemy_health_bar_entity).despawn_recursive();
+                commands.entity(enemy_health_bar_entity).despawn();
             }
         }
     }

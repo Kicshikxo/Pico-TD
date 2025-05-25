@@ -6,20 +6,18 @@ pub mod projectile_blast;
 
 use std::{ops::Deref, time::Duration};
 
-use bevy::{
-    audio::{PlaybackMode, Volume},
-    prelude::*,
-};
+use bevy::{audio::PlaybackMode, prelude::*};
 use bevy_persistent::Persistent;
 use serde::{Deserialize, Serialize};
 
 use crate::game::{
+    GameState, GameTilemap,
     assets::audio::game::GameAudioAssets,
     audio::{GameAudio, GameAudioVolume},
     entities::{
-        enemy::{health::EnemyHealth, Enemy},
+        enemy::{Enemy, health::EnemyHealth},
         soldier::{
-            config::{SoldierConfig, ROCKET_LAUNCHER_LEVELS, SNIPER_LEVELS, SOLDIER_LEVELS},
+            config::{ROCKET_LAUNCHER_LEVELS, SNIPER_LEVELS, SOLDIER_LEVELS, SoldierConfig},
             cooldown_indicator::{CooldownIndicator, CooldownIndicatorPlugin},
             fire_radius::{FireRadius, FireRadiusPlugin},
             projectile::{Projectile, ProjectilePlugin, ProjectileVariant},
@@ -32,7 +30,6 @@ use crate::game::{
         },
     },
     speed::GameSpeed,
-    {GameState, GameTilemap},
 };
 
 #[derive(Clone, Copy, PartialEq)]
@@ -257,7 +254,7 @@ impl Plugin for SoldierPlugin {
 
 fn init_soldier(
     mut commands: Commands,
-    game_tilemap: Query<Entity, With<GameTilemap>>,
+    game_tilemap: Single<Entity, With<GameTilemap>>,
     mut soldiers: Query<(Entity, &Soldier, &mut TilePosition), Added<Soldier>>,
 ) {
     for (soldier_entity, soldier, mut soldier_tile_position) in soldiers.iter_mut() {
@@ -267,11 +264,11 @@ fn init_soldier(
         soldier_tile_position.set_z(2.0);
 
         commands
-            .entity(game_tilemap.single())
+            .entity(game_tilemap.entity())
             .with_child(FireRadius::new(soldier_entity));
 
         commands
-            .entity(game_tilemap.single())
+            .entity(game_tilemap.entity())
             .with_child(CooldownIndicator::new(soldier_entity));
     }
 }
@@ -279,10 +276,10 @@ fn init_soldier(
 fn update_soldier(
     mut commands: Commands,
     mut soldiers: Query<(&mut Soldier, &TilePosition, &mut TileSprite, &mut Transform)>,
-    game_tilemap: Query<Entity, With<GameTilemap>>,
+    game_tilemap: Single<Entity, With<GameTilemap>>,
     enemies: Query<(Entity, &EnemyHealth, &TileMovement, &TilePosition), With<Enemy>>,
     projectiles: Query<&Projectile>,
-    game_audio: Query<Entity, With<GameAudio>>,
+    game_audio: Single<Entity, With<GameAudio>>,
     game_audio_volume: Res<Persistent<GameAudioVolume>>,
     game_audio_assets: Res<GameAudioAssets>,
 ) {
@@ -377,7 +374,7 @@ fn update_soldier(
 
             let projectile =
                 Projectile::new(projectile_variant, *enemy_entity, soldier.get_damage());
-            commands.entity(game_tilemap.single()).with_child((
+            commands.entity(game_tilemap.entity()).with_child((
                 projectile,
                 TileMovement::new(
                     vec![
@@ -390,14 +387,14 @@ fn update_soldier(
             ));
             projectiles.push(projectile);
 
-            commands.entity(game_audio.single()).with_child((
+            commands.entity(game_audio.entity()).with_child((
                 AudioPlayer::new(match projectile_variant {
                     ProjectileVariant::Bullet => game_audio_assets.get_random_bullet_shoot(),
                     ProjectileVariant::Rocket { .. } => game_audio_assets.get_random_rocket_shoot(),
                 }),
                 PlaybackSettings {
                     mode: PlaybackMode::Remove,
-                    volume: Volume::new(game_audio_volume.get_sfx_volume()),
+                    volume: game_audio_volume.get_sfx_volume(),
                     ..default()
                 },
             ));

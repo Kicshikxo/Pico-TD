@@ -96,7 +96,7 @@ impl Plugin for GameWavesPlugin {
 
 fn update_wave(
     mut commands: Commands,
-    game_tilemap: Query<Entity, With<GameTilemap>>,
+    game_tilemap: Single<Entity, With<GameTilemap>>,
     selected_level: Res<Level>,
     mut completed_levels: ResMut<Persistent<CompletedLevels>>,
     mut game_waves: ResMut<GameWaves>,
@@ -125,16 +125,13 @@ fn update_wave(
         }
         return;
     }
-    let Ok(tilemap_entity) = game_tilemap.get_single() else {
-        return;
-    };
     let Some(wave) = selected_level.get_wave(game_waves.get_current()) else {
         return;
     };
 
     for wave_enemies in wave.get_enemies().iter() {
         for index in 0..wave_enemies.get_count() {
-            commands.entity(tilemap_entity).with_child((
+            commands.entity(game_tilemap.entity()).with_child((
                 Enemy::new(wave_enemies.get_enemy_variant()),
                 TileMovement::new(
                     selected_level

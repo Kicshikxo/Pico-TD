@@ -3,7 +3,7 @@ mod game;
 
 use bevy::{
     prelude::*,
-    window::{EnabledButtons, PresentMode, WindowResolution, WindowTheme},
+    window::{PresentMode, WindowResolution, WindowTheme},
 };
 
 use game::GamePlugin;
@@ -24,11 +24,6 @@ fn main() {
                         resize_constraints: WindowResizeConstraints {
                             min_height: 640.0,
                             min_width: 640.0,
-                            ..default()
-                        },
-                        resizable: false,
-                        enabled_buttons: EnabledButtons {
-                            maximize: false,
                             ..default()
                         },
                         fit_canvas_to_parent: true,

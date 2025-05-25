@@ -1,13 +1,14 @@
 pub mod button;
 pub mod container;
+pub mod icon;
 pub mod selector;
 pub mod text;
 
 use bevy::prelude::*;
 
 use crate::game::ui::components::{
-    button::UiButtonPlugin, container::UiContainerPlugin, selector::UiSelectorPlugin,
-    text::UiTextPlugin,
+    button::UiButtonPlugin, container::UiContainerPlugin, icon::UiIconPlugin,
+    selector::UiSelectorPlugin, text::UiTextPlugin,
 };
 
 pub struct ComponentsUiPlugin;
@@ -19,6 +20,7 @@ impl Plugin for ComponentsUiPlugin {
             UiContainerPlugin,
             UiSelectorPlugin,
             UiTextPlugin,
+            UiIconPlugin,
         ));
     }
 }

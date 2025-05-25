@@ -3,13 +3,13 @@ use std::{f32::consts::FRAC_PI_2, ops::Deref, time::Duration};
 use bevy::prelude::*;
 
 use crate::game::{
+    GameState, GameTilemap,
     assets::images::entity::{EntityAssets, UtilSpriteVariant},
     entities::{
-        enemy::{health::EnemyHealth, Enemy},
+        enemy::{Enemy, health::EnemyHealth},
         soldier::projectile_blast::ProjectileBlast,
         tile::{movement::TileMovement, position::TilePosition, sprite::TileSprite},
     },
-    GameState, GameTilemap,
 };
 
 pub struct ProjectileVariantConfig {
@@ -132,7 +132,7 @@ fn init_projectile(
 
 fn update_projectile(
     mut commands: Commands,
-    game_tilemap: Query<Entity, With<GameTilemap>>,
+    game_tilemap: Single<Entity, With<GameTilemap>>,
     mut projectiles: Query<
         (
             &Projectile,
@@ -154,7 +154,7 @@ fn update_projectile(
     ) in projectiles.iter_mut()
     {
         if projectile_movement.get_progress() >= 1.0 {
-            commands.entity(projectile_entity).despawn_recursive();
+            commands.entity(projectile_entity).despawn();
             if let Some(radius) = projectile.get_blast_radius() {
                 for (mut enemy_health, enemy_tile_position) in enemies.iter_mut() {
                     if enemy_tile_position
@@ -165,7 +165,7 @@ fn update_projectile(
                         enemy_health.damage(projectile.get_damage());
                     }
                 }
-                commands.entity(game_tilemap.single()).with_child((
+                commands.entity(game_tilemap.entity()).with_child((
                     ProjectileBlast::new(radius),
                     TilePosition::from_vec2(projectile_tile_position.as_vec2()),
                 ));

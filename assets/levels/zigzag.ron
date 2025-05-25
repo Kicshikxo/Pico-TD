@@ -2,7 +2,8 @@ LevelAsset(
     name: "zigzag",
     player_health: 100,
     player_money: 150,
-    size: (21, 20),
+    viewport_size: Some((20, 20)),
+    map_size: (21, 20),
     map: [
         "FFF###T##TTTTF~~~TTTT",
         "#TTFFTTFTTT##F~~~~~~~",
@@ -51,7 +52,7 @@ LevelAsset(
                     (17, 12),
                     (19, 12),
                     (19, 8),
-                    (22, 8),
+                    (21, 8),
                 ],
             ),
             Path(
@@ -67,7 +68,7 @@ LevelAsset(
                     (14, 13),
                     (16, 6),
                     (18, 12),
-                    (22, 8),
+                    (21, 8),
                 ],
             ),
         ],

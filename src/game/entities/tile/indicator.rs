@@ -1,6 +1,7 @@
 use bevy::prelude::*;
 
 use crate::game::{
+    GameTilemap,
     entities::{
         soldier::Soldier,
         tile::{
@@ -8,12 +9,11 @@ use crate::game::{
             sprite::{TileSprite, TileSpriteVariant, UtilVariant},
         },
         tilemap::{
-            tile::{TilemapTile, TilemapTileVariant},
             Tilemap,
+            tile::{TilemapTile, TilemapTileVariant},
         },
     },
     input::SelectedTile,
-    GameTilemap,
 };
 
 #[derive(Component)]
@@ -47,15 +47,11 @@ fn init_tile_indicator(
 
 fn update_tile_indicator(
     mut tile_indicator: Query<(&mut TilePosition, &mut Sprite), With<TileIndicator>>,
-    game_tilemap: Query<&Tilemap, With<GameTilemap>>,
+    game_tilemap: Single<&Tilemap, With<GameTilemap>>,
     tiles: Query<&TilemapTile>,
     soldiers: Query<&TilePosition, (With<Soldier>, Without<TileIndicator>)>,
     selected_tile: Res<SelectedTile>,
 ) {
-    let Ok(game_tilemap) = game_tilemap.get_single() else {
-        return;
-    };
-
     for (mut tile_indicator_tile_position, mut tile_indicator_sprite) in tile_indicator.iter_mut() {
         tile_indicator_tile_position.set_from_vec2(selected_tile.tile_position.as_vec2());
 

@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-use crate::game::{entities::soldier::Soldier, meshes::annular_segment::AnnularSegment, GameState};
+use crate::game::{GameState, entities::soldier::Soldier, meshes::annular_segment::AnnularSegment};
 
 #[derive(Component, Clone)]
 #[require(Transform)]
@@ -63,9 +63,7 @@ fn despawn_cooldown_indicator(
     for removed_soldier_entity in removed_soldiers.read() {
         for (cooldown_indicator_entity, cooldown_indicator) in cooldown_indicators.iter() {
             if cooldown_indicator.get_soldier_entity() == removed_soldier_entity {
-                commands
-                    .entity(cooldown_indicator_entity)
-                    .despawn_recursive();
+                commands.entity(cooldown_indicator_entity).despawn();
             }
         }
     }

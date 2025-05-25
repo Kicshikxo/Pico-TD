@@ -3,12 +3,13 @@ use bevy::{prelude::*, ui::widget::NodeImageMode};
 use crate::game::{
     assets::images::ui::{UiAssets, UiMiscSpriteVariant},
     ui::{
+        UiState,
         components::{
             button::{UiButton, UiButtonInteraction},
             container::UiContainer,
+            icon::{UiIcon, UiIconVariant},
             text::{UiText, UiTextSize},
         },
-        UiState,
     },
 };
 
@@ -34,74 +35,87 @@ enum ButtonAction {
 }
 
 fn init_ui(mut commands: Commands, ui_assets: Res<UiAssets>) {
-    commands
-        .spawn((
-            RootUiComponent,
-            UiContainer::new().full().center(),
-            ImageNode {
-                image: ui_assets.ui_misc.clone(),
-                texture_atlas: Some(TextureAtlas {
-                    index: UiMiscSpriteVariant::Background as usize,
-                    layout: ui_assets.ui_misc_layout.clone(),
-                }),
-                image_mode: NodeImageMode::Tiled {
-                    tile_x: true,
-                    tile_y: true,
-                    stretch_value: 8.0,
-                },
-                ..default()
+    commands.spawn((
+        RootUiComponent,
+        UiContainer::new().full().center(),
+        ImageNode {
+            image: ui_assets.ui_misc.clone(),
+            texture_atlas: Some(TextureAtlas {
+                index: UiMiscSpriteVariant::Background as usize,
+                layout: ui_assets.ui_misc_layout.clone(),
+            }),
+            image_mode: NodeImageMode::Tiled {
+                tile_x: true,
+                tile_y: true,
+                stretch_value: 8.0,
             },
-        ))
-        .with_children(|parent| {
-            parent
-                .spawn(
-                    UiContainer::primary()
-                        .with_width(Val::Px(320.0))
-                        .with_padding(UiRect::all(Val::Px(24.0)))
-                        .with_row_gap(Val::Px(12.0))
-                        .center()
-                        .column(),
-                )
-                .with_children(|parent| {
-                    parent
-                        .spawn(UiContainer::secondary().with_padding(UiRect::all(Val::Px(8.0))))
-                        .with_child(
+            ..default()
+        },
+        children![
+            (
+                UiContainer::primary()
+                    .with_min_width(Val::Px(320.0))
+                    .with_padding(UiRect::all(Val::Px(24.0)))
+                    .with_row_gap(Val::Px(12.0))
+                    .auto_width()
+                    .center()
+                    .column(),
+                children![
+                    (
+                        UiContainer::secondary().with_padding(UiRect::all(Val::Px(8.0))),
+                        children![
                             UiText::new("ui.menu.game_title").with_size(UiTextSize::ExtraLarge),
-                        );
-
-                    parent
-                        .spawn((ButtonAction::Start, UiButton::success()))
-                        .with_child(UiText::new("ui.menu.start_game").with_size(UiTextSize::Large));
-
-                    parent
-                        .spawn((ButtonAction::Settings, UiButton::primary()))
-                        .with_child(UiText::new("ui.menu.settings").with_size(UiTextSize::Large));
-
+                        ]
+                    ),
+                    (
+                        (ButtonAction::Start, UiButton::success()),
+                        children![
+                            UiIcon::new(UiIconVariant::Play),
+                            UiText::new("ui.menu.start_game")
+                                .with_size(UiTextSize::Large)
+                                .auto_width(),
+                        ]
+                    ),
+                    (
+                        (ButtonAction::Settings, UiButton::primary()),
+                        children![
+                            UiIcon::new(UiIconVariant::Settings),
+                            UiText::new("ui.menu.settings")
+                                .with_size(UiTextSize::Large)
+                                .auto_width(),
+                        ]
+                    ),
                     #[cfg(not(target_arch = "wasm32"))]
-                    parent
-                        .spawn((ButtonAction::Exit, UiButton::danger()))
-                        .with_child(UiText::new("ui.menu.exit_game").with_size(UiTextSize::Large));
-                });
-
-            parent
-                .spawn(
-                    UiContainer::new()
-                        .with_right(Val::Px(8.0))
-                        .with_bottom(Val::Px(8.0))
-                        .absolute(),
-                )
-                .with_child(
+                    (
+                        (ButtonAction::Exit, UiButton::danger()),
+                        children![
+                            UiIcon::new(UiIconVariant::Exit),
+                            UiText::new("ui.menu.exit_game")
+                                .with_size(UiTextSize::Large)
+                                .auto_width(),
+                        ]
+                    ),
+                ]
+            ),
+            (
+                UiContainer::new()
+                    .with_right(Val::Px(8.0))
+                    .with_bottom(Val::Px(8.0))
+                    .absolute(),
+                children![
                     UiText::new("ui.version")
                         .with_size(UiTextSize::Small)
                         .with_justify(JustifyText::Right)
-                        .with_i18n_arg("version", env!("CARGO_PKG_VERSION").to_string()),
-                );
-        });
+                        .with_i18n_arg("version", env!("CARGO_PKG_VERSION").to_string())
+                ]
+            )
+        ],
+    ));
 }
 
 fn destroy_ui(mut commands: Commands, query: Query<Entity, With<RootUiComponent>>) {
     for entity in query.iter() {
-        commands.entity(entity).despawn_recursive();
+        commands.entity(entity).despawn();
     }
 }
 
@@ -125,7 +139,7 @@ fn update_ui(
                 next_ui_state.set(UiState::Settings);
             }
             ButtonAction::Exit => {
-                app_exit_events.send(AppExit::Success);
+                app_exit_events.write(AppExit::Success);
             }
         }
     }

@@ -2,7 +2,7 @@ use std::time::Duration;
 
 use bevy::prelude::*;
 
-use crate::game::{entities::tile::position::TilePosition, speed::GameSpeed, GameState};
+use crate::game::{GameState, entities::tile::position::TilePosition, speed::GameSpeed};
 
 #[derive(Component, Clone)]
 #[require(TilePosition)]

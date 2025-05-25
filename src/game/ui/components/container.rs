@@ -23,6 +23,7 @@ impl UiContainerVariant {
         }
     }
 }
+
 #[derive(Component)]
 #[require(Node)]
 pub struct UiContainer {
@@ -31,7 +32,11 @@ pub struct UiContainer {
     position_type: PositionType,
     position: UiRect,
     width: Val,
+    min_width: Val,
+    max_width: Val,
     height: Val,
+    min_height: Val,
+    max_height: Val,
     padding: UiRect,
     align_items: AlignItems,
     justify_content: JustifyContent,
@@ -50,7 +55,11 @@ impl Default for UiContainer {
             position_type: PositionType::Relative,
             position: UiRect::all(Val::Auto),
             width: Val::Percent(100.0),
+            min_width: Val::Auto,
+            max_width: Val::Auto,
             height: Val::Auto,
+            min_height: Val::Auto,
+            max_height: Val::Auto,
             padding: UiRect::all(Val::ZERO),
             align_items: AlignItems::Start,
             justify_content: JustifyContent::Start,
@@ -116,8 +125,24 @@ impl UiContainer {
         self.width = width;
         self
     }
+    pub fn with_min_width(mut self, min_width: Val) -> Self {
+        self.min_width = min_width;
+        self
+    }
+    pub fn with_max_width(mut self, max_width: Val) -> Self {
+        self.max_width = max_width;
+        self
+    }
     pub fn with_height(mut self, height: Val) -> Self {
         self.height = height;
+        self
+    }
+    pub fn with_min_height(mut self, min_height: Val) -> Self {
+        self.min_height = min_height;
+        self
+    }
+    pub fn with_max_height(mut self, max_height: Val) -> Self {
+        self.max_height = max_height;
         self
     }
     pub fn with_padding(mut self, padding: UiRect) -> Self {
@@ -161,6 +186,9 @@ impl UiContainer {
     pub fn absolute(self) -> Self {
         self.with_position_type(PositionType::Absolute)
     }
+    pub fn auto_width(self) -> Self {
+        self.with_width(Val::Auto)
+    }
     pub fn full(self) -> Self {
         self.with_width(Val::Percent(100.0))
             .with_height(Val::Percent(100.0))
@@ -200,7 +228,11 @@ fn init_ui_container(
             top: ui_container.position.top,
             bottom: ui_container.position.bottom,
             width: ui_container.width,
+            min_width: ui_container.min_width,
+            max_width: ui_container.max_width,
             height: ui_container.height,
+            min_height: ui_container.min_height,
+            max_height: ui_container.max_height,
             padding: ui_container.padding,
             align_items: ui_container.align_items,
             justify_content: ui_container.justify_content,
@@ -219,7 +251,7 @@ fn init_ui_container(
                     layout: ui_assets.ui_containers_layout.clone(),
                 }),
                 image_mode: NodeImageMode::Sliced(TextureSlicer {
-                    border: BorderRect::square(8.0),
+                    border: BorderRect::all(8.0),
                     max_corner_scale: ui_container.max_corner_scale,
                     ..default()
                 }),

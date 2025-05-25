@@ -226,76 +226,75 @@ fn init_ui_selector(
     for (ui_selector_entity, ui_selector) in ui_selectors.iter() {
         let ui_selector_size = ui_selector.size.as_f32();
 
-        commands
-            .entity(ui_selector_entity)
-            .insert(Node {
+        let current_item = ui_selector.get_current_item().unwrap();
+        let text_size = match ui_selector.size {
+            UiSelectorSize::Small => UiTextSize::Small,
+            UiSelectorSize::Medium => UiTextSize::Medium,
+            UiSelectorSize::Large => UiTextSize::Large,
+        };
+
+        commands.entity(ui_selector_entity).insert((
+            Node {
                 width: Val::Percent(100.0),
                 height: Val::Px(ui_selector_size),
                 align_items: AlignItems::Center,
                 justify_content: JustifyContent::SpaceBetween,
                 column_gap: Val::Px(8.0),
                 ..default()
-            })
-            .with_children(|parent| {
-                let current_item = ui_selector.get_current_item().unwrap();
-
-                let text_size = match ui_selector.size {
-                    UiSelectorSize::Small => UiTextSize::Small,
-                    UiSelectorSize::Medium => UiTextSize::Medium,
-                    UiSelectorSize::Large => UiTextSize::Large,
-                };
-
-                parent
-                    .spawn((
-                        UiSelectorButton::Decrease,
-                        UiButton::secondary()
-                            .with_click_audio(ui_audio_assets.selector_click.clone())
-                            .with_width(Val::Px(ui_selector_size))
-                            .with_height(Val::Px(ui_selector_size))
-                            .with_padding(UiRect::ZERO)
-                            .with_aspect_ratio(1.0),
-                    ))
-                    .with_child(UiText::new("<").with_size(text_size.clone()).without_i18n());
-                parent.spawn((
+            },
+            children![
+                (
+                    UiSelectorButton::Decrease,
+                    UiButton::secondary()
+                        .with_click_audio(ui_audio_assets.selector_click.clone())
+                        .with_width(Val::Px(ui_selector_size))
+                        .with_height(Val::Px(ui_selector_size))
+                        .with_padding(UiRect::ZERO)
+                        .with_aspect_ratio(1.0),
+                    children![UiText::new("<").with_size(text_size.clone()).without_i18n()],
+                ),
+                (
                     UiSelectorText,
                     UiText::new(&current_item.text)
                         .with_size(text_size.clone())
                         .with_i18n_args(current_item.i18n_args.clone())
-                        .with_width(Val::Auto)
-                        .no_wrap(),
-                ));
-                parent
-                    .spawn((
-                        UiSelectorButton::Increase,
-                        UiButton::secondary()
-                            .with_click_audio(ui_audio_assets.selector_click.clone())
-                            .with_width(Val::Px(ui_selector_size))
-                            .with_height(Val::Px(ui_selector_size))
-                            .with_padding(UiRect::ZERO)
-                            .with_aspect_ratio(1.0),
-                    ))
-                    .with_child(UiText::new(">").with_size(text_size.clone()).without_i18n());
-            });
+                        .no_wrap()
+                        .auto_width(),
+                ),
+                (
+                    UiSelectorButton::Increase,
+                    UiButton::secondary()
+                        .with_click_audio(ui_audio_assets.selector_click.clone())
+                        .with_width(Val::Px(ui_selector_size))
+                        .with_height(Val::Px(ui_selector_size))
+                        .with_padding(UiRect::ZERO)
+                        .with_aspect_ratio(1.0),
+                    children![UiText::new(">").with_size(text_size.clone()).without_i18n()],
+                ),
+            ],
+        ));
     }
 }
 
 fn update_ui_selector(
     ui_selector_buttons_interactions: Query<
-        (&UiButtonInteraction, &Parent, &UiSelectorButton),
+        (&UiButtonInteraction, &ChildOf, &UiSelectorButton),
         Changed<UiButtonInteraction>,
     >,
     mut ui_selectors: Query<(&mut UiSelector, &Children)>,
     mut ui_selector_buttons: Query<(&mut UiButton, &UiSelectorButton)>,
     mut ui_selector_texts: Query<&mut I18nComponent, With<UiSelectorText>>,
 ) {
-    for (ui_button_interaction, parent, ui_selector_button_variant) in
+    for (ui_button_interaction, child_of, ui_selector_button_variant) in
         ui_selector_buttons_interactions.iter()
     {
         if *ui_button_interaction != UiButtonInteraction::Clicked {
             continue;
         }
 
-        if let Ok((mut ui_selector, _ui_selector_children)) = ui_selectors.get_mut(parent.get()) {
+        if let Ok((mut ui_selector, _ui_selector_children)) =
+            ui_selectors.get_mut(child_of.parent())
+        {
             match ui_selector_button_variant {
                 UiSelectorButton::Decrease if ui_selector.is_previous_allowed() == true => {
                     ui_selector.select_previous();
@@ -315,7 +314,7 @@ fn update_ui_selector(
 
         for child in ui_selector_children.iter() {
             if let Ok((mut ui_selector_button, ui_selector_button_variant)) =
-                ui_selector_buttons.get_mut(*child)
+                ui_selector_buttons.get_mut(child)
             {
                 match ui_selector_button_variant {
                     UiSelectorButton::Decrease => {
@@ -328,7 +327,7 @@ fn update_ui_selector(
                     }
                 }
             }
-            if let Ok(mut ui_selector_text_i18n) = ui_selector_texts.get_mut(*child) {
+            if let Ok(mut ui_selector_text_i18n) = ui_selector_texts.get_mut(child) {
                 let current_item = ui_selector.get_current_item().unwrap();
 
                 ui_selector_text_i18n.change_i18n_key(current_item.text.clone());

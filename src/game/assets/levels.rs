@@ -1,5 +1,5 @@
 use bevy::{
-    asset::{io::Reader, AssetLoader, LoadContext, RenderAssetUsages},
+    asset::{AssetLoader, LoadContext, RenderAssetUsages, io::Reader},
     math::VectorSpace,
     prelude::*,
     render::render_resource::{Extent3d, TextureDimension, TextureFormat},
@@ -220,7 +220,8 @@ pub struct LevelAsset {
     pub name: String,
     pub player_health: u32,
     pub player_money: u32,
-    pub size: UVec2,
+    pub viewport_size: Option<UVec2>,
+    pub map_size: UVec2,
     pub map: Vec<String>,
     pub tile_symbols: Option<TileSymbols>,
     pub paths: Option<Vec<Path>>,
@@ -234,7 +235,8 @@ impl Default for LevelAsset {
             name: String::new(),
             player_health: 0,
             player_money: 0,
-            size: UVec2::default(),
+            viewport_size: None,
+            map_size: UVec2::default(),
             map: Vec::new(),
             tile_symbols: None,
             paths: None,
@@ -259,7 +261,8 @@ pub struct Level {
     name: String,
     player_health: u32,
     player_money: u32,
-    size: UVec2,
+    viewport_size: Option<UVec2>,
+    map_size: UVec2,
     map: Vec<Vec<TilemapTile>>,
     paths: Vec<Path>,
     waves: Vec<Wave>,
@@ -283,7 +286,8 @@ impl Level {
             name: level_asset.name,
             player_health: level_asset.player_health,
             player_money: level_asset.player_money,
-            size: level_asset.size,
+            viewport_size: level_asset.viewport_size,
+            map_size: level_asset.map_size,
             map,
             paths: level_asset.paths.unwrap_or_default(),
             waves: level_asset.waves.unwrap_or_default(),
@@ -293,11 +297,11 @@ impl Level {
     pub fn from_source(source: &str) -> Self {
         let level_asset = match ron::from_str::<LevelAsset>(source) {
             Ok(asset) => {
-                if asset.map.len() < asset.size.y as usize
+                if asset.map.len() < asset.map_size.y as usize
                     || asset
                         .map
                         .iter()
-                        .any(|row| row.len() < asset.size.x as usize)
+                        .any(|row| row.len() < asset.map_size.x as usize)
                 {
                     LevelAsset::error("LevelAsset error: map dimensions are incorrect".to_string())
                 } else {
@@ -321,8 +325,11 @@ impl Level {
     pub fn get_player_money(&self) -> u32 {
         self.player_money
     }
-    pub fn get_size(&self) -> UVec2 {
-        self.size
+    pub fn get_map_size(&self) -> UVec2 {
+        self.map_size
+    }
+    pub fn get_viewport_size(&self) -> Option<UVec2> {
+        self.viewport_size
     }
     pub fn get_map(&self) -> &Vec<Vec<TilemapTile>> {
         &self.map
@@ -366,8 +373,8 @@ impl Level {
     pub fn get_preview(&self) -> Image {
         let mut image = Image::new_fill(
             Extent3d {
-                width: self.size.x as u32,
-                height: self.size.y as u32,
+                width: self.get_map_size().x as u32,
+                height: self.get_map_size().y as u32,
                 depth_or_array_layers: 1,
             },
             TextureDimension::D2,
@@ -376,11 +383,8 @@ impl Level {
             RenderAssetUsages::default(),
         );
 
-        for x in 0..self.get_size().x {
-            for y in 0..self.get_size().y {
-                // if (x == 0 || x == self.size.x - 1) && (y == 0 || y == self.size.y - 1) {
-                //     continue;
-                // }
+        for x in 0..self.get_map_size().x {
+            for y in 0..self.get_map_size().y {
                 image
                     .set_color_at(
                         x,
@@ -401,7 +405,8 @@ impl Default for Level {
             name: String::new(),
             player_health: 0,
             player_money: 0,
-            size: UVec2::default(),
+            viewport_size: None,
+            map_size: UVec2::default(),
             map: Vec::new(),
             paths: Vec::new(),
             waves: Vec::new(),

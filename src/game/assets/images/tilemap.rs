@@ -220,18 +220,21 @@ impl TilemapTileAssets {
         &self,
         tiles_around: [[TilemapTileVariant; 3]; 3],
     ) -> TilemapTileSpriteVariant {
-        let [[ground_top_left, ground_top, ground_top_right], [ground_left, _, ground_right], [ground_bottom_left, ground_bottom, ground_bottom_right]] =
-            tiles_around.map(|row| {
-                row.map(|tile| {
-                    matches!(
-                        tile,
-                        TilemapTileVariant::Ground
-                            | TilemapTileVariant::Flower
-                            | TilemapTileVariant::Tree
-                            | TilemapTileVariant::Road
-                    )
-                })
-            });
+        let [
+            [ground_top_left, ground_top, ground_top_right],
+            [ground_left, _, ground_right],
+            [ground_bottom_left, ground_bottom, ground_bottom_right],
+        ] = tiles_around.map(|row| {
+            row.map(|tile| {
+                matches!(
+                    tile,
+                    TilemapTileVariant::Ground
+                        | TilemapTileVariant::Flower
+                        | TilemapTileVariant::Tree
+                        | TilemapTileVariant::Road
+                )
+            })
+        });
 
         match (ground_top, ground_right, ground_bottom, ground_left) {
             (true, false, false, false) => match (ground_bottom_left, ground_bottom_right) {

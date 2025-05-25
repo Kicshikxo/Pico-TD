@@ -1,6 +1,7 @@
 use bevy::prelude::*;
 
 use crate::game::{
+    GameState,
     assets::{
         audio::ui::UiAudioAssets,
         images::{
@@ -15,6 +16,7 @@ use crate::game::{
     input::{SelectedSoldier, SelectedTile},
     player::Player,
     ui::{
+        UiState,
         components::{
             button::{UiButton, UiButtonInteraction},
             container::UiContainer,
@@ -22,10 +24,8 @@ use crate::game::{
             text::{UiText, UiTextSize},
         },
         i18n::I18nComponent,
-        UiState,
     },
     waves::GameWaves,
-    GameState,
 };
 
 pub struct SoldierInfoViewUiPlugin;
@@ -150,7 +150,7 @@ fn init_ui(
                     UiContainer::new()
                         .with_right(Val::Px(8.0))
                         .with_top(Val::Px(8.0))
-                        .with_width(Val::Auto)
+                        .auto_width()
                         .absolute(),
                 )
                 .with_child(
@@ -238,7 +238,7 @@ fn init_ui(
                                     ));
 
                                 parent
-                                    .spawn(UiContainer::new().with_width(Val::Auto).column())
+                                    .spawn(UiContainer::new().auto_width().column())
                                     .with_children(|parent| {
                                         parent.spawn(
                                             UiText::new("soldier.info.name")
@@ -246,9 +246,9 @@ fn init_ui(
                                                     "name",
                                                     rust_i18n::t!(soldier.to_str()).to_string(),
                                                 )
-                                                .with_width(Val::Auto)
                                                 .with_size(UiTextSize::Small)
-                                                .with_justify(JustifyText::Left),
+                                                .with_justify(JustifyText::Left)
+                                                .auto_width(),
                                         );
 
                                         parent.spawn((
@@ -422,7 +422,7 @@ fn init_ui(
 
 fn destroy_ui(mut commands: Commands, query: Query<Entity, With<RootUiComponent>>) {
     for entity in query.iter() {
-        commands.entity(entity).despawn_recursive();
+        commands.entity(entity).despawn();
     }
 }
 
@@ -444,8 +444,7 @@ fn update_ui(
     mut next_ui_state: ResMut<NextState<UiState>>,
     mut next_game_state: ResMut<NextState<GameState>>,
 ) {
-    if let Ok(mut soldier_target_priority_selector) =
-        soldier_target_priority_selector.get_single_mut()
+    if let Ok(mut soldier_target_priority_selector) = soldier_target_priority_selector.single_mut()
     {
         if let Some(changed_item) = soldier_target_priority_selector.get_changed_item() {
             for (_soldier_entity, mut soldier, soldier_tile_position) in soldiers.iter_mut() {
@@ -503,7 +502,7 @@ fn update_ui(
                         continue;
                     }
 
-                    commands.entity(soldier_entity).despawn_recursive();
+                    commands.entity(soldier_entity).despawn();
                     player
                         .get_money_mut()
                         .increase(soldier.get_config().get_sell_price());

@@ -122,12 +122,10 @@ impl Plugin for TilePositionPlugin {
 }
 
 fn init_tile_position(
-    game_tilemap: Query<&Tilemap, With<GameTilemap>>,
+    game_tilemap: Single<&Tilemap, With<GameTilemap>>,
     mut tile_positions: Query<(&TilePosition, &mut Transform), Added<TilePosition>>,
 ) {
-    let Ok(game_tilemap) = game_tilemap.get_single() else {
-        return;
-    };
+    let game_tilemap = game_tilemap.into_inner();
     for (tile_position, mut tile_position_transform) in tile_positions.iter_mut() {
         tile_position_transform.translation = tile_position
             .get_tilemap_position(game_tilemap)
@@ -136,12 +134,10 @@ fn init_tile_position(
 }
 
 fn update_tile_position(
-    game_tilemap: Query<&Tilemap, With<GameTilemap>>,
+    game_tilemap: Single<&Tilemap, With<GameTilemap>>,
     mut tile_positions: Query<(&mut TilePosition, &mut Transform)>,
 ) {
-    let Ok(game_tilemap) = game_tilemap.get_single() else {
-        return;
-    };
+    let game_tilemap = game_tilemap.into_inner();
     for (mut tile_position, mut position_transform) in tile_positions.iter_mut() {
         if tile_position.get_update_required() == false {
             continue;

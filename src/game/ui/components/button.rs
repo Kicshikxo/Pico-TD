@@ -1,8 +1,4 @@
-use bevy::{
-    audio::{PlaybackMode, Volume},
-    prelude::*,
-    ui::widget::NodeImageMode,
-};
+use bevy::{audio::PlaybackMode, prelude::*, ui::widget::NodeImageMode};
 use bevy_persistent::Persistent;
 
 use crate::game::{
@@ -53,6 +49,7 @@ pub struct UiButton {
     width: Val,
     height: Val,
     padding: UiRect,
+    column_gap: Val,
     aspect_ratio: Option<f32>,
     max_corner_scale: f32,
     previous_interaction: Interaction,
@@ -69,6 +66,7 @@ impl Default for UiButton {
             width: Val::Percent(100.0),
             height: Val::Auto,
             padding: UiRect::all(Val::Px(12.0)),
+            column_gap: Val::Px(8.0),
             aspect_ratio: None,
             max_corner_scale: 4.0,
             previous_interaction: Interaction::default(),
@@ -134,6 +132,10 @@ impl UiButton {
         self.padding = padding;
         self
     }
+    pub fn with_column_gap(mut self, column_gap: Val) -> Self {
+        self.column_gap = column_gap;
+        self
+    }
     pub fn with_aspect_ratio(mut self, aspect_ratio: f32) -> Self {
         self.aspect_ratio = Some(aspect_ratio);
         self
@@ -185,6 +187,7 @@ fn init_ui_button(
                     padding: ui_button.padding,
                     justify_content: JustifyContent::Center,
                     align_items: AlignItems::Center,
+                    column_gap: ui_button.column_gap,
                     aspect_ratio: ui_button.aspect_ratio,
                     ..default()
                 },
@@ -195,7 +198,7 @@ fn init_ui_button(
                         layout: ui_assets.ui_buttons_layout.clone(),
                     }),
                     image_mode: NodeImageMode::Sliced(TextureSlicer {
-                        border: BorderRect::square(6.0),
+                        border: BorderRect::all(6.0),
                         max_corner_scale: ui_button.max_corner_scale,
                         ..default()
                     }),
@@ -220,7 +223,7 @@ fn update_ui_button(
         >,
         Query<(&mut UiButton, &mut ImageNode)>,
     )>,
-    game_audio: Query<Entity, With<GameAudio>>,
+    game_audio: Single<Entity, With<GameAudio>>,
     game_audio_volume: Res<Persistent<GameAudioVolume>>,
     ui_audio_assets: Option<Res<UiAudioAssets>>,
 ) {
@@ -259,11 +262,11 @@ fn update_ui_button(
                         .unwrap_or_else(|| ui_audio_assets.button_click.clone())
                 };
 
-                commands.entity(game_audio.single()).with_child((
+                commands.entity(game_audio.entity()).with_child((
                     AudioPlayer::new(audio_asset),
                     PlaybackSettings {
                         mode: PlaybackMode::Remove,
-                        volume: Volume::new(game_audio_volume.get_sfx_volume()),
+                        volume: game_audio_volume.get_sfx_volume(),
                         ..default()
                     },
                 ));

@@ -95,6 +95,9 @@ impl UiText {
         self.width = width;
         self
     }
+    pub fn auto_width(self) -> Self {
+        self.with_width(Val::Auto)
+    }
 }
 
 pub struct UiTextPlugin;

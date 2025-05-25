@@ -13,10 +13,11 @@ use bevy::prelude::*;
 use serde::Deserialize;
 
 use crate::game::{
+    GameState, GameTilemap,
     entities::{
         enemy::{
             config::{
-                EnemyConfig, BOAT_LEVELS, DRON_LEVELS, HELICOPTER_LEVELS, PLANE_LEVELS,
+                BOAT_LEVELS, DRON_LEVELS, EnemyConfig, HELICOPTER_LEVELS, PLANE_LEVELS,
                 SUBMARINE_LEVELS, TANK_LEVELS, TRUCK_LEVELS,
             },
             health::EnemyHealth,
@@ -31,7 +32,6 @@ use crate::game::{
     },
     player::Player,
     speed::GameSpeed,
-    GameState, GameTilemap,
 };
 
 #[derive(Clone, Copy, PartialEq, Deserialize)]
@@ -145,7 +145,7 @@ impl Plugin for EnemyPlugin {
 
 fn init_enemy(
     mut commands: Commands,
-    game_tilemap: Query<Entity, With<GameTilemap>>,
+    game_tilemap: Single<Entity, With<GameTilemap>>,
     enemies: Query<(Entity, &Enemy), Added<Enemy>>,
 ) {
     for (enemy_entity, enemy) in enemies.iter() {
@@ -155,7 +155,7 @@ fn init_enemy(
         ));
 
         commands
-            .entity(game_tilemap.single())
+            .entity(game_tilemap.entity())
             .with_child(EnemyHealthBar::new(enemy_entity));
     }
 }
@@ -189,7 +189,7 @@ fn update_enemy_movement(
     ) in enemies.iter_mut()
     {
         if enemy_movement.get_progress() >= 1.0 {
-            commands.entity(enemy_entity).despawn_recursive();
+            commands.entity(enemy_entity).despawn();
             player.get_health_mut().damage(enemy.get_damage());
             continue;
         }
@@ -231,7 +231,7 @@ fn update_enemy_health(
         enemies.iter_mut()
     {
         if enemy_health.get_current() == 0 {
-            commands.entity(enemy_entity).despawn_recursive();
+            commands.entity(enemy_entity).despawn();
             player.get_money_mut().increase(enemy.get_kill_reward());
             continue;
         }

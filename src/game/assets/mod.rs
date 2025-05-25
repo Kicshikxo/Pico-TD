@@ -9,12 +9,12 @@ use bevy_embedded_assets::EmbeddedAssetPlugin;
 use utils::UtilsAssets;
 
 use crate::game::{
+    GameState,
     assets::{
         audio::{game::GameAudioAssets, ui::UiAudioAssets},
         images::{entity::EntityAssets, tilemap::TilemapTileAssets, ui::UiAssets},
         levels::{LevelsAssets, LevelsPlugin},
     },
-    GameState,
 };
 
 pub struct GameAssetsPlugin;

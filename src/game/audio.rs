@@ -1,4 +1,4 @@
-use bevy::prelude::*;
+use bevy::{audio::Volume, prelude::*};
 use bevy_persistent::prelude::*;
 use directories::ProjectDirs;
 use serde::{Deserialize, Serialize};
@@ -21,14 +21,14 @@ impl Default for GameAudioVolume {
 }
 
 impl GameAudioVolume {
-    pub fn get_music_volume(&self) -> f32 {
-        self.music_volume
+    pub fn get_music_volume(&self) -> Volume {
+        Volume::Linear(self.music_volume)
     }
     pub fn set_music_volume(&mut self, volume: f32) {
         self.music_volume = volume.clamp(0.0, 1.0);
     }
-    pub fn get_sfx_volume(&self) -> f32 {
-        self.sfx_volume
+    pub fn get_sfx_volume(&self) -> Volume {
+        Volume::Linear(self.sfx_volume)
     }
     pub fn set_sfx_volume(&mut self, volume: f32) {
         self.sfx_volume = volume.clamp(0.0, 1.0);
@@ -78,31 +78,27 @@ fn despawn_game_audio(
     mut removed_audio_sinks: RemovedComponents<AudioSink>,
 ) {
     for removed_audio_sink_entity in removed_audio_sinks.read() {
-        if commands.get_entity(removed_audio_sink_entity).is_some() {
-            commands
-                .entity(removed_audio_sink_entity)
-                .despawn_recursive();
+        if commands.get_entity(removed_audio_sink_entity).is_ok() {
+            commands.entity(removed_audio_sink_entity).despawn();
         }
     }
 }
 
 fn update_game_audio_volume(
-    game_audio: Query<&Children, With<GameAudio>>,
-    audio_sinks: Query<&AudioSink>,
-    background_audio: Query<&AudioSink, With<GameBackgroundAudio>>,
+    game_audio: Single<&Children, With<GameAudio>>,
+    mut audio_sinks: Query<&mut AudioSink, Without<GameBackgroundAudio>>,
+    mut background_audio: Query<&mut AudioSink, With<GameBackgroundAudio>>,
     game_audio_volume: Res<Persistent<GameAudioVolume>>,
 ) {
-    if let Ok(game_audio_children) = game_audio.get_single() {
-        for game_audio_child in game_audio_children.iter() {
-            let Ok(game_audio_child_audio_sink) = audio_sinks.get(*game_audio_child) else {
-                continue;
-            };
+    for game_audio_child in game_audio.iter() {
+        let Ok(mut game_audio_child_audio_sink) = audio_sinks.get_mut(game_audio_child) else {
+            continue;
+        };
 
-            game_audio_child_audio_sink.set_volume(game_audio_volume.get_sfx_volume());
-        }
+        game_audio_child_audio_sink.set_volume(game_audio_volume.get_sfx_volume());
     }
 
-    if let Ok(background_audio_sink) = background_audio.get_single() {
+    if let Ok(mut background_audio_sink) = background_audio.single_mut() {
         background_audio_sink.set_volume(game_audio_volume.get_music_volume());
     }
 }

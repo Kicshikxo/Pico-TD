@@ -53,7 +53,7 @@ impl Plugin for FireRadiusPlugin {
 
 fn init_fire_radius(
     mut commands: Commands,
-    game_tilemap: Query<&Tilemap, With<GameTilemap>>,
+    game_tilemap: Single<&Tilemap, With<GameTilemap>>,
     mut fire_radii: Query<(Entity, &mut FireRadius, &mut Transform), Added<FireRadius>>,
     soldiers: Query<(&Soldier, &TilePosition, &Transform), Without<FireRadius>>,
     selected_tile: Res<SelectedTile>,
@@ -67,24 +67,20 @@ fn init_fire_radius(
             let fire_radius_visible =
                 soldier_tile_position.as_vec2() == selected_tile.tile_position.as_vec2();
 
-            let inner_radius =
-                soldier.get_fire_radius() * game_tilemap.single().get_tile_size() as f32;
+            let inner_radius = soldier.get_fire_radius() * game_tilemap.get_tile_size() as f32;
 
-            commands
-                .entity(fire_radius_entity)
-                .insert((
-                    Mesh2d(meshes.add(Annulus::new(inner_radius - 1.0, inner_radius))),
-                    MeshMaterial2d(materials.add(ColorMaterial {
-                        color: Color::srgb(0.25, 0.25, 0.5).with_alpha(if fire_radius_visible {
-                            0.5
-                        } else {
-                            0.0
-                        }),
-                        alpha_mode: AlphaMode2d::Blend,
-                        ..default()
-                    })),
-                ))
-                .with_child((
+            commands.entity(fire_radius_entity).insert((
+                Mesh2d(meshes.add(Annulus::new(inner_radius - 1.0, inner_radius))),
+                MeshMaterial2d(materials.add(ColorMaterial {
+                    color: Color::srgb(0.25, 0.25, 0.5).with_alpha(if fire_radius_visible {
+                        0.5
+                    } else {
+                        0.0
+                    }),
+                    alpha_mode: AlphaMode2d::Blend,
+                    ..default()
+                })),
+                children![(
                     Mesh2d(meshes.add(Circle::new(inner_radius))),
                     MeshMaterial2d(materials.add(ColorMaterial {
                         color: Color::srgb(0.25, 0.25, 0.5).with_alpha(if fire_radius_visible {
@@ -95,7 +91,8 @@ fn init_fire_radius(
                         alpha_mode: AlphaMode2d::Blend,
                         ..default()
                     })),
-                ));
+                )],
+            ));
 
             fire_radius.set_visible(fire_radius_visible);
             fire_radius_transform.translation = soldier_transform.translation.with_z(1.0);
@@ -111,14 +108,14 @@ fn despawn_file_radius(
     for removed_soldier_entity in removed_soldiers.read() {
         for (fire_radius_entity, fire_radius) in fire_radii.iter() {
             if fire_radius.get_soldier_entity() == removed_soldier_entity {
-                commands.entity(fire_radius_entity).despawn_recursive();
+                commands.entity(fire_radius_entity).despawn();
             }
         }
     }
 }
 
 fn update_fire_radius(
-    game_tilemap: Query<&Tilemap, With<GameTilemap>>,
+    game_tilemap: Single<&Tilemap, With<GameTilemap>>,
     soldiers: Query<(&Soldier, &TilePosition, &Transform)>,
     mut fire_radii: Query<(&mut FireRadius, &Mesh2d, &mut Transform, &Children), Without<Soldier>>,
     inner_fire_radii: Query<&Mesh2d, Without<FireRadius>>,
@@ -132,8 +129,7 @@ fn update_fire_radius(
             soldiers.get(fire_radius.get_soldier_entity())
         {
             if soldier_tile_position.as_vec2() == selected_tile.tile_position.as_vec2() {
-                let inner_radius =
-                    soldier.get_fire_radius() * game_tilemap.single().get_tile_size() as f32;
+                let inner_radius = soldier.get_fire_radius() * game_tilemap.get_tile_size() as f32;
 
                 if let Some(fire_radius_mesh) = meshes.get_mut(&fire_radius_mesh_2d.0) {
                     *fire_radius_mesh = Annulus::new(inner_radius - 1.0, inner_radius)

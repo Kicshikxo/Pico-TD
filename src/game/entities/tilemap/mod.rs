@@ -5,12 +5,12 @@ use std::collections::HashMap;
 use bevy::prelude::*;
 
 use crate::game::{
+    GameState,
     assets::{images::tilemap::TilemapTileAssets, levels::Level},
     entities::{
         tile::{position::TilePosition, sprite::TileSprite},
         tilemap::tile::{TilemapTile, TilemapTileVariant},
     },
-    GameState,
 };
 
 #[derive(Component, Clone)]
@@ -85,8 +85,8 @@ fn init_tilemap(
             return;
         }
 
-        for x in 0..selected_level.get_size().x {
-            for y in 0..selected_level.get_size().y {
+        for x in 0..selected_level.get_map_size().x {
+            for y in 0..selected_level.get_map_size().y {
                 let tilemap_tile = selected_level.get_tile(x, y);
                 let tilemap_tile_entity = commands
                     .spawn((

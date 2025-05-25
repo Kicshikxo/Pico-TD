@@ -1,5 +1,5 @@
 use bevy::{
-    audio::{PlaybackMode, Volume},
+    audio::PlaybackMode,
     prelude::*,
     tasks::{AsyncComputeTaskPool, Task},
     ui::widget::NodeImageMode,
@@ -8,6 +8,7 @@ use bevy_persistent::Persistent;
 use rfd::{AsyncFileDialog, MessageDialog, MessageLevel};
 
 use crate::game::{
+    GameState,
     assets::{
         audio::ui::UiAudioAssets,
         images::ui::{UiAssets, UiButtonSpriteVariant, UiMiscSpriteVariant},
@@ -15,14 +16,14 @@ use crate::game::{
     },
     audio::{GameAudio, GameAudioVolume},
     ui::{
+        UiState,
         components::{
             button::{UiButton, UiButtonInteraction, UiButtonVariant},
             container::UiContainer,
+            icon::{UiIcon, UiIconVariant},
             text::{UiText, UiTextSize},
         },
-        UiState,
     },
-    GameState,
 };
 
 pub struct LevelSelectViewUiPlugin;
@@ -239,7 +240,8 @@ fn init_ui(
 
                     parent
                         .spawn((ButtonAction::UploadLevel, UiButton::primary()))
-                        .with_child(UiText::new("ui.level_select.upload_level"));
+                        .with_child(UiIcon::new(UiIconVariant::Upload))
+                        .with_child(UiText::new("ui.level_select.upload_level").auto_width());
                 });
 
             parent
@@ -260,7 +262,7 @@ fn init_ui(
 
 fn destroy_ui(mut commands: Commands, query: Query<Entity, With<RootUiComponent>>) {
     for entity in query.iter() {
-        commands.entity(entity).despawn_recursive();
+        commands.entity(entity).despawn();
     }
 }
 
@@ -321,7 +323,7 @@ fn update_ui(
 
 fn uploaded_level_update(
     mut commands: Commands,
-    game_audio: Query<Entity, With<GameAudio>>,
+    game_audio: Single<Entity, With<GameAudio>>,
     game_audio_volume: Res<Persistent<GameAudioVolume>>,
     ui_audio_assets: Res<UiAudioAssets>,
     mut uploaded_level: ResMut<UploadedLevel>,
@@ -343,11 +345,11 @@ fn uploaded_level_update(
                     *selected_level = level.clone();
                     next_game_state.set(GameState::Start);
 
-                    commands.entity(game_audio.single()).with_child((
+                    commands.entity(game_audio.entity()).with_child((
                         AudioPlayer::new(ui_audio_assets.level_select.clone()),
                         PlaybackSettings {
                             mode: PlaybackMode::Remove,
-                            volume: Volume::new(game_audio_volume.get_sfx_volume()),
+                            volume: game_audio_volume.get_sfx_volume(),
                             ..default()
                         },
                     ));

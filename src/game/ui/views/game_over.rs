@@ -1,21 +1,22 @@
-use bevy::prelude::*;
+use bevy::{ecs::spawn::SpawnIter, prelude::*};
 
 use crate::game::{
+    GameState,
     assets::{
         images::ui::{UiAssets, UiMiscSpriteVariant},
         levels::LevelCompletionStars,
     },
     player::Player,
     ui::{
+        UiState,
         components::{
             button::{UiButton, UiButtonInteraction},
             container::{UiContainer, UiContainerVariant},
+            icon::{UiIcon, UiIconVariant},
             text::{UiText, UiTextSize},
         },
-        UiState,
     },
     waves::GameWaves,
-    GameState,
 };
 
 pub struct GameOverViewUiPlugin;
@@ -43,39 +44,36 @@ fn init_ui(
     player: Res<Player>,
     game_waves: Res<GameWaves>,
 ) {
-    commands
-        .spawn((
-            RootUiComponent,
-            UiContainer::new().full().center(),
-            BackgroundColor(Color::BLACK.with_alpha(0.5)),
-        ))
-        .with_children(|parent| {
-            parent
-                .spawn(
-                    UiContainer::new()
-                        .with_variant(if player.get_health().is_alive() {
-                            UiContainerVariant::Success
-                        } else {
-                            UiContainerVariant::Danger
-                        })
-                        .with_width(Val::Px(320.0))
-                        .with_padding(UiRect::all(Val::Px(24.0)).with_top(Val::Px(40.0)))
-                        .with_row_gap(Val::Px(12.0))
-                        .center()
-                        .column(),
-                )
-                .with_children(|parent| {
-                    parent
-                        .spawn((
-                            UiContainer::new()
-                                .with_top(Val::Px(-12.0))
-                                .absolute()
-                                .center(),
-                            ZIndex(1),
-                        ))
-                        .with_children(|parent| {
-                            for star_index in 1..=3 {
-                                parent.spawn((
+    commands.spawn((
+        RootUiComponent,
+        UiContainer::new().full().center(),
+        BackgroundColor(Color::BLACK.with_alpha(0.5)),
+        children![(
+            UiContainer::new()
+                .with_variant(if player.get_health().is_alive() {
+                    UiContainerVariant::Success
+                } else {
+                    UiContainerVariant::Danger
+                })
+                .with_min_width(Val::Px(320.0))
+                .with_padding(UiRect::all(Val::Px(24.0)).with_top(Val::Px(40.0)))
+                .with_row_gap(Val::Px(12.0))
+                .auto_width()
+                .center()
+                .column(),
+            children![
+                (
+                    (
+                        UiContainer::new()
+                            .with_top(Val::Px(-12.0))
+                            .absolute()
+                            .center(),
+                        ZIndex(1)
+                    ),
+                    Children::spawn(SpawnIter(
+                        (1..=3)
+                            .map(|star_index| {
+                                (
                                     UiContainer::new()
                                         .with_bottom(if star_index == 2 {
                                             Val::Px(12.0)
@@ -102,56 +100,58 @@ fn init_ui(
                                         }),
                                         ..default()
                                     },
-                                ));
-                            }
-                        });
-
-                    parent
-                        .spawn(
-                            UiContainer::secondary()
-                                .with_padding(UiRect::all(Val::Px(12.0)))
-                                .column()
-                                .center(),
-                        )
-                        .with_children(|parent| {
-                            parent.spawn(
-                                UiText::new(if player.get_health().is_alive() {
-                                    "ui.game_over.player_win"
-                                } else {
-                                    "ui.game_over.player_lose"
-                                })
-                                .with_size(UiTextSize::Large),
-                            );
-
-                            if player.get_health().is_dead() {
-                                parent.spawn(
-                                    UiText::new("ui.game_over.waves_survived")
-                                        .with_i18n_arg(
-                                            "current_wave",
-                                            game_waves.get_current().to_string(),
-                                        )
-                                        .with_i18n_arg(
-                                            "total_waves",
-                                            game_waves.get_total().saturating_add(1).to_string(),
-                                        ),
-                                );
-                            }
-                        });
-
-                    parent
-                        .spawn((ButtonAction::RetryLevel, UiButton::success()))
-                        .with_child(UiText::new("ui.game_over.retry_level"));
-
-                    parent
-                        .spawn((ButtonAction::BackToMenu, UiButton::danger()))
-                        .with_child(UiText::new("ui.game_over.back_to_menu"));
-                });
-        });
+                                )
+                            })
+                            .collect::<Vec<_>>()
+                            .into_iter()
+                    )),
+                ),
+                (
+                    UiContainer::secondary()
+                        .with_padding(UiRect::all(Val::Px(12.0)))
+                        .column()
+                        .center(),
+                    children![
+                        UiText::new(if player.get_health().is_alive() {
+                            "ui.game_over.player_win"
+                        } else {
+                            "ui.game_over.player_lose"
+                        })
+                        .with_size(UiTextSize::Large),
+                        if player.get_health().is_dead() {
+                            UiText::new("ui.game_over.waves_survived")
+                                .with_i18n_arg("current_wave", game_waves.get_current().to_string())
+                                .with_i18n_arg(
+                                    "total_waves",
+                                    game_waves.get_total().saturating_add(1).to_string(),
+                                )
+                        } else {
+                            UiText::default()
+                        }
+                    ],
+                ),
+                (
+                    (ButtonAction::RetryLevel, UiButton::success()),
+                    children![
+                        UiIcon::new(UiIconVariant::Restart),
+                        UiText::new("ui.game_over.retry_level").auto_width()
+                    ],
+                ),
+                (
+                    (ButtonAction::BackToMenu, UiButton::primary()),
+                    children![
+                        UiIcon::new(UiIconVariant::Home),
+                        UiText::new("ui.game_over.back_to_menu").auto_width()
+                    ],
+                ),
+            ],
+        ),],
+    ));
 }
 
 fn destroy_ui(mut commands: Commands, query: Query<Entity, With<RootUiComponent>>) {
     for entity in query.iter() {
-        commands.entity(entity).despawn_recursive();
+        commands.entity(entity).despawn();
     }
 }
 

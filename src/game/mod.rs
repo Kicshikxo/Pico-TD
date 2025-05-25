@@ -1,5 +1,6 @@
 pub mod assets;
 pub mod audio;
+pub mod camera;
 pub mod config;
 pub mod entities;
 pub mod input;
@@ -9,19 +10,16 @@ pub mod speed;
 pub mod ui;
 pub mod waves;
 
-use bevy::{
-    audio::{PlaybackMode, Volume},
-    prelude::*,
-    winit::WinitWindows,
-};
+use bevy::{audio::PlaybackMode, prelude::*, winit::WinitWindows};
 use bevy_persistent::Persistent;
 use winit::window::Icon;
 
 use crate::game::{
-    assets::{audio::game::GameAudioAssets, levels::Level, utils::UtilsAssets, GameAssetsPlugin},
+    assets::{GameAssetsPlugin, audio::game::GameAudioAssets, levels::Level, utils::UtilsAssets},
     audio::{GameAudioPlugin, GameAudioVolume},
+    camera::{GameCamera, GameCameraPlugin},
     config::GameConfigPlugin,
-    entities::{tile::indicator::TileIndicator, tilemap::Tilemap, GameEntitiesPlugin},
+    entities::{GameEntitiesPlugin, tile::indicator::TileIndicator, tilemap::Tilemap},
     input::GameInputPlugin,
     player::{Player, PlayerPlugin},
     speed::GameSpeed,
@@ -37,6 +35,7 @@ impl Plugin for GamePlugin {
             GameConfigPlugin,
             GameAssetsPlugin,
             GameAudioPlugin,
+            GameCameraPlugin,
             GameEntitiesPlugin,
             GameUiPlugin,
             GameWavesPlugin,
@@ -79,11 +78,7 @@ fn setup(
     mut next_ui_state: ResMut<NextState<UiState>>,
     mut next_game_state: ResMut<NextState<GameState>>,
 ) {
-    commands.spawn((
-        Camera2d::default(),
-        Msaa::Off,
-        Transform::from_scale(Vec3::new(0.5, 0.5, 1.0)),
-    ));
+    commands.spawn((GameCamera, Camera2d::default(), Msaa::Off));
 
     next_ui_state.set(UiState::Menu);
     next_game_state.set(GameState::Pause);
@@ -100,7 +95,7 @@ fn setup(
 
         winit_window.set_window_icon(
             Icon::from_rgba(
-                window_icon.data.clone(),
+                window_icon.data.clone().unwrap(),
                 window_icon.width(),
                 window_icon.height(),
             )
@@ -127,22 +122,26 @@ fn start_game(
         return;
     }
 
-    if let Ok(tilemap_entity) = game_tilemap.get_single() {
-        commands.entity(tilemap_entity).despawn_recursive();
+    if let Ok(game_tilemap_entity) = game_tilemap.single() {
+        commands.entity(game_tilemap_entity).despawn();
     }
 
-    commands
-        .spawn((GameTilemap, Tilemap::new(selected_level.get_size(), 16)))
-        .with_child((
-            GameBackgroundAudio,
-            AudioPlayer::new(game_audio_assets.background.clone()),
-            PlaybackSettings {
-                mode: PlaybackMode::Loop,
-                volume: Volume::new(game_audio_volume.get_music_volume()),
-                ..default()
-            },
-        ))
-        .with_child(TileIndicator);
+    commands.spawn((
+        GameTilemap,
+        Tilemap::new(selected_level.get_map_size(), 16),
+        children![
+            (
+                GameBackgroundAudio,
+                AudioPlayer::new(game_audio_assets.background.clone()),
+                PlaybackSettings {
+                    mode: PlaybackMode::Loop,
+                    volume: game_audio_volume.get_music_volume(),
+                    ..default()
+                },
+            ),
+            TileIndicator
+        ],
+    ));
 
     player.restart(
         selected_level.get_player_health(),
@@ -165,13 +164,13 @@ fn pause_game(
     ) {
         return;
     }
-    if let Ok(background_audio_sink) = background_audio.get_single_mut() {
+    if let Ok(background_audio_sink) = background_audio.single_mut() {
         background_audio_sink.pause();
     }
 }
 
 fn resume_game(mut background_audio: Query<&mut AudioSink, With<GameBackgroundAudio>>) {
-    if let Ok(background_audio_sink) = background_audio.get_single_mut() {
+    if let Ok(background_audio_sink) = background_audio.single_mut() {
         background_audio_sink.play();
     }
 }

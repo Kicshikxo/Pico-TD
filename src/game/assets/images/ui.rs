@@ -13,6 +13,11 @@ pub struct UiAssets {
     #[asset(texture_atlas_layout(tile_size_x = 16, tile_size_y = 16, columns = 5, rows = 1))]
     pub ui_buttons_layout: Handle<TextureAtlasLayout>,
 
+    #[asset(path = "embedded://images/ui/icons.png")]
+    pub ui_icons: Handle<Image>,
+    #[asset(texture_atlas_layout(tile_size_x = 24, tile_size_y = 24, columns = 12, rows = 1))]
+    pub ui_icons_layout: Handle<TextureAtlasLayout>,
+
     #[asset(path = "embedded://images/ui/misc.png")]
     pub ui_misc: Handle<Image>,
     #[asset(texture_atlas_layout(tile_size_x = 16, tile_size_y = 16, columns = 4, rows = 1))]
@@ -36,6 +41,23 @@ pub enum UiButtonSpriteVariant {
     Success = 2,
     Danger = 3,
     Close = 4,
+}
+
+#[derive(Clone, Copy)]
+#[repr(usize)]
+pub enum UiIconSpriteVariant {
+    Settings = 0,
+    Globe = 1,
+    Sound = 2,
+    Music = 3,
+    Home = 4,
+    Play = 5,
+    Next = 6,
+    Pause = 7,
+    Exit = 8,
+    Upload = 9,
+    Restart = 10,
+    Delete = 11,
 }
 
 #[derive(Copy, Clone)]

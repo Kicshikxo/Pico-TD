@@ -2,7 +2,8 @@ LevelAsset(
     name: "coastal_highway",
     player_health: 100,
     player_money: 300,
-    size: (20, 20),
+    viewport_size: Some((20, 20)),
+    map_size: (20, 20),
     map: [
         "TTTF##.~~~~~~=~TTTTT",
         "TTTFF#.~~~~~~=~~~~~~",
