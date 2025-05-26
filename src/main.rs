@@ -21,6 +21,7 @@ fn main() {
                         present_mode: PresentMode::AutoVsync,
                         position: WindowPosition::Centered(MonitorSelection::Primary),
                         resolution: WindowResolution::new(640.0, 640.0),
+                        #[cfg(not(target_arch = "wasm32"))]
                         resize_constraints: WindowResizeConstraints {
                             min_height: 640.0,
                             min_width: 640.0,
