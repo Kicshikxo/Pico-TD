@@ -114,7 +114,7 @@ cargo install wasm-opt
 ```
 
 ```shell
-wasm-opt -Oz --output wasm/pico_td_bg.wasm wasm/pico_td_bg.wasm
+wasm-opt -Oz --all-features --output wasm/pico_td_bg.wasm wasm/pico_td_bg.wasm
 ```
 
 ## Лицензия
