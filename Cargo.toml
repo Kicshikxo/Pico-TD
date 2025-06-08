@@ -1,12 +1,12 @@
 [package]
 name = "pico_td"
-version = "1.2.0"
+version = "1.2.1"
 edition = "2024"
 license = "WTFPL"
 build = "build/build.rs"
 
 [dependencies]
-bevy = { version = "0.16.0", default-features = false, features = [
+bevy = { version = "0.16.1", default-features = false, features = [
     "bevy_ui",
     "bevy_window",
     "multi_threaded",
@@ -38,7 +38,7 @@ winit = { version = "0.30.11", default-features = false }
 getrandom = { version = "0.3.3", features = ["wasm_js"] }
 
 [build-dependencies]
-embed-resource = { version = "3.0.2" }
+embed-resource = { version = "3.0.3" }
 
 [profile.dev]
 opt-level = 1

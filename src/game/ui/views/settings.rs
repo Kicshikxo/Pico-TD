@@ -55,32 +55,36 @@ fn init_ui(
     completed_levels: Res<Persistent<CompletedLevels>>,
     game_audio_volume: Res<Persistent<GameAudioVolume>>,
 ) {
-    commands.spawn((
-        RootUiComponent,
-        UiContainer::new().full().center(),
-        ImageNode {
-            image: ui_assets.ui_misc.clone(),
-            texture_atlas: Some(TextureAtlas {
-                index: UiMiscSpriteVariant::Background as usize,
-                layout: ui_assets.ui_misc_layout.clone(),
-            }),
-            image_mode: NodeImageMode::Tiled {
-                tile_x: true,
-                tile_y: true,
-                stretch_value: 8.0,
+    commands
+        .spawn((
+            RootUiComponent,
+            UiContainer::new().full().center(),
+            ImageNode {
+                image: ui_assets.ui_misc.clone(),
+                texture_atlas: Some(TextureAtlas {
+                    index: UiMiscSpriteVariant::Background as usize,
+                    layout: ui_assets.ui_misc_layout.clone(),
+                }),
+                image_mode: NodeImageMode::Tiled {
+                    tile_x: true,
+                    tile_y: true,
+                    stretch_value: 8.0,
+                },
+                ..default()
             },
-            ..default()
-        },
-        children![
-            (
-                UiContainer::primary()
-                    .with_width(Val::Px(320.0))
-                    .with_padding(UiRect::all(Val::Px(24.0)))
-                    .with_row_gap(Val::Px(12.0))
-                    .center()
-                    .column(),
-                children![
-                    (
+        ))
+        .with_children(|parent| {
+            parent
+                .spawn(
+                    UiContainer::primary()
+                        .with_width(Val::Px(320.0))
+                        .with_padding(UiRect::all(Val::Px(24.0)))
+                        .with_row_gap(Val::Px(12.0))
+                        .center()
+                        .column(),
+                )
+                .with_children(|parent| {
+                    parent.spawn((
                         ButtonAction::BackToMenu,
                         UiButton::new(),
                         UiContainer::new()
@@ -95,23 +99,25 @@ fn init_ui(
                                 layout: ui_assets.ui_buttons_layout.clone(),
                             }),
                             ..default()
-                        }
-                    ),
-                    (
-                        UiContainer::secondary().with_padding(UiRect::all(Val::Px(8.0))),
-                        children![UiText::new("ui.settings.title").with_size(UiTextSize::Large)]
-                    ),
-                    (
-                        UiContainer::new().with_row_gap(Val::Px(4.0)).column(),
-                        children![
-                            (
-                                UiContainer::new().with_column_gap(Val::Px(8.0)).center(),
-                                children![
-                                    UiIcon::new(UiIconVariant::Globe),
-                                    UiText::new("ui.settings.change_locale").auto_width()
-                                ]
-                            ),
-                            (
+                        },
+                    ));
+
+                    parent
+                        .spawn(UiContainer::secondary().with_padding(UiRect::all(Val::Px(8.0))))
+                        .with_child(UiText::new("ui.settings.title").with_size(UiTextSize::Large));
+
+                    parent
+                        .spawn(UiContainer::new().with_row_gap(Val::Px(4.0)).column())
+                        .with_children(|parent| {
+                            parent
+                                .spawn(UiContainer::new().with_column_gap(Val::Px(8.0)).center())
+                                .with_children(|parent| {
+                                    parent.spawn(UiIcon::new(UiIconVariant::Globe));
+                                    parent.spawn(
+                                        UiText::new("ui.settings.change_locale").auto_width(),
+                                    );
+                                });
+                            parent.spawn((
                                 LocaleSelector,
                                 UiSelector::new()
                                     .with_options(
@@ -135,19 +141,20 @@ fn init_ui(
                                                     locale.to_string(),
                                                 ))
                                         })
-                                        .collect::<Vec<_>>()
+                                        .collect::<Vec<_>>(),
                                     )
                                     .with_default_index(i18n.get_current() as usize)
-                                    .cycle()
-                            ),
-                            (
-                                UiContainer::new().with_column_gap(Val::Px(8.0)).center(),
-                                children![
-                                    UiIcon::new(UiIconVariant::Sound),
-                                    UiText::new("ui.settings.sfx_volume").auto_width()
-                                ]
-                            ),
-                            (
+                                    .cycle(),
+                            ));
+
+                            parent
+                                .spawn(UiContainer::new().with_column_gap(Val::Px(8.0)).center())
+                                .with_children(|parent| {
+                                    parent.spawn(UiIcon::new(UiIconVariant::Sound));
+                                    parent
+                                        .spawn(UiText::new("ui.settings.sfx_volume").auto_width());
+                                });
+                            parent.spawn((
                                 SfxVolumeSelector,
                                 UiSelector::new()
                                     .with_options(
@@ -158,21 +165,23 @@ fn init_ui(
                                                         index as f32 / 20.0,
                                                     ))
                                             })
-                                            .collect()
+                                            .collect(),
                                     )
                                     .with_default_index(
                                         (game_audio_volume.get_sfx_volume().to_linear() * 20.0)
-                                            as usize
-                                    )
-                            ),
-                            (
-                                UiContainer::new().with_column_gap(Val::Px(8.0)).center(),
-                                children![
-                                    UiIcon::new(UiIconVariant::Music),
-                                    UiText::new("ui.settings.music_volume").auto_width()
-                                ]
-                            ),
-                            (
+                                            as usize,
+                                    ),
+                            ));
+
+                            parent
+                                .spawn(UiContainer::new().with_column_gap(Val::Px(8.0)).center())
+                                .with_children(|parent| {
+                                    parent.spawn(UiIcon::new(UiIconVariant::Music));
+                                    parent.spawn(
+                                        UiText::new("ui.settings.music_volume").auto_width(),
+                                    );
+                                });
+                            parent.spawn((
                                 MusicVolumeSelector,
                                 UiSelector::new()
                                     .with_options(
@@ -183,39 +192,38 @@ fn init_ui(
                                                         index as f32 / 20.0,
                                                     ))
                                             })
-                                            .collect()
+                                            .collect(),
                                     )
                                     .with_default_index(
                                         (game_audio_volume.get_music_volume().to_linear() * 20.0)
-                                            as usize
-                                    )
-                            )
-                        ]
-                    ),
-                    (
-                        ButtonAction::ResetProgress,
-                        UiButton::danger().with_disabled(completed_levels.is_empty()),
-                        children![
-                            UiIcon::new(UiIconVariant::Delete),
-                            UiText::new("ui.settings.reset_progress").auto_width()
-                        ]
-                    )
-                ]
-            ),
-            (
-                UiContainer::new()
-                    .with_right(Val::Px(8.0))
-                    .with_bottom(Val::Px(8.0))
-                    .absolute(),
-                children![
+                                            as usize,
+                                    ),
+                            ));
+                        });
+
+                    parent
+                        .spawn((
+                            ButtonAction::ResetProgress,
+                            UiButton::danger().with_disabled(completed_levels.is_empty()),
+                        ))
+                        .with_child(UiIcon::new(UiIconVariant::Delete))
+                        .with_child(UiText::new("ui.settings.reset_progress").auto_width());
+                });
+
+            parent
+                .spawn(
+                    UiContainer::new()
+                        .with_right(Val::Px(8.0))
+                        .with_bottom(Val::Px(8.0))
+                        .absolute(),
+                )
+                .with_child(
                     UiText::new("ui.version")
                         .with_size(UiTextSize::Small)
                         .with_justify(JustifyText::Right)
-                        .with_i18n_arg("version", env!("CARGO_PKG_VERSION").to_string())
-                ]
-            )
-        ],
-    ));
+                        .with_i18n_arg("version", env!("CARGO_PKG_VERSION").to_string()),
+                );
+        });
 }
 
 fn destroy_ui(mut commands: Commands, query: Query<Entity, With<RootUiComponent>>) {

@@ -45,76 +45,83 @@ fn init_ui(
     player: Res<Player>,
     game_waves: Res<GameWaves>,
 ) {
-    commands.spawn((
-        RootUiComponent,
-        UiContainer::new().full(),
-        children![
-            (
-                UiContainer::new()
-                    .with_left(Val::Px(8.0))
-                    .with_top(Val::Px(8.0))
-                    .absolute(),
-                children![(
-                    UiContainer::new().column(),
-                    children![
-                        (
-                            UiContainer::new().with_column_gap(Val::Px(8.0)).center(),
-                            children![
-                                (
-                                    UiContainer::new()
-                                        .with_width(Val::Px(32.0))
-                                        .with_height(Val::Px(32.0)),
-                                    ImageNode {
-                                        image: ui_assets.ui_misc.clone(),
-                                        texture_atlas: Some(TextureAtlas {
-                                            index: UiMiscSpriteVariant::Health as usize,
-                                            layout: ui_assets.ui_misc_layout.clone(),
-                                        }),
-                                        ..default()
-                                    }
-                                ),
-                                UiText::new("ui.in_game.health")
-                                    .with_justify(JustifyText::Left)
-                                    .with_i18n_arg(
-                                        "health",
-                                        player.get_health().get_current().to_string(),
-                                    ),
-                            ],
-                        ),
-                        (
-                            UiContainer::new().with_column_gap(Val::Px(8.0)).center(),
-                            children![
-                                (
-                                    UiContainer::new()
-                                        .with_width(Val::Px(32.0))
-                                        .with_height(Val::Px(32.0)),
-                                    ImageNode {
-                                        image: ui_assets.ui_misc.clone(),
-                                        texture_atlas: Some(TextureAtlas {
-                                            index: UiMiscSpriteVariant::Money as usize,
-                                            layout: ui_assets.ui_misc_layout.clone(),
-                                        }),
-                                        ..default()
-                                    }
-                                ),
-                                UiText::new("ui.in_game.money")
-                                    .with_justify(JustifyText::Left)
-                                    .with_i18n_arg(
-                                        "money",
-                                        player.get_money().get_current().to_string(),
-                                    ),
-                            ],
-                        ),
-                    ],
-                )],
-            ),
-            (
-                UiContainer::new()
-                    .with_right(Val::Px(8.0))
-                    .with_top(Val::Px(8.0))
-                    .auto_width()
-                    .absolute(),
-                children![
+    commands
+        .spawn((RootUiComponent, UiContainer::new().full()))
+        .with_children(|parent| {
+            parent
+                .spawn(
+                    UiContainer::new()
+                        .with_left(Val::Px(8.0))
+                        .with_top(Val::Px(8.0))
+                        .absolute(),
+                )
+                .with_children(|parent| {
+                    parent
+                        .spawn(UiContainer::new().column())
+                        .with_children(|parent| {
+                            parent
+                                .spawn(UiContainer::new().with_column_gap(Val::Px(8.0)).center())
+                                .with_children(|parent| {
+                                    parent.spawn((
+                                        UiContainer::new()
+                                            .with_width(Val::Px(32.0))
+                                            .with_height(Val::Px(32.0)),
+                                        ImageNode {
+                                            image: ui_assets.ui_misc.clone(),
+                                            texture_atlas: Some(TextureAtlas {
+                                                index: UiMiscSpriteVariant::Health as usize,
+                                                layout: ui_assets.ui_misc_layout.clone(),
+                                            }),
+                                            ..default()
+                                        },
+                                    ));
+                                    parent.spawn(
+                                        UiText::new("ui.in_game.health")
+                                            .with_justify(JustifyText::Left)
+                                            .with_i18n_arg(
+                                                "health",
+                                                player.get_health().get_current().to_string(),
+                                            ),
+                                    );
+                                });
+
+                            parent
+                                .spawn(UiContainer::new().with_column_gap(Val::Px(8.0)).center())
+                                .with_children(|parent| {
+                                    parent.spawn((
+                                        UiContainer::new()
+                                            .with_width(Val::Px(32.0))
+                                            .with_height(Val::Px(32.0)),
+                                        ImageNode {
+                                            image: ui_assets.ui_misc.clone(),
+                                            texture_atlas: Some(TextureAtlas {
+                                                index: UiMiscSpriteVariant::Money as usize,
+                                                layout: ui_assets.ui_misc_layout.clone(),
+                                            }),
+                                            ..default()
+                                        },
+                                    ));
+                                    parent.spawn(
+                                        UiText::new("ui.in_game.money")
+                                            .with_justify(JustifyText::Left)
+                                            .with_i18n_arg(
+                                                "money",
+                                                player.get_money().get_current().to_string(),
+                                            ),
+                                    );
+                                });
+                        });
+                });
+
+            parent
+                .spawn(
+                    UiContainer::new()
+                        .with_right(Val::Px(8.0))
+                        .with_top(Val::Px(8.0))
+                        .auto_width()
+                        .absolute(),
+                )
+                .with_child(
                     UiText::new("ui.in_game.wave")
                         .with_i18n_arg(
                             "current",
@@ -124,45 +131,44 @@ fn init_ui(
                             "total",
                             game_waves.get_total().saturating_add(1).to_string(),
                         ),
-                ],
-            ),
-            (
-                UiContainer::new()
-                    .with_right(Val::Px(8.0))
-                    .with_bottom(Val::Px(8.0))
-                    .with_row_gap(Val::Px(8.0))
-                    .grid()
-                    .absolute()
-                    .auto_width(),
-                children![
-                    (
-                        (
+                );
+
+            parent
+                .spawn(
+                    UiContainer::new()
+                        .with_right(Val::Px(8.0))
+                        .with_bottom(Val::Px(8.0))
+                        .with_row_gap(Val::Px(8.0))
+                        .grid()
+                        .absolute()
+                        .auto_width(),
+                )
+                .with_children(|parent| {
+                    parent
+                        .spawn((
                             ButtonAction::Confirm,
                             UiButton::success()
                                 .with_height(Val::Px(32.0))
-                                .with_padding(UiRect::horizontal(Val::Px(16.0)))
-                        ),
-                        children![
+                                .with_padding(UiRect::horizontal(Val::Px(16.0))),
+                        ))
+                        .with_child(
                             UiText::new("ui.soldier_placement_confirmation.confirm")
-                                .with_size(UiTextSize::Small)
-                        ],
-                    ),
-                    (
-                        (
+                                .with_size(UiTextSize::Small),
+                        );
+
+                    parent
+                        .spawn((
                             ButtonAction::Cancel,
                             UiButton::danger()
                                 .with_height(Val::Px(32.0))
-                                .with_padding(UiRect::horizontal(Val::Px(16.0)))
-                        ),
-                        children![
+                                .with_padding(UiRect::horizontal(Val::Px(16.0))),
+                        ))
+                        .with_child(
                             UiText::new("ui.soldier_placement_confirmation.cancel")
-                                .with_size(UiTextSize::Small)
-                        ],
-                    ),
-                ],
-            ),
-        ],
-    ));
+                                .with_size(UiTextSize::Small),
+                        );
+                });
+        });
 }
 
 fn destroy_ui(mut commands: Commands, query: Query<Entity, With<RootUiComponent>>) {
