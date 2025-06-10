@@ -6,7 +6,6 @@ pub mod utils;
 use bevy::prelude::*;
 use bevy_asset_loader::prelude::*;
 use bevy_embedded_assets::EmbeddedAssetPlugin;
-use utils::UtilsAssets;
 
 use crate::game::{
     GameState,
@@ -14,6 +13,7 @@ use crate::game::{
         audio::{game::GameAudioAssets, ui::UiAudioAssets},
         images::{entity::EntityAssets, tilemap::TilemapTileAssets, ui::UiAssets},
         levels::{LevelsAssets, LevelsPlugin},
+        utils::UtilsAssets,
     },
 };
 
