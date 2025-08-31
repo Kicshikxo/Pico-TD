@@ -13,6 +13,8 @@ level.example:
     tr: "Örnek"
     pl: "Przykład"
     zh: "样例"
+    ja: "例"
+    ko: "예시"
 level.ring:
     en: "Ring"
     ru: "Кольцо"
@@ -26,6 +28,8 @@ level.ring:
     tr: "Halka"
     pl: "Pierścień"
     zh: "环路"
+    ja: "リング"
+    ko: "고리"
 level.zigzag:
     en: "Zigzag"
     ru: "Зигзаг"
@@ -39,6 +43,8 @@ level.zigzag:
     tr: "Zikzak"
     pl: "Zygzak"
     zh: "蜿蜒小路"
+    ja: "ジグザグ"
+    ko: "지그재그"
 level.coastal_highway:
     en: "Coastal Highway"
     ru: "Прибрежное шоссе"
@@ -52,6 +58,8 @@ level.coastal_highway:
     tr: "Sahil otoyolu"
     pl: "Nadmorska autostrada"
     zh: "滨海公路"
+    ja: "海岸高速道路"
+    ko: "해안 고속도로"
 level.error:
     en: "Error"
     ru: "Ошибка"
@@ -65,3 +73,5 @@ level.error:
     tr: "Hata"
     pl: "Błąd"
     zh: "错误"
+    ja: "エラー"
+    ko: "오류"

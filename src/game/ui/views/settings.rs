@@ -134,6 +134,8 @@ fn init_ui(
                                             Locale::Tr,
                                             Locale::Pl,
                                             Locale::Zh,
+                                            Locale::Ja,
+                                            Locale::Ko,
                                         ]
                                         .iter()
                                         .map(|locale| {

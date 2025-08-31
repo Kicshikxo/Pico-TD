@@ -1,6 +1,10 @@
 use bevy::prelude::*;
+use bevy_persistent::Persistent;
 
-use crate::game::{assets::utils::UtilsAssets, ui::i18n::I18nComponent};
+use crate::game::{
+    assets::fonts::FontAssets,
+    ui::i18n::{I18n, I18nComponent},
+};
 
 #[derive(Clone, Copy, Default)]
 pub enum UiTextSize {
@@ -98,6 +102,9 @@ impl UiText {
     pub fn auto_width(self) -> Self {
         self.with_width(Val::Auto)
     }
+    pub fn get_i18n_enabled(&self) -> bool {
+        self.enable_i18n
+    }
 }
 
 pub struct UiTextPlugin;
@@ -111,9 +118,10 @@ impl Plugin for UiTextPlugin {
 fn init_ui_text(
     mut commands: Commands,
     ui_texts: Query<(Entity, &UiText), Added<UiText>>,
-    utils_assets: Option<Res<UtilsAssets>>,
+    font_assets: Option<Res<FontAssets>>,
+    i18n: Res<Persistent<I18n>>,
 ) {
-    let Some(utils_assets) = &utils_assets else {
+    let Some(font_assets) = &font_assets else {
         return;
     };
 
@@ -124,7 +132,11 @@ fn init_ui_text(
                 ..default()
             },
             TextFont {
-                font: utils_assets.primary_font.clone(),
+                font: if ui_text.enable_i18n {
+                    font_assets.get_locale_based_font(i18n.get_current())
+                } else {
+                    font_assets.primary_font.clone()
+                },
                 font_size: ui_text.size.as_f32(),
                 ..default()
             },

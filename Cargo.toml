@@ -1,6 +1,6 @@
 [package]
 name = "pico_td"
-version = "1.2.2"
+version = "1.2.3"
 edition = "2024"
 license = "WTFPL"
 build = "build/build.rs"

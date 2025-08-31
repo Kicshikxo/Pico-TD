@@ -13,6 +13,8 @@ ui.version:
     tr: "Sürüm: %{version}"
     pl: "Wersja: %{version}"
     zh: "版本: %{version}"
+    ja: "バージョン: %{version}"
+    ko: "버전: %{version}"
 
 ui.menu.game_title:
     en: "Pico TD"
@@ -27,6 +29,8 @@ ui.menu.game_title:
     tr: "Pico TD"
     pl: "Pico TD"
     zh: "Pico TD"
+    ja: "Pico TD"
+    ko: "Pico TD"
 ui.menu.start_game:
     en: "Start game"
     ru: "Начать игру"
@@ -40,6 +44,8 @@ ui.menu.start_game:
     tr: "Oyunu başlat"
     pl: "Rozpocznij grę"
     zh: "开始游戏"
+    ja: "ゲーム開始"
+    ko: "게임 시작"
 ui.menu.settings:
     en: "Settings"
     ru: "Настройки"
@@ -53,6 +59,8 @@ ui.menu.settings:
     tr: "Ayarlar"
     pl: "Ustawienia"
     zh: "设置"
+    ja: "設定"
+    ko: "설정"
 ui.menu.exit_game:
     en: "Exit game"
     ru: "Выйти из игры"
@@ -66,6 +74,8 @@ ui.menu.exit_game:
     tr: "Oyundan çık"
     pl: "Wyjdź z gry"
     zh: "退出游戏"
+    ja: "ゲーム終了"
+    ko: "게임 종료"
 
 ui.settings.title:
     en: "Settings"
@@ -80,6 +90,8 @@ ui.settings.title:
     tr: "Ayarlar"
     pl: "Ustawienia"
     zh: "设置"
+    ja: "設定"
+    ko: "설정"
 ui.settings.change_locale:
     en: "Change language"
     ru: "Сменить язык"
@@ -93,6 +105,8 @@ ui.settings.change_locale:
     tr: "Dili değiştir"
     pl: "Zmień język"
     zh: "设置语言"
+    ja: "言語を変更"
+    ko: "언어 변경"
 ui.settings.current_language:
     en: "English"
     ru: "Русский"
@@ -106,6 +120,8 @@ ui.settings.current_language:
     tr: "Türkçe"
     pl: "Polski"
     zh: "简体中文"
+    ja: "日本語"
+    ko: "한국어"
 ui.settings.music_volume:
     en: "Music volume"
     ru: "Громкость музыки"
@@ -119,6 +135,8 @@ ui.settings.music_volume:
     tr: "Müzik sesi"
     pl: "Głośność muzyki"
     zh: "音乐音量"
+    ja: "音楽音量"
+    ko: "음악 음량"
 ui.settings.sfx_volume:
     en: "SFX volume"
     ru: "Громкость звуков"
@@ -132,6 +150,8 @@ ui.settings.sfx_volume:
     tr: "Efekt sesi"
     pl: "Głośność efektu"
     zh: "音效音量"
+    ja: "効果音音量"
+    ko: "효과음 음량"
 ui.settings.reset_progress:
     en: "Reset Progress"
     ru: "Сбросить прогресс"
@@ -145,6 +165,8 @@ ui.settings.reset_progress:
     tr: "İlerlemeyi sıfırla"
     pl: "Resetuj postęp"
     zh: "重置进度"
+    ja: "進行状況をリセット"
+    ko: "진행 상황 초기화"
 
 ui.level_select.title:
     en: "Select level"
@@ -159,6 +181,8 @@ ui.level_select.title:
     tr: "Seviye seç"
     pl: "Wybierz poziom"
     zh: "选择关卡"
+    ja: "レベル選択"
+    ko: "레벨 선택"
 ui.level_select.upload_level:
     en: "Upload level"
     ru: "Загрузить уровень"
@@ -172,6 +196,8 @@ ui.level_select.upload_level:
     tr: "Seviye yükle"
     pl: "Prześlij poziom"
     zh: "上传关卡"
+    ja: "レベルをアップロード"
+    ko: "레벨 업로드"
 
 ui.in_game.health:
     en: "%{health}"
@@ -186,6 +212,8 @@ ui.in_game.health:
     tr: "%{health}"
     pl: "%{health}"
     zh: "%{health}"
+    ja: "%{health}"
+    ko: "%{health}"
 ui.in_game.money:
     en: "%{money}"
     ru: "%{money}"
@@ -199,6 +227,8 @@ ui.in_game.money:
     tr: "%{money}"
     pl: "%{money}"
     zh: "%{money}"
+    ja: "%{money}"
+    ko: "%{money}"
 ui.in_game.wave:
     en: "Wave %{current}/%{total}"
     ru: "Волна %{current}/%{total}"
@@ -212,6 +242,8 @@ ui.in_game.wave:
     tr: "Dalga %{current}/%{total}"
     pl: "Fala %{current}/%{total}"
     zh: "回合 %{current}/%{total}"
+    ja: "ウェーブ %{current}/%{total}"
+    ko: "웨이브 %{current}/%{total}"
 ui.in_game.game_speed:
     en: "Speed: x%{speed}"
     ru: "Скорость: x%{speed}"
@@ -225,6 +257,8 @@ ui.in_game.game_speed:
     tr: "Hız: x%{speed}"
     pl: "Prędkość: x%{speed}"
     zh: "速度: x%{speed}"
+    ja: "速度: x%{speed}"
+    ko: "속도: x%{speed}"
 ui.in_game.pause:
     en: "Pause"
     ru: "Пауза"
@@ -238,6 +272,8 @@ ui.in_game.pause:
     tr: "Duraklat"
     pl: "Pauza"
     zh: "暂停"
+    ja: "一時停止"
+    ko: "일시 정지"
 ui.in_game.next_wave:
     en: "Next wave"
     ru: "Следующая волна"
@@ -251,6 +287,8 @@ ui.in_game.next_wave:
     tr: "Sonraki dalga"
     pl: "Następna fala"
     zh: "下一回合"
+    ja: "次のウェーブ"
+    ko: "다음 웨이브"
 
 ui.soldier_select.title:
     en: "Select soldier"
@@ -265,6 +303,8 @@ ui.soldier_select.title:
     tr: "Asker seç"
     pl: "Wybierz żołnierza"
     zh: "选择士兵"
+    ja: "兵士を選択"
+    ko: "병사 선택"
 ui.soldier_select.price:
     en: "%{price}$"
     ru: "%{price}$"
@@ -278,6 +318,8 @@ ui.soldier_select.price:
     tr: "%{price}$"
     pl: "%{price}$"
     zh: "%{price}$"
+    ja: "%{price}$"
+    ko: "%{price}$"
 
 ui.soldier_placement_confirmation.confirm:
     en: "Confirm"
@@ -292,6 +334,8 @@ ui.soldier_placement_confirmation.confirm:
     tr: "Onayla"
     pl: "Potwierdzenie"
     zh: "确定"
+    ja: "確認"
+    ko: "확인"
 ui.soldier_placement_confirmation.cancel:
     en: "Cancel"
     ru: "Отмена"
@@ -305,6 +349,8 @@ ui.soldier_placement_confirmation.cancel:
     tr: "İptal"
     pl: "Anuluj"
     zh: "取消"
+    ja: "キャンセル"
+    ko: "취소"
 
 ui.soldier_info.title:
     en: "Soldier info"
@@ -319,6 +365,8 @@ ui.soldier_info.title:
     tr: "Asker bilgisi"
     pl: "Informacje o żołnierzu"
     zh: "士兵状态"
+    ja: "兵士情報"
+    ko: "병사 정보"
 ui.soldier_info.target_priority:
     en: "Target priority"
     ru: "Приоритет выбора цели"
@@ -332,6 +380,8 @@ ui.soldier_info.target_priority:
     tr: "Hedef önceliği"
     pl: "Priorytet celu"
     zh: "优先目标"
+    ja: "優先ターゲット"
+    ko: "목표 우선순위"
 ui.soldier_info.upgrade_soldier:
     en: "Upgrade %{price}$"
     ru: "Улучшить %{price}$"
@@ -345,6 +395,8 @@ ui.soldier_info.upgrade_soldier:
     tr: "Yükselt %{price}$"
     pl: "Ulepsz %{price}$"
     zh: "升级 %{price}$"
+    ja: "アップグレード %{price}$"
+    ko: "업그레이드 %{price}$"
 ui.soldier_info.sell_soldier:
     en: "Sell %{sell_price}$"
     ru: "Продать %{sell_price}$"
@@ -358,6 +410,8 @@ ui.soldier_info.sell_soldier:
     tr: "Sat %{sell_price}$"
     pl: "Sprzedaj %{sell_price}$"
     zh: "出售 %{sell_price}$"
+    ja: "売却 %{sell_price}$"
+    ko: "판매 %{sell_price}$"
 
 ui.pause.title:
     en: "Pause"
@@ -372,6 +426,8 @@ ui.pause.title:
     tr: "Duraklat"
     pl: "Pauza"
     zh: "暂停"
+    ja: "一時停止"
+    ko: "일시 정지"
 ui.pause.enemy_path_visibility:
     en: "Show enemy paths"
     ru: "Отображать пути врагов"
@@ -385,6 +441,8 @@ ui.pause.enemy_path_visibility:
     tr: "Düşman yollarını göster"
     pl: "Wyświetlanie ścieżek wroga"
     zh: "显示进攻路线"
+    ja: "敵の経路を表示"
+    ko: "적 경로 표시"
 ui.pause.resume_game:
     en: "Resume game"
     ru: "Продолжить игру"
@@ -398,6 +456,8 @@ ui.pause.resume_game:
     tr: "Devam et"
     pl: "Wznów grę"
     zh: "恢复游戏"
+    ja: "ゲーム再開"
+    ko: "게임 재개"
 ui.pause.restart_level:
     en: "Restart level"
     ru: "Рестарт уровня"
@@ -411,6 +471,8 @@ ui.pause.restart_level:
     tr: "Bölümü tekrar başlat"
     pl: "Zrestartuj poziom"
     zh: "重启关卡"
+    ja: "レベル再開"
+    ko: "레벨 재시작"
 ui.pause.back_to_menu:
     en: "Back to menu"
     ru: "Вернуться в меню"
@@ -424,6 +486,8 @@ ui.pause.back_to_menu:
     tr: "Menüye dön"
     pl: "Powrót do menu"
     zh: "返回菜单"
+    ja: "メニューに戻る"
+    ko: "메뉴로 돌아가기"
 
 ui.game_over.player_win:
     en: "You win!"
@@ -438,6 +502,8 @@ ui.game_over.player_win:
     tr: "Kazandın!"
     pl: "Wygrałeś!"
     zh: "你赢了!"
+    ja: "勝利！"
+    ko: "승리!"
 ui.game_over.player_lose:
     en: "You lose!"
     ru: "Вы проиграли!"
@@ -451,6 +517,8 @@ ui.game_over.player_lose:
     tr: "Kaybettin!"
     pl: "Przegrałeś!"
     zh: "你输了!"
+    ja: "敗北！"
+    ko: "패배!"
 ui.game_over.waves_survived:
     en: "Waves survived: %{current_wave}/%{total_waves}"
     ru: "Волн отражено: %{current_wave}/%{total_waves}"
@@ -464,6 +532,8 @@ ui.game_over.waves_survived:
     tr: "Hayatta kalınan dalgalar: %{current_wave}/%{total_waves}"
     pl: "Przetrwane fale: %{current_wave}/%{total_waves}"
     zh: "存活回合: %{current_wave}/%{total_waves}"
+    ja: "生き残ったウェーブ: %{current_wave}/%{total_waves}"
+    ko: "생존한 웨이브: %{current_wave}/%{total_waves}"
 ui.game_over.retry_level:
     en: "Retry level"
     ru: "Повторить уровень"
@@ -477,6 +547,8 @@ ui.game_over.retry_level:
     tr: "Bölümü tekrar et"
     pl: "Powtórz poziom"
     zh: "重试关卡"
+    ja: "レベル再挑戦"
+    ko: "레벨 재도전"
 ui.game_over.back_to_menu:
     en: "Back to menu"
     ru: "Вернуться в меню"
@@ -490,3 +562,5 @@ ui.game_over.back_to_menu:
     tr: "Menüye dön"
     pl: "Powrót do menu"
     zh: "返回菜单"
+    ja: "メニューに戻る"
+    ko: "메뉴로 돌아가기"

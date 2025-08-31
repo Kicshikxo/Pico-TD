@@ -2,6 +2,8 @@ use bevy::prelude::*;
 use bevy_persistent::prelude::*;
 use serde::{Deserialize, Serialize};
 
+use crate::game::{assets::fonts::FontAssets, ui::components::text::UiText};
+
 #[derive(Clone, Copy, PartialEq, Serialize, Deserialize)]
 pub enum Locale {
     En,
@@ -16,6 +18,8 @@ pub enum Locale {
     Tr,
     Pl,
     Zh,
+    Ja,
+    Ko,
 }
 
 impl Locale {
@@ -33,6 +37,8 @@ impl Locale {
             Locale::Tr => "tr",
             Locale::Pl => "pl",
             Locale::Zh => "zh",
+            Locale::Ja => "ja",
+            Locale::Ko => "ko",
         }
         .to_string()
     }
@@ -50,6 +56,8 @@ impl Locale {
             "tr" => Locale::Tr,
             "pl" => Locale::Pl,
             "zh" => Locale::Zh,
+            "ja" => Locale::Ja,
+            "ko" => Locale::Ko,
             _ => Locale::En,
         }
     }
@@ -186,11 +194,17 @@ fn update_i18n(mut i18n_components: Query<(&mut Text, &mut I18nComponent)>) {
 }
 
 fn update_locale(
-    mut i18n_components: Query<(&mut Text, &I18nComponent)>,
+    mut i18n_components: Query<(&UiText, &mut TextFont, &mut Text, &I18nComponent)>,
+    font_assets: Option<Res<FontAssets>>,
     i18n: Res<Persistent<I18n>>,
 ) {
     rust_i18n::set_locale(&i18n.get_current().to_string());
-    for (mut i18n_text, i18n_component) in i18n_components.iter_mut() {
-        i18n_text.0 = i18n_component.translate();
+    for (ui_text, mut ui_text_font, mut text, i18n_component) in i18n_components.iter_mut() {
+        text.0 = i18n_component.translate();
+        if let Some(font_assets) = &font_assets
+            && ui_text.get_i18n_enabled()
+        {
+            ui_text_font.font = font_assets.get_locale_based_font(i18n.get_current())
+        }
     }
 }

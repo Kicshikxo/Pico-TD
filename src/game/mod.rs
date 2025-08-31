@@ -15,7 +15,7 @@ use bevy_persistent::Persistent;
 use winit::window::Icon;
 
 use crate::game::{
-    assets::{GameAssetsPlugin, audio::game::GameAudioAssets, levels::Level, utils::UtilsAssets},
+    assets::{GameAssetsPlugin, audio::game::GameAudioAssets, levels::Level, utils::UtilAssets},
     audio::{GameAudioPlugin, GameAudioVolume},
     camera::{GameCamera, GameCameraPlugin},
     config::GameConfigPlugin,
@@ -73,7 +73,7 @@ fn setup(
     mut commands: Commands,
     mut windows: Query<(Entity, &mut Window)>,
     winit_windows: NonSend<WinitWindows>,
-    utils_assets: Res<UtilsAssets>,
+    util_assets: Res<UtilAssets>,
     asset_images: Res<Assets<Image>>,
     mut next_ui_state: ResMut<NextState<UiState>>,
     mut next_game_state: ResMut<NextState<GameState>>,
@@ -89,7 +89,7 @@ fn setup(
         let Some(winit_window) = winit_windows.get_window(window_entity) else {
             continue;
         };
-        let Some(window_icon) = asset_images.get(&utils_assets.window_icon) else {
+        let Some(window_icon) = asset_images.get(&util_assets.window_icon) else {
             continue;
         };
 

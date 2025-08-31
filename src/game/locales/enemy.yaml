@@ -13,6 +13,8 @@ enemy.path_visibility.pre_wave_visible:
     tr: "Dalgalar arasında"
     pl: "Między falami"
     zh: "回合之间"
+    ja: "波の間"
+    ko: "웨이브 사이"
 enemy.path_visibility.always_visible:
     en: "Always"
     ru: "Всегда"
@@ -26,6 +28,8 @@ enemy.path_visibility.always_visible:
     tr: "Her zaman"
     pl: "Zawsze"
     zh: "总是"
+    ja: "常に"
+    ko: "항상"
 enemy.path_visibility.never_visible:
     en: "Never"
     ru: "Никогда"
@@ -39,3 +43,5 @@ enemy.path_visibility.never_visible:
     tr: "Asla"
     pl: "Nigdy"
     zh: "从不"
+    ja: "決してない"
+    ko: "절대 없음"

@@ -13,3 +13,5 @@ error.level_select.file_reading_error.title:
     tr: "Dosya okuma hatası"
     pl: "Błąd odczytu pliku"
     zh: "文件读取错误"
+    ja: "ファイル読み取りエラー"
+    ko: "파일 읽기 오류"

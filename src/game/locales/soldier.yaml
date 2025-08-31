@@ -13,6 +13,8 @@ soldier.variant.soldier:
     tr: "Asker"
     pl: "Żołnierz"
     zh: "士兵"
+    ja: "兵士"
+    ko: "병사"
 soldier.variant.rocket_launcher:
     en: "Rocket launcher"
     ru: "Ракетница"
@@ -26,6 +28,8 @@ soldier.variant.rocket_launcher:
     tr: "Roketatar"
     pl: "Wyrzutnia rakiet"
     zh: "火箭炮"
+    ja: "ロケットランチャー"
+    ko: "로켓 발사기"
 soldier.variant.sniper:
     en: "Sniper"
     ru: "Снайпер"
@@ -39,6 +43,8 @@ soldier.variant.sniper:
     tr: "Keskin nişancı"
     pl: "Snajper"
     zh: "狙击手"
+    ja: "スナイパー"
+    ko: "저격수"
 
 soldier.info.name:
     en: "Name: %{name}"
@@ -53,6 +59,8 @@ soldier.info.name:
     tr: "Adı: %{name}"
     pl: "Nazwa: %{name}"
     zh: "名称: %{name}"
+    ja: "名前: %{name}"
+    ko: "이름: %{name}"
 soldier.info.level:
     en: "Level: %{level}/%{max_level}"
     ru: "Уровень: %{level}/%{max_level}"
@@ -65,7 +73,9 @@ soldier.info.level:
     nl: "Niveau: %{level}/%{max_level}"
     tr: "Seviye: %{level}/%{max_level}"
     pl: "Poziom: %{level}/%{max_level}"
-    zh: "等级: %{name}"
+    zh: "等级: %{level}/%{max_level}"
+    ja: "レベル: %{level}/%{max_level}"
+    ko: "레벨: %{level}/%{max_level}"
 soldier.info.max_level:
     en: "Max level: %{max_level}"
     ru: "Максимальный уровень: %{max_level}"
@@ -79,6 +89,8 @@ soldier.info.max_level:
     tr: "Maksimum seviye: %{max_level}"
     pl: "Maksymalny poziom: %{max_level}"
     zh: "最高等级: %{max_level}"
+    ja: "最大レベル: %{max_level}"
+    ko: "최대 레벨: %{max_level}"
 soldier.info.damage:
     en: "Damage: %{damage}"
     ru: "Урон: %{damage}"
@@ -92,6 +104,8 @@ soldier.info.damage:
     tr: "Hasar: %{damage}"
     pl: "Obrażenia: %{damage}"
     zh: "伤害: %{damage}"
+    ja: "ダメージ: %{damage}"
+    ko: "피해: %{damage}"
 soldier.info.fire_radius:
     en: "Fire radius: %{fire_radius}"
     ru: "Радиус стрельбы: %{fire_radius}"
@@ -105,6 +119,8 @@ soldier.info.fire_radius:
     tr: "Atış menzili: %{fire_radius}"
     pl: "Zasięg strzału: %{fire_radius}"
     zh: "开火半径: %{fire_radius}"
+    ja: "射程: %{fire_radius}"
+    ko: "사거리: %{fire_radius}"
 soldier.info.blast_radius:
     en: "Blast radius: %{blast_radius}"
     ru: "Радиус взрыва: %{blast_radius}"
@@ -118,6 +134,8 @@ soldier.info.blast_radius:
     tr: "Patlama yarıçapı: %{blast_radius}"
     pl: "Promień wybuchu: %{blast_radius}"
     zh: "爆炸半径: %{blast_radius}"
+    ja: "爆風半径: %{blast_radius}"
+    ko: "폭발 반경: %{blast_radius}"
 soldier.info.fire_rate:
     en: "Fire rate: %{fire_rate}/s"
     ru: "Скорострельность: %{fire_rate}/с"
@@ -131,6 +149,8 @@ soldier.info.fire_rate:
     tr: "Atış hızı: %{fire_rate}/s"
     pl: "Szybkostrzelność: %{fire_rate}/s"
     zh: "发射频率: %{fire_rate}/s"
+    ja: "発射速度: %{fire_rate}/s"
+    ko: "발사 속도: %{fire_rate}/s"
 
 soldier.target_priority.first:
     en: "Attack the first"
@@ -145,6 +165,8 @@ soldier.target_priority.first:
     tr: "İlk hedefe saldır"
     pl: "Atakuj pierwszego"
     zh: "位置最靠前"
+    ja: "先頭を攻撃"
+    ko: "첫 번째 공격"
 soldier.target_priority.last:
     en: "Attack the last"
     ru: "Атаковать последнюю"
@@ -158,6 +180,8 @@ soldier.target_priority.last:
     tr: "Son hedefe saldır"
     pl: "Atakuj ostatniego"
     zh: "位置最靠后"
+    ja: "最後を攻撃"
+    ko: "마지막 공격"
 soldier.target_priority.strongest:
     en: "Attack the strongest"
     ru: "Атаковать самую стойкую"
@@ -171,6 +195,8 @@ soldier.target_priority.strongest:
     tr: "En güçlüye saldır"
     pl: "Atakuj najsilniejszego"
     zh: "剩余血量最高"
+    ja: "最も強い敵を攻撃"
+    ko: "가장 강한 적 공격"
 soldier.target_priority.weakest:
     en: "Attack the weakest"
     ru: "Атаковать самую слабую"
@@ -184,6 +210,8 @@ soldier.target_priority.weakest:
     tr: "En zayıfa saldır"
     pl: "Atakuj najsłabszego"
     zh: "剩余血量最低"
+    ja: "最も弱い敵を攻撃"
+    ko: "가장 약한 적 공격"
 soldier.target_priority.nearest:
     en: "Attack the nearest"
     ru: "Атаковать ближайшую"
@@ -197,6 +225,8 @@ soldier.target_priority.nearest:
     tr: "En yakına saldır"
     pl: "Atakuj najbliższego"
     zh: "距离最小"
+    ja: "最も近い敵を攻撃"
+    ko: "가장 가까운 적 공격"
 
 soldier.placement.with_confirmation:
     en: "Place with confirmation"
@@ -211,6 +241,8 @@ soldier.placement.with_confirmation:
     tr: "Onaylı yerleştir"
     pl: "Umieścić z potwierdzeniem"
     zh: "部署前确认"
+    ja: "確認して配置"
+    ko: "확인 후 배치"
 soldier.placement.without_confirmation:
     en: "Place without confirmation"
     ru: "Размещать без подтверждения"
@@ -224,3 +256,5 @@ soldier.placement.without_confirmation:
     tr: "Onaysız yerleştir"
     pl: "Umieścić bez potwierdzenia"
     zh: "部署并确认"
+    ja: "確認なしで配置"
+    ko: "확인 없이 배치"

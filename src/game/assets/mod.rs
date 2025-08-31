@@ -1,4 +1,5 @@
 pub mod audio;
+pub mod fonts;
 pub mod images;
 pub mod levels;
 pub mod utils;
@@ -11,9 +12,10 @@ use crate::game::{
     GameState,
     assets::{
         audio::{game::GameAudioAssets, ui::UiAudioAssets},
+        fonts::FontAssets,
         images::{entity::EntityAssets, tilemap::TilemapTileAssets, ui::UiAssets},
         levels::{LevelsAssets, LevelsPlugin},
-        utils::UtilsAssets,
+        utils::UtilAssets,
     },
 };
 
@@ -27,7 +29,8 @@ impl Plugin for GameAssetsPlugin {
                 .load_collection::<EntityAssets>()
                 .load_collection::<TilemapTileAssets>()
                 .load_collection::<UiAssets>()
-                .load_collection::<UtilsAssets>()
+                .load_collection::<FontAssets>()
+                .load_collection::<UtilAssets>()
                 .load_collection::<UiAudioAssets>()
                 .load_collection::<GameAudioAssets>()
                 .load_collection::<LevelsAssets>()
