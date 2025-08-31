@@ -16,6 +16,7 @@ pub enum Locale {
     Nl,
     Tr,
     Pl,
+    Zh,
 }
 
 impl Locale {
@@ -32,6 +33,7 @@ impl Locale {
             Locale::Nl => "nl",
             Locale::Tr => "tr",
             Locale::Pl => "pl",
+            Locale::Zh => "zh",
         }
         .to_string()
     }
@@ -48,6 +50,7 @@ impl Locale {
             "nl" => Locale::Nl,
             "tr" => Locale::Tr,
             "pl" => Locale::Pl,
+            "zh" => Locale::Zh,
             _ => Locale::En,
         }
     }
