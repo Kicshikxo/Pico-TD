@@ -11,19 +11,7 @@ android {
         minSdk 21
         targetSdk 36
         versionCode 1
-        versionName "1.2.2"
-        // need this otherwise it won't insert libc++_shared.so
-        externalNativeBuild {
-            cmake {
-                arguments "-DANDROID_STL=c++_shared"
-            }
-        }
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-    }
-    externalNativeBuild {
-        cmake {
-            path "CMakeLists.txt"
-        }
+        versionName "1.2.3"
     }
     splits {
         abi {
@@ -35,8 +23,8 @@ android {
     }
     buildTypes {
         release {
-            minifyEnabled = true
-            shrinkResources = true
+            minifyEnabled true
+            shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
@@ -44,28 +32,10 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
-    buildFeatures {
-        prefab true
-    }
-    packagingOptions {
-        jniLibs {
-            excludes += ['lib/*/libdummy.so']
-        }
-    }
-    // The final part to insert libc++_shared.so only
-    sourceSets {
-        main {
-            assets.srcDirs += files('../../../../assets')
-            res.srcDirs += files('../../../../assets/android-res')
-        }
-    }
 }
 
 dependencies {
     implementation libs.appcompat
     implementation libs.material
     implementation libs.games.activity
-    testImplementation libs.junit
-    androidTestImplementation libs.ext.junit
-    androidTestImplementation libs.espresso.core
 }
