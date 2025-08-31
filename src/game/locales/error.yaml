@@ -12,3 +12,4 @@ error.level_select.file_reading_error.title:
     nl: "Bestandsleesfout"
     tr: "Dosya okuma hatası"
     pl: "Błąd odczytu pliku"
+    zh: "文件读取错误"
