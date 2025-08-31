@@ -6,6 +6,6 @@ pub struct UtilsAssets {
     #[asset(path = "embedded://images/icon.png")]
     pub window_icon: Handle<Image>,
 
-    #[asset(path = "embedded://fonts/Fairfax.ttf")]
+    #[asset(path = "embedded://fonts/Fairfax-Fusion.ttf")]
     pub primary_font: Handle<Font>,
 }
