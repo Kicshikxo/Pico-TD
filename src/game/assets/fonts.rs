@@ -7,11 +7,11 @@ use crate::game::ui::i18n::Locale;
 pub struct FontAssets {
     #[asset(path = "embedded://fonts/Fairfax.ttf")]
     pub primary_font: Handle<Font>,
-    #[asset(path = "embedded://fonts/ark-pixel-16px-proportional-zh_cn.ttf")]
+    #[asset(path = "embedded://fonts/ark-pixel-12px-proportional-zh_hk.ttf")]
     pub chinese_font: Handle<Font>,
-    #[asset(path = "embedded://fonts/ark-pixel-16px-proportional-ja.ttf")]
+    #[asset(path = "embedded://fonts/ark-pixel-12px-proportional-ja.ttf")]
     pub japanese_font: Handle<Font>,
-    #[asset(path = "embedded://fonts/ark-pixel-16px-proportional-ko.ttf")]
+    #[asset(path = "embedded://fonts/ark-pixel-12px-proportional-ko.ttf")]
     pub korean_font: Handle<Font>,
 }
 
