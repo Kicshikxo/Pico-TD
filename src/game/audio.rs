@@ -1,6 +1,5 @@
 use bevy::{audio::Volume, prelude::*};
 use bevy_persistent::prelude::*;
-use directories::ProjectDirs;
 use serde::{Deserialize, Serialize};
 
 use crate::game::GameBackgroundAudio;
@@ -47,11 +46,15 @@ impl Plugin for GameAudioPlugin {
                 .format(StorageFormat::Ron)
                 .default(GameAudioVolume::default())
                 .path(
-                    if let Some(proj_dirs) = ProjectDirs::from("ru", "kicshikxo", "pico-td") {
-                        proj_dirs.preference_dir().join("volume.ron")
-                    } else {
-                        std::path::Path::new("local").join("volume")
-                    },
+                    #[cfg(all(not(target_arch = "wasm32"), not(target_os = "android")))]
+                    directories::ProjectDirs::from("ru", "kicshikxo", "pico-td")
+                        .unwrap()
+                        .preference_dir()
+                        .join("volume.ron"),
+                    #[cfg(target_arch = "wasm32")]
+                    std::path::Path::new("local").join("volume"),
+                    #[cfg(target_os = "android")]
+                    "/data/data/ru.kicshikxo.pico_td/files/volume.ron",
                 )
                 .revertible(true)
                 .revert_to_default_on_deserialization_errors(true)

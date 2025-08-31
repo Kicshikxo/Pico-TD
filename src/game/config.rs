@@ -1,6 +1,5 @@
 use bevy::prelude::*;
 use bevy_persistent::prelude::*;
-use directories::ProjectDirs;
 use serde::{Deserialize, Serialize};
 
 use crate::game::entities::{enemy::path::EnemyPathVisibility, soldier::SoldierPlacement};
@@ -45,11 +44,15 @@ impl Plugin for GameConfigPlugin {
                 .format(StorageFormat::Ron)
                 .default(GameConfig::default())
                 .path(
-                    if let Some(proj_dirs) = ProjectDirs::from("ru", "kicshikxo", "pico-td") {
-                        proj_dirs.preference_dir().join("config.ron")
-                    } else {
-                        std::path::Path::new("local").join("config")
-                    },
+                    #[cfg(all(not(target_arch = "wasm32"), not(target_os = "android")))]
+                    directories::ProjectDirs::from("ru", "kicshikxo", "pico-td")
+                        .unwrap()
+                        .preference_dir()
+                        .join("config.ron"),
+                    #[cfg(target_arch = "wasm32")]
+                    std::path::Path::new("local").join("config"),
+                    #[cfg(target_os = "android")]
+                    "/data/data/ru.kicshikxo.pico_td/files/config.ron",
                 )
                 .revertible(true)
                 .revert_to_default_on_deserialization_errors(true)

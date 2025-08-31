@@ -6,7 +6,6 @@ use bevy::{
 };
 use bevy_asset_loader::asset_collection::AssetCollection;
 use bevy_persistent::prelude::*;
-use directories::ProjectDirs;
 use serde::{Deserialize, Serialize};
 
 use crate::game::{
@@ -430,11 +429,15 @@ impl Plugin for LevelsPlugin {
                 .format(StorageFormat::Ron)
                 .default(CompletedLevels::default())
                 .path(
-                    if let Some(proj_dirs) = ProjectDirs::from("ru", "kicshikxo", "pico-td") {
-                        proj_dirs.data_dir().join("completed_levels.ron")
-                    } else {
-                        std::path::Path::new("local").join("completed_levels")
-                    },
+                    #[cfg(all(not(target_arch = "wasm32"), not(target_os = "android")))]
+                    directories::ProjectDirs::from("ru", "kicshikxo", "pico-td")
+                        .unwrap()
+                        .data_dir()
+                        .join("completed_levels.ron"),
+                    #[cfg(target_arch = "wasm32")]
+                    std::path::Path::new("local").join("completed_levels"),
+                    #[cfg(target_os = "android")]
+                    "/data/data/ru.kicshikxo.pico_td/files/completed_levels.ron",
                 )
                 .revertible(true)
                 .revert_to_default_on_deserialization_errors(true)

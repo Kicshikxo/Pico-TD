@@ -1,11 +1,7 @@
-use bevy::{
-    audio::PlaybackMode,
-    prelude::*,
-    tasks::{AsyncComputeTaskPool, Task},
-    ui::widget::NodeImageMode,
-};
+#![allow(unused)]
+
+use bevy::{audio::PlaybackMode, prelude::*, tasks::Task, ui::widget::NodeImageMode};
 use bevy_persistent::Persistent;
-use rfd::{AsyncFileDialog, MessageDialog, MessageLevel};
 
 use crate::game::{
     GameState,
@@ -238,6 +234,7 @@ fn init_ui(
                             }
                         });
 
+                    #[cfg(not(target_os = "android"))]
                     parent
                         .spawn((ButtonAction::UploadLevel, UiButton::primary()))
                         .with_child(UiIcon::new(UiIconVariant::Upload))
@@ -300,19 +297,23 @@ fn update_ui(
                 if uploaded_level.task.is_some() {
                     continue;
                 }
-                uploaded_level.task = Some(AsyncComputeTaskPool::get().spawn(async move {
-                    if let Some(file) = AsyncFileDialog::new()
-                        .add_filter("RON Files", &["ron"])
-                        .pick_file()
-                        .await
-                    {
-                        let bytes = file.read().await;
-                        let source = std::str::from_utf8(&bytes).unwrap_or_default();
-                        Some(Level::from_source(source))
-                    } else {
-                        None
-                    }
-                }));
+                #[cfg(not(target_os = "android"))]
+                {
+                    uploaded_level.task =
+                        Some(bevy::tasks::AsyncComputeTaskPool::get().spawn(async move {
+                            if let Some(file) = rfd::AsyncFileDialog::new()
+                                .add_filter("RON Files", &["ron"])
+                                .pick_file()
+                                .await
+                            {
+                                let bytes = file.read().await;
+                                let source = std::str::from_utf8(&bytes).unwrap_or_default();
+                                Some(Level::from_source(source))
+                            } else {
+                                None
+                            }
+                        }));
+                }
             }
         }
     }
@@ -336,11 +337,14 @@ fn uploaded_level_update(
         {
             if let Some(level) = uploaded_level_task_result {
                 if level.get_error().is_some() {
-                    MessageDialog::new()
-                        .set_level(MessageLevel::Error)
-                        .set_title(rust_i18n::t!("error.level_select.file_reading_error.title"))
-                        .set_description(level.get_error().unwrap())
-                        .show();
+                    #[cfg(not(target_os = "android"))]
+                    {
+                        rfd::MessageDialog::new()
+                            .set_level(rfd::MessageLevel::Error)
+                            .set_title(rust_i18n::t!("error.level_select.file_reading_error.title"))
+                            .set_description(level.get_error().unwrap())
+                            .show();
+                    }
                 } else {
                     *selected_level = level.clone();
                     next_game_state.set(GameState::Start);

@@ -1,6 +1,5 @@
 use bevy::prelude::*;
 use bevy_persistent::prelude::*;
-use directories::ProjectDirs;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Copy, PartialEq, Serialize, Deserialize)]
@@ -153,11 +152,15 @@ impl Plugin for I18nPlugin {
                 .format(StorageFormat::Ron)
                 .default(I18n::default())
                 .path(
-                    if let Some(proj_dirs) = ProjectDirs::from("ru", "kicshikxo", "pico-td") {
-                        proj_dirs.preference_dir().join("i18n.ron")
-                    } else {
-                        std::path::Path::new("local").join("i18n")
-                    },
+                    #[cfg(all(not(target_arch = "wasm32"), not(target_os = "android")))]
+                    directories::ProjectDirs::from("ru", "kicshikxo", "pico-td")
+                        .unwrap()
+                        .preference_dir()
+                        .join("i18n.ron"),
+                    #[cfg(target_arch = "wasm32")]
+                    std::path::Path::new("local").join("i18n"),
+                    #[cfg(target_os = "android")]
+                    "/data/data/ru.kicshikxo.pico_td/files/i18n.ron",
                 )
                 .revertible(true)
                 .revert_to_default_on_deserialization_errors(true)
