@@ -65,7 +65,7 @@ soldier.info.level:
     nl: "Niveau: %{level}/%{max_level}"
     tr: "Seviye: %{level}/%{max_level}"
     pl: "Poziom: %{level}/%{max_level}"
-    zh: "等级: %{name}"
+    zh: "等级: %{level}/%{max_level}"
 soldier.info.max_level:
     en: "Max level: %{max_level}"
     ru: "Максимальный уровень: %{max_level}"
