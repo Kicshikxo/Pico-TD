@@ -189,7 +189,7 @@ fn init_ui(
                         UiSelector::new()
                             .with_size(UiSelectorSize::Small)
                             .with_options(
-                                (1..=5)
+                                (0..=5)
                                     .map(|index| {
                                         let game_speed = GameSpeed::from_f32(index as f32);
 
@@ -271,7 +271,9 @@ fn update_ui(
         }
     }
     if let Ok(mut speed_selector) = speed_selector.single_mut() {
-        let speed = if keyboard_input.just_pressed(KeyCode::Digit1) {
+        let speed = if keyboard_input.just_pressed(KeyCode::Digit0) {
+            GameSpeed::Zero
+        } else if keyboard_input.just_pressed(KeyCode::Digit1) {
             GameSpeed::Normal
         } else if keyboard_input.just_pressed(KeyCode::Digit2) {
             GameSpeed::Double
