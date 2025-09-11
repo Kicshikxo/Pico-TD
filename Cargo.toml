@@ -1,6 +1,6 @@
 [package]
 name = "pico_td"
-version = "1.2.3"
+version = "1.2.4"
 edition = "2024"
 license = "WTFPL"
 build = "build/build.rs"
@@ -36,7 +36,7 @@ sys-locale = { version = "0.3.2", features = ["js"] }
 bevy-persistent = { version = "0.8.0", features = ["ron"] }
 directories = { version = "6.0.0" }
 
-log = { version = "0.4.27", features = [
+log = { version = "0.4.28", features = [
     "max_level_debug",
     "release_max_level_warn",
 ] }
