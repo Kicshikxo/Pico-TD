@@ -33,7 +33,7 @@ impl UiTextSize {
 #[require(Node)]
 pub struct UiText {
     size: UiTextSize,
-    justify: JustifyText,
+    justify: Justify,
     linebreak: LineBreak,
     color: Color,
     i18n_key: String,
@@ -46,7 +46,7 @@ impl Default for UiText {
     fn default() -> Self {
         Self {
             size: UiTextSize::default(),
-            justify: JustifyText::Center,
+            justify: Justify::Center,
             linebreak: LineBreak::default(),
             color: Color::WHITE,
             i18n_key: String::new(),
@@ -68,7 +68,7 @@ impl UiText {
         self.size = size;
         self
     }
-    pub fn with_justify(mut self, justify: JustifyText) -> Self {
+    pub fn with_justify(mut self, justify: Justify) -> Self {
         self.justify = justify;
         self
     }

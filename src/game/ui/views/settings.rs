@@ -223,7 +223,7 @@ fn init_ui(
                 .with_child(
                     UiText::new("ui.version")
                         .with_size(UiTextSize::Small)
-                        .with_justify(JustifyText::Right)
+                        .with_justify(Justify::Right)
                         .with_i18n_arg("version", env!("CARGO_PKG_VERSION").to_string()),
                 );
         });

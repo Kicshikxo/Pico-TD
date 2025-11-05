@@ -2,8 +2,8 @@ use std::f32::consts::{FRAC_PI_2, PI};
 
 use bevy::{
     asset::RenderAssetUsages,
+    mesh::{Indices, PrimitiveTopology},
     prelude::*,
-    render::mesh::{Indices, PrimitiveTopology},
 };
 
 pub struct RoundedRectangle;

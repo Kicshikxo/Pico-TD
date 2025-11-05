@@ -43,8 +43,8 @@ You can play the game directly in your browser:
 
 The following tools were used to build this project:
 
--   Rust 1.88.0
--   Bevy 0.16.1
+-   Rust 1.91.0
+-   Bevy 0.17.2
 
 ## Installation and Run
 

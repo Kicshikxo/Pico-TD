@@ -1,6 +1,6 @@
 use std::time::Duration;
 
-use bevy::{prelude::*, sprite::AlphaMode2d};
+use bevy::{prelude::*, sprite_render::AlphaMode2d};
 use bevy_persistent::Persistent;
 use serde::{Deserialize, Serialize};
 

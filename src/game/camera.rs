@@ -17,7 +17,7 @@ fn update_camera(
     windows: Query<&Window>,
     mut game_camera: Query<&mut Transform, With<GameCamera>>,
     game_tilemap: Single<&Tilemap, With<GameTilemap>>,
-    mut resize_reader: EventReader<WindowResized>,
+    mut resize_reader: MessageReader<WindowResized>,
     selected_level: Res<Level>,
     game_state: Res<State<GameState>>,
 ) {

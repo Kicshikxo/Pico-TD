@@ -110,7 +110,7 @@ fn init_ui(mut commands: Commands, ui_assets: Res<UiAssets>) {
                 .with_child(
                     UiText::new("ui.version")
                         .with_size(UiTextSize::Small)
-                        .with_justify(JustifyText::Right)
+                        .with_justify(Justify::Right)
                         .with_i18n_arg("version", env!("CARGO_PKG_VERSION").to_string()),
                 );
         });
@@ -128,7 +128,7 @@ fn update_ui(
         (Changed<UiButtonInteraction>, With<UiButton>),
     >,
     mut next_ui_state: ResMut<NextState<UiState>>,
-    mut app_exit_events: EventWriter<AppExit>,
+    mut app_exit_events: MessageWriter<AppExit>,
 ) {
     for (ui_button_interaction, button_action) in interaction_query.iter() {
         if *ui_button_interaction != UiButtonInteraction::Clicked {

@@ -50,8 +50,8 @@ fn update_selected_tile(
     game_camera: Query<(&Camera, &GlobalTransform), With<GameCamera>>,
     game_tilemap: Single<(&Tilemap, &Transform), With<GameTilemap>>,
     mut selected_tile: ResMut<SelectedTile>,
-    mut cursor_moved_events: EventReader<CursorMoved>,
-    mut touch_events: EventReader<TouchInput>,
+    mut cursor_moved_events: MessageReader<CursorMoved>,
+    mut touch_events: MessageReader<TouchInput>,
 ) {
     let cursor_moved = cursor_moved_events.is_empty() == false;
     let touch_moved = touch_events.is_empty() == false;
@@ -72,7 +72,7 @@ fn update_selected_tile(
         };
 
         let cursor_in_tilemap_position = game_tilemap_transform
-            .compute_matrix()
+            .to_matrix()
             .inverse()
             .transform_point3(
                 (cursor_position - game_tilemap.get_tile_size() as f32 / 2.0).extend(0.0),
@@ -105,7 +105,7 @@ fn update_selected_soldier(
     mut selected_soldier: ResMut<SelectedSoldier>,
     game_waves: Res<GameWaves>,
     mouse_button_input: Res<ButtonInput<MouseButton>>,
-    mut touch_events: EventReader<TouchInput>,
+    mut touch_events: MessageReader<TouchInput>,
     ui_interaction: Query<&Interaction, (Changed<Interaction>, With<Button>)>,
     game_audio: Single<Entity, With<GameAudio>>,
     game_audio_volume: Res<Persistent<GameAudioVolume>>,

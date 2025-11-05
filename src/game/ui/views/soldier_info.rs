@@ -109,7 +109,7 @@ fn init_ui(
                                     ));
                                     parent.spawn(
                                         UiText::new("ui.in_game.health")
-                                            .with_justify(JustifyText::Left)
+                                            .with_justify(Justify::Left)
                                             .with_i18n_arg(
                                                 "health",
                                                 player.get_health().get_current().to_string(),
@@ -135,7 +135,7 @@ fn init_ui(
                                     ));
                                     parent.spawn(
                                         UiText::new("ui.in_game.money")
-                                            .with_justify(JustifyText::Left)
+                                            .with_justify(Justify::Left)
                                             .with_i18n_arg(
                                                 "money",
                                                 player.get_money().get_current().to_string(),
@@ -247,7 +247,7 @@ fn init_ui(
                                                     rust_i18n::t!(soldier.to_str()).to_string(),
                                                 )
                                                 .with_size(UiTextSize::Small)
-                                                .with_justify(JustifyText::Left)
+                                                .with_justify(Justify::Left)
                                                 .auto_width(),
                                         );
 
@@ -271,7 +271,7 @@ fn init_ui(
                                                         .to_string(),
                                                 )
                                                 .with_size(UiTextSize::Small)
-                                                .with_justify(JustifyText::Left),
+                                                .with_justify(Justify::Left),
                                         ));
 
                                         parent.spawn((
@@ -282,7 +282,7 @@ fn init_ui(
                                                     soldier.get_damage().to_string(),
                                                 )
                                                 .with_size(UiTextSize::Small)
-                                                .with_justify(JustifyText::Left),
+                                                .with_justify(Justify::Left),
                                         ));
 
                                         parent.spawn((
@@ -293,7 +293,7 @@ fn init_ui(
                                                     soldier.get_fire_radius().to_string(),
                                                 )
                                                 .with_size(UiTextSize::Small)
-                                                .with_justify(JustifyText::Left),
+                                                .with_justify(Justify::Left),
                                         ));
 
                                         if let Some(blast_radius) = soldier
@@ -309,7 +309,7 @@ fn init_ui(
                                                         blast_radius.to_string(),
                                                     )
                                                     .with_size(UiTextSize::Small)
-                                                    .with_justify(JustifyText::Left),
+                                                    .with_justify(Justify::Left),
                                             ));
                                         }
 
@@ -325,7 +325,7 @@ fn init_ui(
                                                         .to_string(),
                                                 )
                                                 .with_size(UiTextSize::Small)
-                                                .with_justify(JustifyText::Left),
+                                                .with_justify(Justify::Left),
                                         ));
                                     });
                             });

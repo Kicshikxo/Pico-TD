@@ -92,7 +92,7 @@ fn init_ui(
                                     ));
                                     parent.spawn(
                                         UiText::new("ui.in_game.health")
-                                            .with_justify(JustifyText::Left)
+                                            .with_justify(Justify::Left)
                                             .with_i18n_arg(
                                                 "health",
                                                 player.get_health().get_current().to_string(),
@@ -118,7 +118,7 @@ fn init_ui(
                                     ));
                                     parent.spawn(
                                         UiText::new("ui.in_game.money")
-                                            .with_justify(JustifyText::Left)
+                                            .with_justify(Justify::Left)
                                             .with_i18n_arg(
                                                 "money",
                                                 player.get_money().get_current().to_string(),
@@ -151,7 +151,7 @@ fn init_ui(
             parent
                 .spawn(
                     UiContainer::primary()
-                        .with_width(Val::Px(360.0))
+                        .with_width(Val::Px(380.0))
                         .with_padding(UiRect::all(Val::Px(24.0)))
                         .with_row_gap(Val::Px(12.0))
                         .center()
@@ -283,7 +283,7 @@ fn init_ui(
                                                                 .to_string(),
                                                         )
                                                         .with_size(UiTextSize::Small)
-                                                        .with_justify(JustifyText::Left),
+                                                        .with_justify(Justify::Left),
                                                 );
 
                                                 parent.spawn(
@@ -296,7 +296,7 @@ fn init_ui(
                                                                 .to_string(),
                                                         )
                                                         .with_size(UiTextSize::Small)
-                                                        .with_justify(JustifyText::Left),
+                                                        .with_justify(Justify::Left),
                                                 );
 
                                                 parent.spawn(
@@ -309,7 +309,7 @@ fn init_ui(
                                                                 .to_string(),
                                                         )
                                                         .with_size(UiTextSize::Small)
-                                                        .with_justify(JustifyText::Left),
+                                                        .with_justify(Justify::Left),
                                                 );
 
                                                 parent.spawn(
@@ -322,7 +322,7 @@ fn init_ui(
                                                                 .to_string(),
                                                         )
                                                         .with_size(UiTextSize::Small)
-                                                        .with_justify(JustifyText::Left),
+                                                        .with_justify(Justify::Left),
                                                 );
 
                                                 if let Some(blast_radius) = soldier_variant
@@ -337,7 +337,7 @@ fn init_ui(
                                                                 blast_radius.to_string(),
                                                             )
                                                             .with_size(UiTextSize::Small)
-                                                            .with_justify(JustifyText::Left),
+                                                            .with_justify(Justify::Left),
                                                     );
                                                 }
 
@@ -356,7 +356,7 @@ fn init_ui(
                                                                 .to_string(),
                                                         )
                                                         .with_size(UiTextSize::Small)
-                                                        .with_justify(JustifyText::Left),
+                                                        .with_justify(Justify::Left),
                                                 );
                                             });
                                     });

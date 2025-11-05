@@ -1,6 +1,6 @@
 [package]
 name = "pico_td"
-version = "1.2.4"
+version = "1.2.5"
 edition = "2024"
 license = "WTFPL"
 build = "build/build.rs"
@@ -11,29 +11,18 @@ path = "src/pico_td.rs"
 crate-type = ["lib", "cdylib"]
 
 [dependencies]
-bevy = { version = "0.16.1", default-features = false, features = [
-    "android-game-activity",
-    "android_shared_stdcxx",
-    "async_executor",
-    "bevy_ui",
-    "bevy_window",
-    "multi_threaded",
-    "std",
-    "vorbis",
-    "webgl2",
-    "x11",
-] }
+bevy = { version = "0.17.2" }
 rand = { version = "0.9.2" }
 ron = { version = "0.11.0" }
-serde = { version = "1.0.221" }
+serde = { version = "1.0.228" }
 
-bevy_asset_loader = { version = "0.23.0", features = ["2d"] }
-bevy_embedded_assets = { version = "0.13.0" }
+bevy_asset_loader = { version = "0.24.0-rc.1", features = ["2d"] }
+bevy_embedded_assets = { version = "0.14.0" }
 
 rust-i18n = { version = "3.1.5" }
 sys-locale = { version = "0.3.2", features = ["js"] }
 
-bevy-persistent = { version = "0.8.0", features = ["ron"] }
+bevy-persistent = { version = "0.9.0", features = ["ron"] }
 directories = { version = "6.0.0" }
 
 log = { version = "0.4.28", features = [
@@ -46,10 +35,10 @@ winit = { version = "0.30.12", default-features = false }
 rfd = { version = "0.15.4", default-features = false, features = ["gtk3"] }
 
 [target.'cfg(target_arch = "wasm32")'.dependencies]
-getrandom = { version = "0.3.3", features = ["wasm_js"] }
+getrandom = { version = "0.3.4", features = ["wasm_js"] }
 
 [build-dependencies]
-embed-resource = { version = "3.0.5" }
+embed-resource = { version = "3.0.6" }
 
 [profile.dev]
 opt-level = 1

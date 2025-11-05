@@ -10,7 +10,7 @@ pub mod speed;
 pub mod ui;
 pub mod waves;
 
-use bevy::{audio::PlaybackMode, prelude::*, winit::WinitWindows};
+use bevy::{audio::PlaybackMode, ecs::system::NonSendMarker, prelude::*, winit::WINIT_WINDOWS};
 use bevy_persistent::Persistent;
 use winit::window::Icon;
 
@@ -70,38 +70,37 @@ pub enum GameState {
 }
 
 fn setup(
+    _marker: NonSendMarker,
     mut commands: Commands,
     mut windows: Query<(Entity, &mut Window)>,
-    winit_windows: NonSend<WinitWindows>,
     util_assets: Res<UtilAssets>,
     asset_images: Res<Assets<Image>>,
     mut next_ui_state: ResMut<NextState<UiState>>,
     mut next_game_state: ResMut<NextState<GameState>>,
 ) {
-    commands.spawn((GameCamera, Camera2d::default(), Msaa::Off));
+    commands.spawn((GameCamera, Camera2d::default()));
 
     next_ui_state.set(UiState::Menu);
     next_game_state.set(GameState::Pause);
 
-    for (window_entity, mut window) in windows.iter_mut() {
-        window.visible = true;
+    WINIT_WINDOWS.with_borrow(|winit_windows| {
+        for (window_entity, mut window) in windows.iter_mut() {
+            window.visible = true;
 
-        let Some(winit_window) = winit_windows.get_window(window_entity) else {
-            continue;
-        };
-        let Some(window_icon) = asset_images.get(&util_assets.window_icon) else {
-            continue;
-        };
-
-        winit_window.set_window_icon(
-            Icon::from_rgba(
-                window_icon.data.clone().unwrap(),
-                window_icon.width(),
-                window_icon.height(),
-            )
-            .ok(),
-        );
-    }
+            if let Some(winit_window) = winit_windows.get_window(window_entity) {
+                if let Some(window_icon) = asset_images.get(&util_assets.window_icon) {
+                    winit_window.set_window_icon(
+                        Icon::from_rgba(
+                            window_icon.data.clone().unwrap(),
+                            window_icon.width(),
+                            window_icon.height(),
+                        )
+                        .ok(),
+                    );
+                }
+            }
+        }
+    });
 }
 
 fn start_game(

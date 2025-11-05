@@ -98,7 +98,7 @@ fn init_ui(
                                     parent.spawn((
                                         HealthTextComponent,
                                         UiText::new("ui.in_game.health")
-                                            .with_justify(JustifyText::Left)
+                                            .with_justify(Justify::Left)
                                             .with_i18n_arg(
                                                 "health",
                                                 player.get_health().get_current().to_string(),
@@ -125,7 +125,7 @@ fn init_ui(
                                     parent.spawn((
                                         MoneyTextComponent,
                                         UiText::new("ui.in_game.money")
-                                            .with_justify(JustifyText::Left)
+                                            .with_justify(Justify::Left)
                                             .with_i18n_arg(
                                                 "money",
                                                 player.get_money().get_current().to_string(),

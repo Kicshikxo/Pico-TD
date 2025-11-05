@@ -10,8 +10,8 @@ android {
         applicationId "ru.kicshikxo.pico_td"
         minSdk 21
         targetSdk 36
-        versionCode 1
-        versionName "1.2.3"
+        versionCode 4
+        versionName "1.2.5"
     }
     splits {
         abi {
