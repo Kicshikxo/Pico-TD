@@ -447,7 +447,7 @@ impl Plugin for LevelsPlugin {
     }
 }
 
-#[derive(Default)]
+#[derive(Default, TypePath)]
 struct LevelsLoader;
 
 impl AssetLoader for LevelsLoader {

@@ -24,9 +24,9 @@ Pico TD features tactical gameplay where you place your soldiers to maximize the
 
 There are three soldier classes:
 
--   **Regular Soldier:** A balanced unit with moderate damage and a fast rate of fire.
--   **Rocket Launcher:** High area damage, but a slow rate of fire.
--   **Sniper:** Long-range, high-damage unit with a slow rate of fire.
+- **Regular Soldier:** A balanced unit with moderate damage and a fast rate of fire.
+- **Rocket Launcher:** High area damage, but a slow rate of fire.
+- **Sniper:** Long-range, high-damage unit with a slow rate of fire.
 
 Enemies can be ground, naval, or air units, including trucks, tanks, drones, planes, boats, and more. Both soldiers and enemies have multiple levels, increasing the difficulty as the game progresses.
 
@@ -36,15 +36,15 @@ The game is designed to be played with a mouse but also supports touch input.
 
 You can play the game directly in your browser:
 
--   [kicshikxo.itch.io/pico-td](https://kicshikxo.itch.io/pico-td)
--   [pico-td.kicshikxo.ru](https://pico-td.kicshikxo.ru)
+- [kicshikxo.itch.io/pico-td](https://kicshikxo.itch.io/pico-td)
+- [pico-td.kicshikxo.ru](https://pico-td.kicshikxo.ru)
 
 ## Built With
 
 The following tools were used to build this project:
 
--   Rust 1.91.0
--   Bevy 0.17.2
+- Rust 1.93.0
+- Bevy 0.18.0
 
 ## Installation and Run
 
@@ -145,7 +145,7 @@ Finally, open the `android` folder in Android Studio and build the project.
 
 ## External Assets
 
--   [Kenney Game Assets](https://kenney.nl/assets/)
+- [Kenney Game Assets](https://kenney.nl/assets/)
 
 ## License
 
