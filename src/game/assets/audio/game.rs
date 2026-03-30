@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 use bevy_asset_loader::asset_collection::AssetCollection;
-use rand::Rng;
+use rand::RngExt;
 
 #[derive(AssetCollection, Resource)]
 pub struct GameAudioAssets {
