@@ -11,15 +11,15 @@ path = "src/pico_td.rs"
 crate-type = ["lib", "cdylib"]
 
 [dependencies]
-bevy = { version = "0.18.0", default-features = false, features = ['2d'] }
-rand = { version = "0.10.0" }
-ron = { version = "0.12.0" }
+bevy = { version = "0.18.1", default-features = false, features = ['2d'] }
+rand = { version = "0.10.1" }
+ron = { version = "0.12.1" }
 serde = { version = "1.0.228" }
 
-bevy_asset_loader = { version = "0.25.0", features = ["2d"] }
+bevy_asset_loader = { version = "0.26.0", features = ["2d"] }
 bevy_embedded_assets = { version = "0.15.0" }
 
-rust-i18n = { version = "3.1.5" }
+rust-i18n = { version = "4.0.0" }
 sys-locale = { version = "0.3.2", features = ["js"] }
 
 bevy-persistent = { version = "0.10.0", features = ["ron"] }
@@ -30,6 +30,8 @@ log = { version = "0.4.29", features = [
     "release_max_level_warn",
 ] }
 winit = { version = "0.30.12", default-features = false }
+# js-sys = { version = "0.3.77" }
+# wasm-bindgen = "0.2.100"
 
 [target.'cfg(not(target_os = "android"))'.dependencies]
 rfd = { version = "0.17.2", default-features = false, features = ["gtk3"] }
